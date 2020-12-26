@@ -8,11 +8,11 @@ extern Application* CreateApplication();
 
 int main(int argc, char** argv)
 {
-    OSWindows os;
-    Main::Setup(argc, argv);
+    OSWindows* os = new OSWindows();
 
-    Application* app = CreateApplication();
+    Main::Setup(argc, argv);
+    Main::SetApplicationInstance(CreateApplication());
 
     Main::Start();
-    os.Run();
+    os->Run();
 }

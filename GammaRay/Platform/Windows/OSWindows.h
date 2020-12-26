@@ -17,8 +17,6 @@ class GAMMARAY_API OSWindows : public OS
 public:
     void Run();
 
-    void SetMainLoop(MainLoop* newMainLoop) override;
-
     OSWindows() {};
     ~OSWindows() {};
 };

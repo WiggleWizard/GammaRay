@@ -10,8 +10,9 @@
 #include "Core/Event/EventMouse.h"
 
 
-static Engine* engine = nullptr;
-static MainLoop* mainLoop = nullptr;
+Engine* m_engine           = nullptr;
+MainLoop* m_mainLoop       = nullptr;
+Application* m_application = nullptr;
 
 uint32_t Main::frame = 0;
 
@@ -19,18 +20,15 @@ uint32_t Main::frame = 0;
 void Main::Setup(int argc, char *argv[])
 {
     Log::Init();
-    engine = new Engine();
+    m_engine = new Engine();
+
 }
 
 bool Main::Start()
 {
+    m_mainLoop = std::make_unique<MainLoop>();
 
-    // TODO: Make this reference counted!
-    mainLoop = new MainLoop();
-    OS::GetSingleton()->SetMainLoop(mainLoop);
-
-    GR_CORE_INFO("Main started");
-
+    GR_CORE_TRACE("Main started");
 
     return true;
 }
@@ -39,7 +37,13 @@ bool Main::OnProcess()
 {
     frame++;
 
-    bool mainLoopOk = mainLoop->OnProcess(0);
+    bool mainLoopOk = m_mainLoop->OnProcess(0);
 
     return mainLoopOk;
+}
+
+bool Main::Shutdown()
+{
+    delete m_engine;
+    m_engine = nullptr;
 }

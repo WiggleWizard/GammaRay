@@ -14,8 +14,5 @@ public:
     ~OS();
 
     static OS* GetSingleton();
-
-public:
-    virtual void SetMainLoop(MainLoop* newMainLoop) = 0;
 };
 

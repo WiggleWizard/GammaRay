@@ -12,8 +12,3 @@ void OSWindows::Run()
             break;
     };
 }
-
-void OSWindows::SetMainLoop(MainLoop* newMainLoop)
-{
-    mainLoop = newMainLoop;
-}
