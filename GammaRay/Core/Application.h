@@ -21,9 +21,9 @@ public:
     Application();
     virtual ~Application();
 
-    //virtual void Start() = 0;
-    virtual bool OnProcess(float DeltaTimeMS);
-    //virtual void Stop() = 0;
+    virtual bool OnProcess(float deltaTimeMs) = 0;
+
+    bool _OnProcess(float deltaTimeMs);
 
     void OnEvent(Event& event);
     bool OnEventWindowClose(EventWindowClose& event);

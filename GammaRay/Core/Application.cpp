@@ -18,8 +18,9 @@ Application::~Application()
 {
 }
 
-bool Application::OnProcess(float DeltaTimeMS)
+bool Application::_OnProcess(float deltaTimeMs)
 {
+    OnProcess(deltaTimeMs);
     m_windowMain->OnUpdate();
     return m_running;
 }

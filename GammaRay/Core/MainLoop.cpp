@@ -9,7 +9,7 @@ bool MainLoop::OnProcess(float DeltaTimeMS)
 {
     GR_PROF_FRAME_MARK;
 
-    bool appOk = Application::GetSingleton()->OnProcess(0);
+    bool appOk = Application::GetSingleton()->_OnProcess(0);
 
     return appOk;
 }
