@@ -1,0 +1,6 @@
+[submodule "GammaRay/Thirdparty/spdlog"]
+	path = GammaRay/Thirdparty/spdlog
+	url = git@github.com:gabime/spdlog.git
+[submodule "GammaRay/Thirdparty/tracy"]
+	path = GammaRay/Thirdparty/tracy
+	url = git@github.com:wolfpld/tracy.git
