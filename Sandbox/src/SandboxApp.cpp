@@ -4,10 +4,6 @@ class Sandbox : public Application
 {
 public:
 
-    void Step(float DeltaTimeMS) override
-    {
-        
-    };
 };
 
 Application* CreateApplication()

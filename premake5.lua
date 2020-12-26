@@ -10,6 +10,12 @@ workspace "GammaRay"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+includeDirs = {}
+includeDirs["GLFW"]   = "GammaRay/Thirdparty/glfw/include"
+includeDirs["spdlog"] = "GammaRay/Thirdparty/spdlog/include"
+includeDirs["tracy"]  = "GammaRay/Thirdparty/tracy"
+
+include "GammaRay/Thirdparty/glfw_p5.lua"
 
 project "GammaRay"
     location "GammaRay"
@@ -42,8 +48,15 @@ project "GammaRay"
     includedirs
     {
         "%{prj.name}",
-        "%{prj.name}/Thirdparty/spdlog/include",
-        "%{prj.name}/Thirdparty/tracy",
+        "%{includeDirs.spdlog}",
+        "%{includeDirs.tracy}",
+        "%{includeDirs.GLFW}"
+    }
+
+    links
+    {
+        "GLFW",
+        "opengl32.lib"
     }
 
     -- Disable PCH for tracy
@@ -54,6 +67,7 @@ project "GammaRay"
         cppdialect "C++17"
         staticruntime "On"
         systemversion "latest"
+
         -- Disable edit and continue since Tracy doesn't like this
         editAndContinue "Off"
 
@@ -61,6 +75,8 @@ project "GammaRay"
         {
             "GR_BUILD_DLL",
             "GR_PLATFORM_WINDOWS",
+
+            -- Disable "min" and "max" <Windows.h> macros so we can compile Tracy
             "NOMINMAX"
         }
 
@@ -73,6 +89,9 @@ project "GammaRay"
         defines
         {
             "GR_DEBUG",
+            "GR_ENABLE_ASSERTS",
+
+            -- Enable minimal on demand Tracy
             "TRACY_ENABLE",
             "TRACY_ON_DEMAND",
             "TRACY_NO_SYSTEM_TRACING"
