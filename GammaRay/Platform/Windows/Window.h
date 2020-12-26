@@ -12,6 +12,11 @@ public:
     WindowsWindow(const WindowProps& props);
     virtual ~WindowsWindow();
 
+    static void OnGLFWError(int error, const char* description)
+    {
+        GR_CORE_ERROR("A GLFW error occurred ({0}): {1}", error, description);
+    }
+
     void OnUpdate() override;
 
     inline virtual unsigned int GetWidth() const { return m_data.width; }
@@ -23,6 +28,7 @@ public:
 
 private:
     virtual void Init(const WindowProps& props);
+    virtual void SetupGLFWCallbacks();
     virtual void Shutdown();
 
 private:

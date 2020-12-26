@@ -6,8 +6,6 @@
 #include <sstream>
 
 
-FMT_EVENT_FORMATTER(class EventMouseMoved)
-
 class GAMMARAY_API EventMouseMoved : public Event
 {
 public:
@@ -33,3 +31,44 @@ private:
     float m_mouseX, m_mouseY = 0;
 };
 
+class GAMMARAY_API EventMousePressed : public Event
+{
+public:
+    EVENT_CLASS_TYPE(MouseButtonPressed)
+    EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
+
+    EventMousePressed(int button) : m_button(button) {}
+
+    inline int GetButton() const { return m_button; }
+
+    std::string ToString() const override
+    {
+        std::stringstream ss;
+        ss << "EventMousePressed: " << m_button;
+        return ss.str();
+    }
+
+protected:
+    int m_button = 0;
+};
+
+class GAMMARAY_API EventMouseRelease : public Event
+{
+public:
+    EVENT_CLASS_TYPE(MouseButtonReleased)
+    EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
+
+    EventMouseRelease(int button) : m_button(button) {}
+
+    inline int GetButton() const { return m_button; }
+
+    std::string ToString() const override
+    {
+        std::stringstream ss;
+        ss << "EventMouseReleased: " << m_button;
+        return ss.str();
+    }
+
+protected:
+    int m_button = 0;
+};

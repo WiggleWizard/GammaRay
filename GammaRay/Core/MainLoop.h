@@ -2,9 +2,10 @@
 
 #include "Debug/Profiling.h"
 
+
 class MainLoop
 {
 public:
-    virtual void Step(float DeltaTimeMS);
+    virtual bool OnProcess(float DeltaTimeMS);
 };
 

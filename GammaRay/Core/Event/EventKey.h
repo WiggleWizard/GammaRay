@@ -29,7 +29,12 @@ public:
         , m_repeatCount(repeatCount)
     {}
 
-    // TODO: ToString
+    std::string ToString() const override
+    {
+        std::stringstream ss;
+        ss << "EventKeyPressed: " << m_keyCode;
+        return ss.str();
+    }
 
 private:
     int m_repeatCount = 0;
@@ -40,9 +45,14 @@ class GAMMARAY_API EventKeyReleased : public EventKey
 public:
     EVENT_CLASS_TYPE(KeyReleased)
 
-    EventKeyReleased(int keyCode, int repeatCount)
+    EventKeyReleased(int keyCode, int repeatCount = 0)
         : EventKey(keyCode)
     {}
 
-    // TODO: ToString
+    std::string ToString() const override
+    {
+        std::stringstream ss;
+        ss << "EventKeyReleased: " << m_keyCode;
+        return ss.str();
+    }
 };

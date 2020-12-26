@@ -35,14 +35,11 @@ bool Main::Start()
     return true;
 }
 
-bool Main::Step()
+bool Main::OnProcess()
 {
     frame++;
 
-    //Engine::GetSingleton()->Step();
+    bool mainLoopOk = mainLoop->OnProcess(0);
 
-    mainLoop->Step(0);
-    Application::GetSingleton()->Step(0);
-
-    return true;
+    return mainLoopOk;
 }

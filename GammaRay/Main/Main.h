@@ -13,6 +13,6 @@ public:
     static void Setup(int argc, char *argv[]);
     static bool Start();
 
-    static bool Step();
+    static bool OnProcess();
 };
 

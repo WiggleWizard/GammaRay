@@ -8,7 +8,7 @@ void OSWindows::Run()
 {
     while(!m_forceQuit)
     {
-        if(!Main::Step())
+        if(!Main::OnProcess())
             break;
     };
 }
