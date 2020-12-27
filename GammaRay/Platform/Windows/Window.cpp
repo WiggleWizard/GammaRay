@@ -70,7 +70,7 @@ void WindowsWindow::Init(const WindowProps& props)
     glfwMakeContextCurrent(m_glfwWindow);
 
     int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-    GR_CORE_ASSERT(!status, "glad failed to load");
+    GR_CORE_ASSERT(status, "glad failed to load");
 
     glfwSetWindowUserPointer(m_glfwWindow, &m_data);
     SetVSync(true);
