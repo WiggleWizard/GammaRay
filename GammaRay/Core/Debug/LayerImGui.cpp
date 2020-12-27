@@ -86,6 +86,38 @@ void LayerImGui::OnProcess()
 
 void LayerImGui::OnEvent(Event& event)
 {
+    EventDispatcher dispatcher(event);
+    dispatcher.Dispatch<EventMouseMoved>(std::bind(&LayerImGui::OnMouseMove, this, std::placeholders::_1));
+    dispatcher.Dispatch<EventMousePressed>(std::bind(&LayerImGui::OnMousePressed, this, std::placeholders::_1));
+    dispatcher.Dispatch<EventMouseRelease>(std::bind(&LayerImGui::OnMouseRelease, this, std::placeholders::_1));
+    dispatcher.Dispatch<EventMouseScrolled>(std::bind(&LayerImGui::OnMouseScrolled, this, std::placeholders::_1));
+}
 
+bool LayerImGui::OnMouseMove(EventMouseMoved& event)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    io.MousePos = ImVec2((float)event.GetX(), (float)event.GetY());
+    return true;
+}
+
+bool LayerImGui::OnMousePressed(EventMousePressed& event)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    io.MouseDown[0] = true;
+    return true;
+}
+
+bool LayerImGui::OnMouseRelease(EventMouseRelease& event)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    io.MouseDown[0] = false;
+    return true;
+}
+
+bool LayerImGui::OnMouseScrolled(EventMouseScrolled& event)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    io.MouseWheel = event.GetYOffset();
+    return true;
 }
 

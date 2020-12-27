@@ -149,7 +149,13 @@ void WindowsWindow::SetupGLFWCallbacks()
         }
     });
 
-    // TODO: Mouse scroll
+    glfwSetScrollCallback(m_glfwWindow, [](GLFWwindow* window, double xOffset, double yOffset)
+    {
+        WindowData* windowData = (WindowData*)glfwGetWindowUserPointer(window);
+
+        EventMouseScrolled event((float)xOffset, (float)yOffset);
+        windowData->eventCallback(event);
+    });
 
     glfwSetCursorPosCallback(m_glfwWindow, [](GLFWwindow* window, double x, double y)
     {

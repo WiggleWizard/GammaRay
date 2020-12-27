@@ -31,6 +31,31 @@ private:
     float m_mouseX, m_mouseY = 0;
 };
 
+class GAMMARAY_API EventMouseScrolled : public Event
+{
+public:
+    EVENT_CLASS_TYPE(MouseScrolled)
+    EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
+
+    EventMouseScrolled(float xOffset, float yOffset)
+        : m_xOffset(xOffset)
+        , m_yOffset(yOffset)
+    {}
+
+    inline float GetXOffset() const { return m_xOffset; }
+    inline float GetYOffset() const { return m_yOffset; }
+
+    std::string ToString() const override
+    {
+        std::stringstream ss;
+        ss << "EventMouseScrolled: " << m_xOffset << ", " << m_yOffset;
+        return ss.str();
+    }
+
+protected:
+    float m_xOffset, m_yOffset;
+};
+
 class GAMMARAY_API EventMousePressed : public Event
 {
 public:
