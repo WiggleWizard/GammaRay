@@ -98,6 +98,8 @@ project "GammaRay"
             "GR_DEBUG",
             "GR_ENABLE_ASSERTS",
 
+            "DISABLE_FORCED_INLINE",
+
             -- Enable minimal on demand Tracy
             "TRACY_ENABLE",
             "TRACY_ON_DEMAND",
