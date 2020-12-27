@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Debug/Profiling.h"
-
 
 class MainLoop
 {

@@ -10,9 +10,10 @@
 #include "Core/Event/EventMouse.h"
 
 
-Engine* m_engine           = nullptr;
-MainLoop* m_mainLoop       = nullptr;
-Application* m_application = nullptr;
+Engine* Main::m_engine = nullptr;
+
+std::unique_ptr<MainLoop> Main::m_mainLoop       = nullptr;
+std::unique_ptr<Application> Main::m_application = nullptr;
 
 uint32_t Main::frame = 0;
 
@@ -21,7 +22,6 @@ void Main::Setup(int argc, char *argv[])
 {
     Log::Init();
     m_engine = new Engine();
-
 }
 
 bool Main::Start()
@@ -46,4 +46,5 @@ bool Main::Shutdown()
 {
     delete m_engine;
     m_engine = nullptr;
+    return true;
 }

@@ -12,10 +12,12 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 includeDirs = {}
 includeDirs["GLFW"]   = "GammaRay/Thirdparty/glfw/include"
+includeDirs["glad"]   = "GammaRay/Thirdparty/glad/include"
 includeDirs["spdlog"] = "GammaRay/Thirdparty/spdlog/include"
 includeDirs["tracy"]  = "GammaRay/Thirdparty/tracy"
 
 include "GammaRay/Thirdparty/glfw_p5.lua"
+include "GammaRay/Thirdparty/glad_p5.lua"
 
 project "GammaRay"
     location "GammaRay"
@@ -50,12 +52,14 @@ project "GammaRay"
         "%{prj.name}",
         "%{includeDirs.spdlog}",
         "%{includeDirs.tracy}",
-        "%{includeDirs.GLFW}"
+        "%{includeDirs.GLFW}",
+        "%{includeDirs.glad}",
     }
 
     links
     {
         "GLFW",
+        "glad",
         "opengl32.lib"
     }
 
@@ -75,6 +79,9 @@ project "GammaRay"
         {
             "GR_BUILD_DLL",
             "GR_PLATFORM_WINDOWS",
+
+            -- So glad and GLFW play nice together
+            "GLFW_INCLUDE_NONE",
 
             -- Disable "min" and "max" <Windows.h> macros so we can compile Tracy
             "NOMINMAX"

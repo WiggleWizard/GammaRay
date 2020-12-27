@@ -2,8 +2,10 @@
 
 #include "Core/Core.h"
 #include "Core/Typedefs.h"
-
+#include "Core/MainLoop.h"
 #include "Core/Application.h"
+
+class Engine;
 
 
 /**

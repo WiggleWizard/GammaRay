@@ -1,5 +1,6 @@
 #include <GammaRay.h>
 
+
 class Sandbox : public Application
 {
 public:

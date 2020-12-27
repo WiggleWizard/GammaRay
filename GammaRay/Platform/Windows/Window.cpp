@@ -9,6 +9,7 @@
 #include "Core/Event/EventWindow.h"
 
 #include <GLFW/glfw3.h>
+#include <glad/glad.h>
 
 
 bool WindowsWindow::m_glfwInitialized = false;
@@ -67,6 +68,10 @@ void WindowsWindow::Init(const WindowProps& props)
 
     m_glfwWindow = glfwCreateWindow(m_data.width, m_data.height, m_data.title.c_str(), nullptr, nullptr);
     glfwMakeContextCurrent(m_glfwWindow);
+
+    int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+    GR_CORE_ASSERT(!status, "glad failed to load");
+
     glfwSetWindowUserPointer(m_glfwWindow, &m_data);
     SetVSync(true);
 

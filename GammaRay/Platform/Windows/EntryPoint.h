@@ -8,10 +8,12 @@ extern Application* CreateApplication();
 
 int main(int argc, char** argv)
 {
-    OSWindows* os = new OSWindows();
-
     Main::Setup(argc, argv);
-    Main::SetApplicationInstance(CreateApplication());
+
+    OSWindows* os = new OSWindows();
+    Application* application = CreateApplication();
+
+    Main::SetApplicationInstance(application);
 
     Main::Start();
     os->Run();
