@@ -1,5 +1,7 @@
 workspace "GammaRay"
     architecture "x64"
+    startproject "Sandbox"
+
 
     configurations
     {
@@ -25,6 +27,7 @@ project "GammaRay"
     location "GammaRay"
     kind "SharedLib"
     language "C++"
+    staticruntime "Off"
 
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("bin-obj/" .. outputdir .. "/%{prj.name}")
@@ -73,7 +76,6 @@ project "GammaRay"
 
     filter "system:windows"
         cppdialect "C++17"
-        staticruntime "On"
         systemversion "latest"
 
         -- Disable edit and continue since Tracy doesn't like this
@@ -97,7 +99,8 @@ project "GammaRay"
         }
 
     filter "configurations:Debug"
-        buildoptions "/MDd"
+        runtime "Debug"
+
         defines
         {
             "GR_DEBUG",
@@ -117,18 +120,19 @@ project "GammaRay"
 
     filter "configurations:Release"
         defines "GR_RELEASE"
-        buildoptions "/MD"
+        runtime "Release"
         optimize "On"
 
     filter "configurations:Dist"
         defines "GR_DIST"
-        buildoptions "/MD"
+        runtime "Release"
         optimize "On"
 
 project "Sandbox"
     location "Sandbox"
     kind "ConsoleApp"
     language "C++"
+    staticruntime "Off"
 
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("bin-obj/" .. outputdir .. "/%{prj.name}")
