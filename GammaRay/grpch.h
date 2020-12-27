@@ -14,7 +14,11 @@
 #include <unordered_set>
 
 // Internal frequently used
+#include "Core/OS/Memory.h"
+#include "Core/Core.h"
 #include "Core/Debug/Log.h"
+
+#include "Core/Math/Vector2.h"
 #include "Core/Color.h"
 
 #ifdef GR_PLATFORM_WINDOWS

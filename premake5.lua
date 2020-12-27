@@ -98,6 +98,9 @@ project "GammaRay"
             "GR_DEBUG",
             "GR_ENABLE_ASSERTS",
 
+            -- Enable the below to profile memory in Tracy
+            -- "GR_PROFILE_MEMORY"
+
             "DISABLE_FORCED_INLINE",
 
             -- Enable minimal on demand Tracy
