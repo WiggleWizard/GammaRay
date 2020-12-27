@@ -2,6 +2,7 @@
 #include "Application.h"
 
 #include "Window.h"
+#include "Core/Layer.h"
 
 
 Application* Application::singleton = nullptr;
@@ -21,6 +22,12 @@ Application::~Application()
 bool Application::_OnProcess(float deltaTimeMs)
 {
     OnProcess(deltaTimeMs);
+
+    m_windowMain->PreRender();
+
+    for(Layer* layer : m_layerStack)
+        layer->OnProcess();
+
     m_windowMain->OnUpdate();
     return m_running;
 }
@@ -30,6 +37,13 @@ void Application::OnEvent(Event& event)
     EventDispatcher dispatcher(event);
     dispatcher.Dispatch<EventWindowClose>(BIND_EVENT_FN(OnEventWindowClose));
 
+    for(auto it = m_layerStack.end(); it != m_layerStack.begin(); )
+    {
+        (*--it)->OnEvent(event);
+        if(event.HasBeenHandled())
+            break;
+    }
+
     GR_CORE_TRACE("{0}", event);
 }
 
@@ -37,4 +51,14 @@ bool Application::OnEventWindowClose(EventWindowClose& event)
 {
     m_running = false;
     return true;
+}
+
+void Application::PushLayer(Layer* layer)
+{
+    m_layerStack.PushLayer(layer);
+}
+
+Size2i Application::GetWindowSize()
+{
+    return m_windowMain->GetSize();
 }

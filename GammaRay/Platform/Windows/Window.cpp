@@ -28,12 +28,15 @@ WindowsWindow::~WindowsWindow()
 {
 }
 
-void WindowsWindow::OnUpdate()
+void WindowsWindow::PreRender()
 {
     const Color& clearColor = m_data.clearColor;
     glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
     glClear(GL_COLOR_BUFFER_BIT);
+}
 
+void WindowsWindow::OnUpdate()
+{
     glfwPollEvents();
     glfwSwapBuffers(m_glfwWindow);
 }
@@ -52,11 +55,10 @@ bool WindowsWindow::IsVSync() const
 void WindowsWindow::Init(const WindowProps& props)
 {
     m_data.title      = props.title;
-    m_data.width      = props.width;
-    m_data.height     = props.height;
+    m_data.windowSize = props.windowSize;
     m_data.clearColor = props.clearColor;
 
-    GR_CORE_INFO("Creating window {0} ({1}, {2})", m_data.title, m_data.width, m_data.height);
+    GR_CORE_INFO("Creating window {0} ({1}, {2})", m_data.windowSize.width, m_data.windowSize.height);
 
     if(!m_glfwInitialized)
     {
@@ -64,9 +66,13 @@ void WindowsWindow::Init(const WindowProps& props)
         glfwSetErrorCallback(&WindowsWindow::OnGLFWError);
         GR_CORE_ASSERT(success, "Could not initialize GLFW");
         m_glfwInitialized = success;
+
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     }
 
-    m_glfwWindow = glfwCreateWindow(m_data.width, m_data.height, m_data.title.c_str(), nullptr, nullptr);
+    m_glfwWindow = glfwCreateWindow(m_data.windowSize.width, m_data.windowSize.height, m_data.title.c_str(), nullptr, nullptr);
     glfwMakeContextCurrent(m_glfwWindow);
 
     int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
@@ -83,8 +89,8 @@ void WindowsWindow::SetupGLFWCallbacks()
     glfwSetWindowSizeCallback(m_glfwWindow, [](GLFWwindow* window, int w, int h)
     {
         WindowData* windowData = (WindowData*)glfwGetWindowUserPointer(window);
-        windowData->height = h;
-        windowData->width = w;
+        windowData->windowSize.height = h;
+        windowData->windowSize.width = w;
 
         EventWindowResize event(w, h);
         windowData->eventCallback(event);

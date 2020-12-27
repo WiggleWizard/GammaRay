@@ -17,10 +17,10 @@ public:
         GR_CORE_ERROR("A GLFW error occurred ({0}): {1}", error, description);
     }
 
+    void PreRender() override;
     void OnUpdate() override;
 
-    inline virtual unsigned int GetWidth() const { return m_data.width; }
-    inline virtual unsigned int GetHeight() const { return m_data.height; }
+    inline virtual Size2i GetSize() const { return m_data.windowSize; }
 
     virtual void SetEventCallback(const EventCallbackFn& callback) override { m_data.eventCallback = callback; }
     virtual void SetVSync(bool enabled) override;
@@ -37,8 +37,7 @@ private:
     struct WindowData
     {
         std::string title;
-        unsigned int width;
-        unsigned int height;
+        Size2i windowSize;
         Color clearColor;
         bool vsyncEnabled;
 

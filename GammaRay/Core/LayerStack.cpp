@@ -1,6 +1,9 @@
 #include "grpch.h"
 #include "LayerStack.h"
 
+#include "Layer.h"
+
+
 LayerStack::LayerStack()
 {
     m_itLayerInsert = begin();
@@ -15,6 +18,7 @@ LayerStack::~LayerStack()
 void LayerStack::PushLayer(Layer* layer)
 {
     m_itLayerInsert = m_layers.emplace(m_itLayerInsert, layer);
+    layer->OnAttach();
 }
 
 void LayerStack::PushOverlay(Layer* overlayLayer)

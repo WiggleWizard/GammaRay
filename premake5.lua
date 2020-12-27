@@ -15,9 +15,11 @@ includeDirs["GLFW"]   = "GammaRay/Thirdparty/glfw/include"
 includeDirs["glad"]   = "GammaRay/Thirdparty/glad/include"
 includeDirs["spdlog"] = "GammaRay/Thirdparty/spdlog/include"
 includeDirs["tracy"]  = "GammaRay/Thirdparty/tracy"
+includeDirs["imgui"]  = "GammaRay/Thirdparty/imgui"
 
 include "GammaRay/Thirdparty/glfw_p5.lua"
 include "GammaRay/Thirdparty/glad_p5.lua"
+include "GammaRay/Thirdparty/imgui_p5.lua"
 
 project "GammaRay"
     location "GammaRay"
@@ -54,12 +56,14 @@ project "GammaRay"
         "%{includeDirs.tracy}",
         "%{includeDirs.GLFW}",
         "%{includeDirs.glad}",
+        "%{includeDirs.imgui}",
     }
 
     links
     {
         "GLFW",
         "glad",
+        "imgui",
         "opengl32.lib"
     }
 
@@ -93,6 +97,7 @@ project "GammaRay"
         }
 
     filter "configurations:Debug"
+        buildoptions "/MDd"
         defines
         {
             "GR_DEBUG",
@@ -112,10 +117,12 @@ project "GammaRay"
 
     filter "configurations:Release"
         defines "GR_RELEASE"
+        buildoptions "/MD"
         optimize "On"
 
     filter "configurations:Dist"
         defines "GR_DIST"
+        buildoptions "/MD"
         optimize "On"
 
 project "Sandbox"

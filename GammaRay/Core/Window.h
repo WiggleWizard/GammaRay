@@ -9,15 +9,13 @@
 struct WindowProps
 {
     std::string title;
-    unsigned int width;
-    unsigned int height;
+    Size2i windowSize;
     Color clearColor;
 
-    WindowProps(const std::string& windowTitle = "GammaRay Engine", unsigned int w = 800, unsigned int h = 600)
+    WindowProps(const std::string& windowTitle = "GammaRay Engine", const Size2i& windowSize = {800, 600}, const Color& color = {1, 0, 1})
         : title(windowTitle)
-        , width(w)
-        , height(h)
-        , clearColor(1, 0, 1)
+        , windowSize(windowSize)
+        , clearColor(color)
     {}
 };
 
@@ -29,10 +27,10 @@ public:
 
     virtual ~Window() {}
 
+    virtual void PreRender() = 0;
     virtual void OnUpdate() = 0;
 
-    virtual unsigned int GetWidth() const = 0;
-    virtual unsigned int GetHeight() const = 0;
+    virtual Size2i GetSize() const = 0;
 
     virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
     virtual void SetVSync(bool enabled) = 0;

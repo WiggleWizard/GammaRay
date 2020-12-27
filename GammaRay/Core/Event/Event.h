@@ -45,6 +45,8 @@ public:
         return GetCategoryFlags() & category;
     }
 
+    _FORCE_INLINE_ bool HasBeenHandled() { return m_handled; }
+
 protected:
     bool m_handled = false;
 };

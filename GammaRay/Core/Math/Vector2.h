@@ -45,6 +45,9 @@ struct Vector2i
         int height;
     };
 
+    _FORCE_INLINE_ Vector2i() {}
+    _FORCE_INLINE_ Vector2i(int x, int y) : x(x), y(y) {}
+
     /**
      * Allow components to be referenced with square bracket notation.
      */
