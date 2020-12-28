@@ -6,7 +6,6 @@
 
 LayerStack::LayerStack()
 {
-    m_itLayerInsert = begin();
 }
 
 LayerStack::~LayerStack()
@@ -17,8 +16,9 @@ LayerStack::~LayerStack()
 
 void LayerStack::PushLayer(Layer* layer)
 {
-    m_itLayerInsert = m_layers.emplace(m_itLayerInsert, layer);
+    m_layers.emplace(m_layers.begin() + m_itLayerInsertIndex , layer);
     layer->OnAttach();
+    m_itLayerInsertIndex++;
 }
 
 void LayerStack::PushOverlay(Layer* overlayLayer)
@@ -32,7 +32,7 @@ void LayerStack::PopLayer(Layer* layer)
     if(it != end())
     {
         m_layers.erase(it);
-        m_itLayerInsert--;
+        m_itLayerInsertIndex--;
     }
 }
 

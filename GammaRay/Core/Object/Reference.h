@@ -1,5 +1,5 @@
 #pragma once
 
 
-template<typename T>
+template<class T>
 using Ref = std::shared_ptr<T>;

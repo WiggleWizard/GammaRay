@@ -108,36 +108,36 @@ void WindowsWindow::SetupGLFWCallbacks()
         });
 
     glfwSetKeyCallback(m_glfwWindow, [](GLFWwindow* window, int key, int scanCode, int action, int mods)
+    {
+        WindowData* windowData = (WindowData*)glfwGetWindowUserPointer(window);
+
+        InputEventKey event;
+
+        switch(action)
         {
-            WindowData* windowData = (WindowData*)glfwGetWindowUserPointer(window);
+        case GLFW_PRESS:
+        {
+            event.keycode = key;
+            event.pressed = true;
+            event.echo    = false;
+        } break;
+        case GLFW_RELEASE:
+        {
+            event.keycode = key;
+            event.pressed = false;
+            event.echo    = false;
+        } break;
+        case GLFW_REPEAT:
+        {
+            event.keycode = key;
+            event.pressed = true;
+            event.echo    = true;
+        } break;
+        default: break;
+        }
 
-            InputEventKey event;
-
-            switch(action)
-            {
-            case GLFW_PRESS:
-            {
-                event.keycode = key;
-                event.pressed = true;
-                event.echo = false;
-            } break;
-            case GLFW_RELEASE:
-            {
-                event.keycode = key;
-                event.pressed = false;
-                event.echo = false;
-            } break;
-            case GLFW_REPEAT:
-            {
-                event.keycode = key;
-                event.pressed = true;
-                event.echo    = true;
-            } break;
-            default: break;
-            }
-
-            Input::GetSingleton()->ProcessWindowInput(event);
-        });
+        Input::GetSingleton()->ProcessWindowInput(event);
+    });
 
     glfwSetMouseButtonCallback(m_glfwWindow, [](GLFWwindow* window, int button, int action, int mods)
         {

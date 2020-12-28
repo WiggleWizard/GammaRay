@@ -2,7 +2,6 @@
 #include "Application.h"
 
 #include "Window.h"
-#include "Core/Layer.h"
 
 
 Application* Application::singleton = nullptr;
@@ -13,6 +12,9 @@ Application::Application()
 
     m_windowMain = std::unique_ptr<Window>(Window::Create());
     m_windowMain->SetEventCallback(BIND_EVENT_FN(OnEvent));
+
+    m_layerImGui = new LayerImGui();
+    PushLayer(m_layerImGui);
 }
 
 Application::~Application()
@@ -27,6 +29,11 @@ bool Application::_OnProcess(float deltaTimeMs)
 
     for(Layer* layer : m_layerStack)
         layer->OnProcess();
+
+    m_layerImGui->Begin();
+    for(Layer* layer : m_layerStack)
+        layer->OnImGuiRender();
+    m_layerImGui->End();
 
     m_windowMain->OnUpdate();
     return m_running;

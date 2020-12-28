@@ -2,12 +2,14 @@
 #include "grpch.h"
 
 #include "Core.h"
+#include "Core/Object/Reference.h"
 #include "Core/Event/Event.h"
 #include "Core/Event/EventWindow.h"
 #include "Core/LayerStack.h"
+#include "Core/Window.h"
 
-class Window;
-class Layer;
+#include "Core/Layer.h"
+#include "Core/Debug/LayerImGui.h"
 
 #define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
 
@@ -32,11 +34,13 @@ public:
 
     void PushLayer(Layer* layer);
 
-    Size2i GetWindowSize(); 
+    Ref<Window> GetWindow() { return m_windowMain; }
+    Size2i GetWindowSize();
 
 private:
     bool m_running = true;
-    std::unique_ptr<Window> m_windowMain;
+    Ref<Window> m_windowMain;
+    LayerImGui* m_layerImGui;
     LayerStack m_layerStack;
 };
 

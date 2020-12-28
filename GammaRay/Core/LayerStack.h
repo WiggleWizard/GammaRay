@@ -4,6 +4,7 @@
 
 class Layer;
 
+
 class LayerStack
 {
 public:
@@ -20,6 +21,6 @@ public:
 
 private:
     std::vector<Layer*> m_layers;
-    std::vector<Layer*>::iterator m_itLayerInsert;
+    unsigned int m_itLayerInsertIndex = 0;
 };
 

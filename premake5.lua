@@ -149,6 +149,7 @@ project "Sandbox"
     {
         "GammaRay/Thirdparty/spdlog/include",
         "GammaRay",
+        "GammaRay/Thirdparty",
         "%{includeDirs.glm}"
     }
 

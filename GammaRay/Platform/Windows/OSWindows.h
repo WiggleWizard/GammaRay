@@ -2,7 +2,6 @@
 
 #include "Core/OS.h"
 #include "Core/Core.h"
-#include "Core/Application.h"
 
 #include "Main/Main.h"
 

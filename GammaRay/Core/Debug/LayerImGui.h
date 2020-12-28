@@ -2,8 +2,6 @@
 
 #include "Core/Layer.h"
 
-#include "Core/Event/EventMouse.h"
-
 
 class GAMMARAY_API LayerImGui : public Layer
 {
@@ -11,15 +9,14 @@ public:
     LayerImGui();
     ~LayerImGui();
 
-    virtual void OnAttach();
-    virtual void OnDetach();
+    virtual void OnAttach() override;
+    virtual void OnDetach() override;
     virtual void OnProcess() override;
-    virtual void OnEvent(Event& event) override;
+    virtual void OnImGuiRender() override;
 
-    bool OnMouseMove(EventMouseMoved& event);
-    bool OnMousePressed(EventMousePressed& event);
-    bool OnMouseRelease(EventMouseRelease& event);
-    bool OnMouseScrolled(EventMouseScrolled& event);
+    virtual void Begin();
+    virtual void End();
+
 
 private:
     float m_time = 0.f;
