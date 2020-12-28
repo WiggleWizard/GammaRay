@@ -10,3 +10,6 @@
 [submodule "GammaRay/Thirdparty/imgui"]
 	path = GammaRay/Thirdparty/imgui
 	url = git@github.com:ocornut/imgui.git
+[submodule "GammaRay/Thirdparty/glm"]
+	path = GammaRay/Thirdparty/glm
+	url = git@github.com:g-truc/glm.git

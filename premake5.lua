@@ -18,6 +18,7 @@ includeDirs["glad"]   = "GammaRay/Thirdparty/glad/include"
 includeDirs["spdlog"] = "GammaRay/Thirdparty/spdlog/include"
 includeDirs["tracy"]  = "GammaRay/Thirdparty/tracy"
 includeDirs["imgui"]  = "GammaRay/Thirdparty/imgui"
+includeDirs["glm"]    = "GammaRay/Thirdparty/glm"
 
 include "GammaRay/Thirdparty/glfw_p5.lua"
 include "GammaRay/Thirdparty/glad_p5.lua"
@@ -60,6 +61,7 @@ project "GammaRay"
         "%{includeDirs.GLFW}",
         "%{includeDirs.glad}",
         "%{includeDirs.imgui}",
+        "%{includeDirs.glm}",
     }
 
     links
@@ -146,7 +148,8 @@ project "Sandbox"
     includedirs
     {
         "GammaRay/Thirdparty/spdlog/include",
-        "GammaRay"
+        "GammaRay",
+        "%{includeDirs.glm}"
     }
 
     links
