@@ -26,6 +26,8 @@ public:
     virtual void SetVSync(bool enabled) override;
     virtual bool IsVSync() const override;
 
+    virtual void* GetNativeWindow() const override { return (void*)m_glfwWindow; }
+
 private:
     virtual void Init(const WindowProps& props);
     virtual void SetupGLFWCallbacks();

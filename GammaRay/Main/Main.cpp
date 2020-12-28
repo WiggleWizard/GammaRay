@@ -1,6 +1,7 @@
 #include "grpch.h"
 #include "Main.h"
 
+#include "Core/Input/Input.h"
 #include "Core/MainLoop.h"
 #include "Core/OS.h"
 #include "Core/Engine.h"
@@ -9,6 +10,8 @@
 
 #include "Core/Event/EventMouse.h"
 
+
+static std::unique_ptr<Input> input = nullptr;
 
 Engine* Main::m_engine = nullptr;
 
@@ -22,6 +25,7 @@ void Main::Setup(int argc, char *argv[])
 {
     Log::Init();
     m_engine = new Engine();
+    input = std::make_unique<Input>();
 }
 
 bool Main::Start()
