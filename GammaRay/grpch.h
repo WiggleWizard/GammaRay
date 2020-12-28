@@ -13,13 +13,19 @@
 #include <unordered_map>
 #include <unordered_set>
 
-// Internal frequently used
+// Internal algorithm
 #include "Core/OS/Memory.h"
 #include "Core/Core.h"
 #include "Core/Debug/Log.h"
 
-#include "Core/Math/Vector2.h"
+// Internal structures
+#include "Core/Typedefs.h"
 #include "Core/Color.h"
+#include "Core/Math/MathDefs.h"
+#include "Core/Math/Vector2.h"
+
+// Internal frequently used objects
+#include "Core/Object/Object.h"
 
 #ifdef GR_PLATFORM_WINDOWS
     #include <Windows.h>
