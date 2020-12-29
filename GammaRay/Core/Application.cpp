@@ -3,6 +3,8 @@
 
 #include "Window.h"
 
+#include <glad/glad.h>
+
 
 Application* Application::singleton = nullptr;
 
@@ -15,6 +17,57 @@ Application::Application()
 
     m_layerImGui = new LayerImGui();
     PushLayer(m_layerImGui);
+
+    glGenVertexArrays(1, &vertexArray);
+    glBindVertexArray(vertexArray);
+
+    glGenBuffers(1, &vertexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+
+    float vertices[3 * 3] = {
+        -0.5f, -0.5f, 0.0f,
+        0.5f, -0.5f, 0.0f,
+        0.0f, 0.5f, 0.0f
+    };
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+
+    glGenBuffers(1, &vertexIndex);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vertexIndex);
+
+    unsigned int indices[3] = {0, 1, 2};
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    std::string vertexSrc = R"(
+        #version 450 core
+
+        layout(location = 0) in vec3 a_position;
+
+        out vec3 v_position;
+
+        void main()
+        {
+            v_position = a_position;
+            gl_Position = vec4(v_position, 1.0);
+        }
+    )";
+    std::string fragmentSrc = R"(
+        #version 450 core
+
+        layout(location = 0) out vec4 color;
+
+        in vec3 v_position;
+
+        void main()
+        {
+            color = vec4(v_position * 0.5 + 0.5, 1.0);
+        }
+    )";
+
+    m_shader.reset(new RendererShader(vertexSrc, fragmentSrc));
 }
 
 Application::~Application()
@@ -26,6 +79,10 @@ bool Application::_OnProcess(float deltaTimeMs)
     OnProcess(deltaTimeMs);
 
     m_windowMain->PreRender();
+
+    m_shader->Bind();
+    glBindVertexArray(vertexArray);
+    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
 
     for(Layer* layer : m_layerStack)
         layer->OnProcess();

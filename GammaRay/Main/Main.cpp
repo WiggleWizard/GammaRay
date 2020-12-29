@@ -10,12 +10,8 @@
 
 #include "Core/Event/EventMouse.h"
 
-#include "Systems/RenderingSystem.h"
-#include "Systems/RenderingSystem/RenderingSystemDefault.h"
-
 
 static std::unique_ptr<Input> input = nullptr;
-static std::unique_ptr<RenderingSystem> renderingSystem = nullptr;
 
 Engine* Main::m_engine = nullptr;
 
@@ -31,7 +27,6 @@ void Main::Setup(int argc, char *argv[])
 
     m_engine = new Engine();
     input = std::make_unique<Input>();
-    renderingSystem = std::make_unique<RenderingSystemDefault>();
 }
 
 bool Main::Start()
@@ -48,8 +43,6 @@ bool Main::OnProcess()
     frame++;
 
     bool mainLoopOk = m_mainLoop->OnProcess(0);
-
-    RS::GetSingleton()->Draw();
 
     return mainLoopOk;
 }

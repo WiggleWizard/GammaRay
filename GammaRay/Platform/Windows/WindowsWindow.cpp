@@ -1,5 +1,5 @@
 #include "grpch.h"
-#include "Window.h"
+#include "WindowsWindow.h"
 
 #include "Core/Debug/Log.h"
 
@@ -11,16 +11,18 @@
 #include "Core/Input/Input.h"
 #include "Core/Input/InputEvent.h"
 
+#include "Drivers/OpenGL3/GraphicsContextOpenGL3.h"
+
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
-
-bool WindowsWindow::m_glfwInitialized = false;
 
 Window* Window::Create(const WindowProps& props)
 {
     return new WindowsWindow(props);
 }
+
+bool WindowsWindow::m_glfwInitialized = false;
 
 WindowsWindow::WindowsWindow(const WindowProps& props)
 {
@@ -41,7 +43,7 @@ void WindowsWindow::PreRender()
 void WindowsWindow::OnUpdate()
 {
     glfwPollEvents();
-    glfwSwapBuffers(m_glfwWindow);
+    m_renderingSystem->SwapBuffers();
 }
 
 void WindowsWindow::SetVSync(bool enabled)
@@ -76,10 +78,10 @@ void WindowsWindow::Init(const WindowProps& props)
     }
 
     m_glfwWindow = glfwCreateWindow(m_data.windowSize.width, m_data.windowSize.height, m_data.title.c_str(), nullptr, nullptr);
-    glfwMakeContextCurrent(m_glfwWindow);
 
-    int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-    GR_CORE_ASSERT(status, "glad failed to load");
+    m_renderingSystem = new GraphicsContextOpenGL3();
+    m_renderingSystem->SetGLFWContext(m_glfwWindow);
+    m_renderingSystem->Init();
 
     glfwSetWindowUserPointer(m_glfwWindow, &m_data);
     SetVSync(true);
@@ -90,22 +92,22 @@ void WindowsWindow::Init(const WindowProps& props)
 void WindowsWindow::SetupGLFWCallbacks()
 {
     glfwSetWindowSizeCallback(m_glfwWindow, [](GLFWwindow* window, int w, int h)
-        {
-            WindowData* windowData = (WindowData*)glfwGetWindowUserPointer(window);
-            windowData->windowSize.height = h;
-            windowData->windowSize.width = w;
+    {
+        WindowData* windowData = (WindowData*)glfwGetWindowUserPointer(window);
+        windowData->windowSize.height = h;
+        windowData->windowSize.width = w;
 
-            EventWindowResize event(w, h);
-            windowData->eventCallback(event);
-        });
+        EventWindowResize event(w, h);
+        windowData->eventCallback(event);
+    });
 
     glfwSetWindowCloseCallback(m_glfwWindow, [](GLFWwindow* window)
-        {
-            WindowData* windowData = (WindowData*)glfwGetWindowUserPointer(window);
+    {
+        WindowData* windowData = (WindowData*)glfwGetWindowUserPointer(window);
 
-            EventWindowClose event;
-            windowData->eventCallback(event);
-        });
+        EventWindowClose event;
+        windowData->eventCallback(event);
+    });
 
     glfwSetKeyCallback(m_glfwWindow, [](GLFWwindow* window, int key, int scanCode, int action, int mods)
     {
@@ -140,40 +142,40 @@ void WindowsWindow::SetupGLFWCallbacks()
     });
 
     glfwSetMouseButtonCallback(m_glfwWindow, [](GLFWwindow* window, int button, int action, int mods)
-        {
-            WindowData* windowData = (WindowData*)glfwGetWindowUserPointer(window);
+    {
+        WindowData* windowData = (WindowData*)glfwGetWindowUserPointer(window);
 
-            switch(action)
-            {
-            case GLFW_PRESS:
-            {
-                EventMousePressed event(button);
-                windowData->eventCallback(event);
-            } break;
-            case GLFW_RELEASE:
-            {
-                EventMouseRelease event(button);
-                windowData->eventCallback(event);
-            } break;
-            default: break;
-            }
-        });
+        switch(action)
+        {
+        case GLFW_PRESS:
+        {
+            EventMousePressed event(button);
+            windowData->eventCallback(event);
+        } break;
+        case GLFW_RELEASE:
+        {
+            EventMouseRelease event(button);
+            windowData->eventCallback(event);
+        } break;
+        default: break;
+        }
+    });
 
     glfwSetScrollCallback(m_glfwWindow, [](GLFWwindow* window, double xOffset, double yOffset)
-        {
-            WindowData* windowData = (WindowData*)glfwGetWindowUserPointer(window);
+    {
+        WindowData* windowData = (WindowData*)glfwGetWindowUserPointer(window);
 
-            EventMouseScrolled event((float)xOffset, (float)yOffset);
-            windowData->eventCallback(event);
-        });
+        EventMouseScrolled event((float)xOffset, (float)yOffset);
+        windowData->eventCallback(event);
+    });
 
     glfwSetCursorPosCallback(m_glfwWindow, [](GLFWwindow* window, double x, double y)
-        {
-            WindowData* windowData = (WindowData*)glfwGetWindowUserPointer(window);
+    {
+        WindowData* windowData = (WindowData*)glfwGetWindowUserPointer(window);
 
-            EventMouseMoved event((float)x, (float)y);
-            windowData->eventCallback(event);
-        });
+        EventMouseMoved event((float)x, (float)y);
+        windowData->eventCallback(event);
+    });
 }
 
 void WindowsWindow::Shutdown()
