@@ -50,6 +50,8 @@ project "GammaRay"
         "%{prj.name}/Modules/**.cpp",
         "%{prj.name}/Platform/**.h",
         "%{prj.name}/Platform/**.cpp",
+        "%{prj.name}/Systems/**.h",
+        "%{prj.name}/Systems/**.cpp",
 
         "%{prj.name}/Thirdparty/tracy/TracyClient.cpp"
     }
