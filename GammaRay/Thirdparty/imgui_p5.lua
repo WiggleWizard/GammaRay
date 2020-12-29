@@ -1,6 +1,7 @@
 project "imgui"
     location "imgui"
     kind "StaticLib"
+    staticruntime "On"
     language "C++"
 
     targetdir ("imgui/bin/" .. outputdir .. "/%{prj.name}")
@@ -24,7 +25,11 @@ project "imgui"
     filter "system:windows"
         systemversion "latest"
         cppdialect "C++17"
-        staticruntime "On"
 
-    filter { "system:windows", "configurations:Release" }
-        buildoptions "/MT"
+    filter "configurations:Debug"
+        runtime "Debug"
+        symbols "on"
+
+    filter "configurations:Release"
+        runtime "Release"
+        optimize "on"

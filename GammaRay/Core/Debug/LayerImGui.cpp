@@ -67,8 +67,8 @@ void LayerImGui::End()
     ImGuiIO& io = ImGui::GetIO();
 
     Size2i windowSize = Application::GetSingleton()->GetWindowSize();
-    io.DisplaySize.x = windowSize.width;
-    io.DisplaySize.y = windowSize.height;
+    io.DisplaySize.x = (float)windowSize.width;
+    io.DisplaySize.y = (float)windowSize.height;
 
     float time = (float)glfwGetTime();
     io.DeltaTime = m_time > 0.f ? (time - m_time) : (1.f / 60.f);

@@ -26,9 +26,10 @@ include "GammaRay/Thirdparty/imgui_p5.lua"
 
 project "GammaRay"
     location "GammaRay"
-    kind "SharedLib"
+    kind "StaticLib"
     language "C++"
-    staticruntime "Off"
+    cppdialect "C++17"
+    staticruntime "on"
 
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("bin-obj/" .. outputdir .. "/%{prj.name}")
@@ -72,12 +73,16 @@ project "GammaRay"
         "opengl32.lib"
     }
 
+    defines
+    {
+        "_CRT_SECURE_NO_WARNINGS"
+    }
+
     -- Disable PCH for tracy
     filter "files:GammaRay/Thirdparty/tracy/TracyClient.cpp"
         flags { "NoPCH" }
 
     filter "system:windows"
-        cppdialect "C++17"
         systemversion "latest"
 
         -- Disable edit and continue since Tracy doesn't like this
@@ -95,13 +100,9 @@ project "GammaRay"
             "NOMINMAX"
         }
 
-        postbuildcommands
-        {
-            ("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox")
-        }
-
     filter "configurations:Debug"
         runtime "Debug"
+        symbols "on"
 
         defines
         {
@@ -118,23 +119,23 @@ project "GammaRay"
             "TRACY_ON_DEMAND",
             "TRACY_NO_SYSTEM_TRACING"
         }
-        symbols "On"
 
     filter "configurations:Release"
         defines "GR_RELEASE"
         runtime "Release"
-        optimize "On"
+        optimize "on"
 
     filter "configurations:Dist"
         defines "GR_DIST"
         runtime "Release"
-        optimize "On"
+        optimize "on"
 
 project "Sandbox"
     location "Sandbox"
     kind "ConsoleApp"
     language "C++"
-    staticruntime "Off"
+    cppdialect "C++17"
+    staticruntime "on"
 
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("bin-obj/" .. outputdir .. "/%{prj.name}")
@@ -159,8 +160,7 @@ project "Sandbox"
     }
 
     filter "system:windows"
-        cppdialect "C++17"
-        staticruntime "On"
+        staticruntime "on"
         systemversion "latest"
 
         defines
@@ -169,13 +169,16 @@ project "Sandbox"
         }
 
     filter "configurations:Debug"
+        runtime "Debug"
         defines "GR_DEBUG"
-        symbols "On"
+        symbols "on"
 
     filter "configurations:Release"
+        runtime "Release"
         defines "GR_RELEASE"
-        optimize "On"
+        optimize "on"
 
     filter "configurations:Dist"
+        runtime "Release"
         defines "GR_DIST"
-        optimize "On"
+        optimize "on"

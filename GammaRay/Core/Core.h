@@ -2,10 +2,14 @@
 
 
 #ifdef GR_PLATFORM_WINDOWS
-    #ifdef GR_BUILD_DLL
-        #define GAMMARAY_API __declspec(dllexport)
+    #ifdef GAMMARAY_DLL
+        #ifdef GR_BUILD_DLL
+            #define GAMMARAY_API __declspec(dllexport)
+        #else
+            #define GAMMARAY_API __declspec(dllimport)
+        #endif
     #else
-        #define GAMMARAY_API __declspec(dllimport)
+        #define GAMMARAY_API
     #endif
 #else
     #error Windows only support!
