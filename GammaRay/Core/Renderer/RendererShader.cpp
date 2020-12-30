@@ -3,15 +3,61 @@
 
 #include <glad/glad.h>
 
+#include <filesystem>
+#include <fstream>
 
-RendererShader::RendererShader(const std::string& vertexSrc, const std::string& fragmentSrc)
+
+RendererShader::RendererShader()
+{
+}
+
+RendererShader::~RendererShader()
+{
+    glDeleteProgram(m_rendererId);
+}
+
+bool RendererShader::LoadFromDisk(const std::string& filePath)
+{
+    std::ifstream ifs(filePath, std::ios::binary|std::ios::ate);
+    std::streampos end = ifs.tellg();
+    ifs.seekg(0, std::ios::beg);
+
+    size_t size = size_t(end - ifs.tellg());
+
+    // TODO: If size is 0, does this mean the file doesnt exist too???
+    if(size == 0)
+        return true;
+
+    std::vector<char> buffer(size);
+
+    if(!ifs.read((char*)buffer.data(), buffer.size()))
+    {
+        GR_CORE_ERROR("Could not load file {0}", filePath.c_str());
+        GR_CORE_ASSERT(false, "Error loading file");
+        return false;
+    }
+
+    // TODO: Do something with buffer
+
+
+    return false;
+}
+
+void RendererShader::Setup(const char* vertShaderSrc, const char* fragShaderSrc, const char* _, const char* shaderName)
+{
+    vertexShaderSrc   = vertShaderSrc;
+    fragmentShaderSrc = fragShaderSrc;
+    name = shaderName;
+}
+
+bool RendererShader::Compile()
 {
     // Create an empty vertex shader handle
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
     // Send the vertex shader source code to GL
     // Note that std::string's .c_str is NULL character terminated.
-    const GLchar* source = (const GLchar*)vertexSrc.c_str();
+    const GLchar* source = (const GLchar*)vertexShaderSrc;
     glShaderSource(vertexShader, 1, &source, 0);
 
     // Compile the vertex shader
@@ -34,8 +80,7 @@ RendererShader::RendererShader(const std::string& vertexSrc, const std::string& 
         GR_CORE_ERROR("{0}", infoLog.data());
         GR_CORE_ASSERT(false, "Error compiling vertex shader");
 
-        // In this simple program, we'll just leave
-        return;
+        return false;
     }
 
     // Create an empty fragment shader handle
@@ -43,7 +88,7 @@ RendererShader::RendererShader(const std::string& vertexSrc, const std::string& 
 
     // Send the fragment shader source code to GL
     // Note that std::string's .c_str is NULL character terminated.
-    source = (const GLchar*)fragmentSrc.c_str();
+    source = (const GLchar*)fragmentShaderSrc;
     glShaderSource(fragmentShader, 1, &source, 0);
 
     // Compile the fragment shader
@@ -67,8 +112,7 @@ RendererShader::RendererShader(const std::string& vertexSrc, const std::string& 
         GR_CORE_ERROR("{0}", infoLog.data());
         GR_CORE_ASSERT(false, "Error compiling fragment shader");
 
-        // In this simple program, we'll just leave
-        return;
+        return false;
     }
 
     // Vertex and fragment shaders are successfully compiled.
@@ -105,18 +149,14 @@ RendererShader::RendererShader(const std::string& vertexSrc, const std::string& 
         GR_CORE_ERROR("{0}", infoLog.data());
         GR_CORE_ASSERT(false, "Error linking shader");
 
-        // In this simple program, we'll just leave
-        return;
+        return false;
     }
 
     // Always detach shaders after a successful link.
     glDetachShader(program, vertexShader);
     glDetachShader(program, fragmentShader);
-}
 
-RendererShader::~RendererShader()
-{
-    glDeleteProgram(m_rendererId);
+    return true;
 }
 
 void RendererShader::Bind() const
