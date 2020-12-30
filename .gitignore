@@ -42,3 +42,6 @@
 /bin-obj
 /GammaRay/Thirdparty/glad/bin
 /GammaRay/Thirdparty/glad/bin-obj
+
+/Tools/bin2c/bin
+/Tools/bin2c/bin-obj

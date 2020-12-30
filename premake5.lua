@@ -10,8 +10,13 @@ workspace "GammaRay"
         "Dist"
     }
 
+
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+-- Tools
+include "Tools/bin2c"
+
+-- Thirdparty vendor stuff
 includeDirs = {}
 includeDirs["GLFW"]   = "GammaRay/Thirdparty/glfw/include"
 includeDirs["glad"]   = "GammaRay/Thirdparty/glad/include"
@@ -23,6 +28,7 @@ includeDirs["glm"]    = "GammaRay/Thirdparty/glm"
 include "GammaRay/Thirdparty/glfw_p5.lua"
 include "GammaRay/Thirdparty/glad_p5.lua"
 include "GammaRay/Thirdparty/imgui_p5.lua"
+
 
 project "GammaRay"
     location "GammaRay"
@@ -69,6 +75,7 @@ project "GammaRay"
 
     links
     {
+        "bin2c",
         "GLFW",
         "glad",
         "imgui",
