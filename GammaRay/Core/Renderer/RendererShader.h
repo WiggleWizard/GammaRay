@@ -7,22 +7,19 @@ class RendererShader : public Object
 {
 public:
     RendererShader();
-    ~RendererShader();
-
-    bool LoadFromDisk(const std::string& filePath);
+    virtual ~RendererShader();
 
     void Setup(const char* vertShaderSrc, const char* fragShaderSrc, const char* _, const char* shaderName);
-    bool Compile();
 
-    void Bind() const;
-    void Unbind() const;
+    virtual bool Compile() = 0;
+    virtual void Bind() const = 0;
+    virtual void Unbind() const = 0;
 
 protected:
-    std::string name = "";
-    const char* vertexShaderSrc = nullptr;
-    const char* fragmentShaderSrc = nullptr;
+    std::string m_name = "";
+    const char* m_vertexShaderSrc = nullptr;
+    const char* m_fragmentShaderSrc = nullptr;
 
-private:
     uint32_t m_rendererId = 0;
 };
 
