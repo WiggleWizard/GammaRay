@@ -1,3 +1,5 @@
+-- dofile("Tools/shadergen/premake5.lua")
+
 workspace "GammaRay"
     architecture "x64"
     startproject "Sandbox"
@@ -10,11 +12,8 @@ workspace "GammaRay"
         "Dist"
     }
 
-
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
--- Tools
-include "Tools/bin2c"
 
 -- Thirdparty vendor stuff
 includeDirs = {}
@@ -58,6 +57,8 @@ project "GammaRay"
         "%{prj.name}/Platform/**.cpp",
         "%{prj.name}/Systems/**.h",
         "%{prj.name}/Systems/**.cpp",
+        "%{prj.name}/Drivers/**.h",
+        "%{prj.name}/Drivers/**.cpp",
 
         "%{prj.name}/Thirdparty/tracy/TracyClient.cpp"
     }
@@ -75,7 +76,6 @@ project "GammaRay"
 
     links
     {
-        "bin2c",
         "GLFW",
         "glad",
         "imgui",
@@ -94,8 +94,17 @@ project "GammaRay"
     filter "system:windows"
         systemversion "latest"
 
+        toolsdir = "$(ProjectDir)../Tools"
+        shaderdir = "$(ProjectDir)Core/Renderer/Shaders"
+
         -- Disable edit and continue since Tracy doesn't like this
         editAndContinue "Off"
+
+        -- Generate shaders from GLSL -> C headers
+        prebuildcommands
+        {
+            toolsdir .. "/shader2c/bin/shader2c.exe --in=" .. shaderdir .. "/default.glsl --out=" .. shaderdir.. "/default.gen.h --class=Default"
+        }
 
         defines
         {
@@ -191,3 +200,7 @@ project "Sandbox"
         runtime "Release"
         defines "GR_DIST"
         optimize "on"
+
+        
+
+-- Tools
