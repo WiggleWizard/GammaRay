@@ -38,6 +38,9 @@
 *.vcxproj.user
 *.vcxproj.filters
 
-/bin
-/bin-obj
 *.gen.h
+
+/bin/**
+/bin-obj/**
+!bin/shader2c.exe
+!bin/shader2c

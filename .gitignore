@@ -37,11 +37,13 @@
 *.vcxproj
 *.vcxproj.user
 *.vcxproj.filters
+*.pdb
+*.idb
 
-/bin
-/bin-obj
-/GammaRay/Thirdparty/glad/bin
-/GammaRay/Thirdparty/glad/bin-obj
+/bin/**
+/bin-obj/**
+/GammaRay/Thirdparty/glad/bin/**
+/GammaRay/Thirdparty/glad/bin-obj/**
 
 /Tools/bin2c/bin
 /Tools/bin2c/bin-obj
