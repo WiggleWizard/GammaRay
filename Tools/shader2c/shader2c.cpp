@@ -1,7 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #define VERSION_MAJOR 1
-#define VERSION_MINOR 0
+#define VERSION_MINOR 1
 
 #include <fstream>
 #include <string>
@@ -40,7 +40,6 @@ void WriteShaderBytesToStream(std::ofstream& ofs, const std::string& s, const ch
 
 int main(int argc, char** argv)
 {
-
     InOutPair out;
 
     for(int i = 1; i < argc; i++)
@@ -81,7 +80,8 @@ int main(int argc, char** argv)
     outStream << "#include \"" << shaderHeaderPath << "\"\n\n\n";
 
     outStream << "class " << newShaderClassPrefix << out.outClassName.data() << " : public " << shaderClassName << "\n{\n";
-    outStream << "    " << out.outClassName.data() << "()\n";
+    outStream << "public:\n";
+    outStream << "    " << newShaderClassPrefix << out.outClassName.data() << "()\n";
     outStream << "    {\n";
 
     std::string outVertexStr;
@@ -104,7 +104,7 @@ int main(int argc, char** argv)
         }
 
         if(outStr)
-            *outStr += line;
+            *outStr += line + "\n";
     }
     inStream.close();
 
