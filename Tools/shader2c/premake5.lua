@@ -1,4 +1,4 @@
-workspace "ShaderGen"
+workspace "shader2c"
     architecture "x64"
 
     configurations
