@@ -14,7 +14,7 @@ project "bin2c"
     
     files
     {
-        "main.cpp"
+        "bin2c.cpp"
     }
 
     filter "configurations:Debug"
