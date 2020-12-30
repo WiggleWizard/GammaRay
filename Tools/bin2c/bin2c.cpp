@@ -7,10 +7,13 @@
 #include <string_view>
 
 
+// TODO: Make this tool a bit more complex in allowing the inputs to be shoved into specific classes and generated files
+//       so we don't end up with one horrible monolithic header that includes all resources.
+
 enum class OutType
 {
     OUTTYPE_BIN = 0,
-    OUTTYPE_STRING
+    OUTTYPE_STRING // Currently processing is no different with the string option
 };
 
 struct InOutPair
@@ -24,6 +27,7 @@ int main(int argc, char** argv)
 {
     printf("// Generated with GammaRay bin2c.\n");
     printf("// Probably best if you don't touch this file.\n\n");
+    printf("#pragma once\n\n");
     printf("namespace CoreData {\n\n");
 
     std::vector<InOutPair> args;
