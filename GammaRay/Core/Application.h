@@ -11,6 +11,7 @@
 #include "Core/Layer.h"
 #include "Core/Debug/LayerImGui.h"
 
+#include "Core/Renderer/Buffer.h"
 #include "Core/Renderer/RendererShader.h"
 
 #define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
@@ -45,6 +46,9 @@ private:
     LayerImGui* m_layerImGui;
     LayerStack m_layerStack;
 
+protected:
+    std::unique_ptr<VertexBuffer> m_vertexBuffer;
+    std::unique_ptr<IndexBuffer> m_indexBuffer;
     unsigned int vertexArray, vertexBuffer, vertexIndex;
     std::unique_ptr<RendererShader> m_shader;
 
