@@ -8,11 +8,15 @@ public:
     virtual void Bind() const override;
     virtual void Unbind() const override;
 
+    virtual const BufferLayout& GetLayout() const override { return m_layout; }
+    virtual void SetLayout(const BufferLayout& layout) override { m_layout = layout; }
+
     VertexBufferOpenGL3(float* vertices, uint32_t size);
     ~VertexBufferOpenGL3();
 
 private:
     RendererID m_rendererId = 0;
+    BufferLayout m_layout;
 };
 
 class IndexBufferOpenGL3 : public IndexBuffer

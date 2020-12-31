@@ -23,15 +23,37 @@ Application::Application()
     glGenVertexArrays(1, &vertexArray);
     glBindVertexArray(vertexArray);
 
-    float vertices[3 * 3] = {
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        0.0f, 0.5f, 0.0f
+    float vertices[3 * 7] = {
+        -0.5f, -0.5f, 0.0f,  0.8, 0.2, 0.8, 1.0,
+        0.5f, -0.5f, 0.0f,   0.2, 0.3, 0.8, 1.0,
+        0.0f, 0.5f, 0.0f,    0.8, 0.8, 0.2, 1.0,
     };
     m_vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
 
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+    {
+        BufferLayout layout = {
+            { ShaderDataType::Float3, "a_Position" },
+            { ShaderDataType::Float4, "a_Color" },
+        };
+        m_vertexBuffer->SetLayout(layout);
+    }
+
+    uint32_t index = 0;
+    const auto& layout = m_vertexBuffer->GetLayout();
+    for(const auto& element : layout)
+    {
+        glEnableVertexAttribArray(index);
+        glVertexAttribPointer(
+            index,
+            element.GetComponentCount(),
+            ShaderDataTypeToOpenGL(element.type),
+            element.normalized ? GL_TRUE : GL_FALSE,
+            layout.GetStride(),
+            (const void*)element.offset
+        );
+
+        index++;
+    }
 
     uint32_t indices[3] = {0, 1, 2};
     m_indexBuffer.reset(IndexBuffer::Create(indices, 3));
