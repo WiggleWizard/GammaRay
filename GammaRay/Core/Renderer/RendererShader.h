@@ -2,6 +2,8 @@
 
 #include <string>
 
+#define INVALID_SHADER_ID 0
+
 
 class RendererShader : public Object
 {
@@ -10,6 +12,7 @@ public:
     virtual ~RendererShader();
 
     void Setup(const char* vertShaderSrc, const char* fragShaderSrc, const char* _, const char* shaderName);
+    void LoadFromFile(const std::string& filePath);
 
     virtual bool Compile() = 0;
     virtual void Bind() const = 0;
@@ -17,9 +20,12 @@ public:
 
 protected:
     std::string m_name = "";
-    const char* m_vertexShaderSrc = nullptr;
-    const char* m_fragmentShaderSrc = nullptr;
+    std::string m_vertexShaderSrc;
+    std::string m_fragmentShaderSrc;
 
-    uint32_t m_rendererId = 0;
+    uint32_t m_vertexShaderId = 0;
+    uint32_t m_fragmentShaderId = 0;
+
+    uint32_t m_rendererId = INVALID_SHADER_ID;
 };
 

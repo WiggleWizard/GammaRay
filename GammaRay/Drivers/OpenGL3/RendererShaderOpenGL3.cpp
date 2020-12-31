@@ -6,12 +6,30 @@
 
 bool RendererShaderOpenGL3::Compile()
 {
+    // Destroy and release the shader program on the GPU
+    if(m_rendererId != INVALID_SHADER_ID)
+    {
+        // TODO: I'm sure I've gone overboard with trying to clean up here, and I'm sure that
+        //       half these calls are probably not even needed. Double check if this is the case.
+
+        Unbind();
+
+        glDeleteProgram(m_rendererId);
+        glDeleteShader(m_vertexShaderId);
+        glDeleteShader(m_fragmentShaderId);
+
+        m_rendererId = INVALID_SHADER_ID;
+        m_vertexShaderId = INVALID_SHADER_ID;
+        m_fragmentShaderId = INVALID_SHADER_ID;
+    }
+
     // Create an empty vertex shader handle
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    m_vertexShaderId = (uint32_t)vertexShader;
 
     // Send the vertex shader source code to GL
     // Note that std::string's .c_str is NULL character terminated.
-    const GLchar* source = (const GLchar*)m_vertexShaderSrc;
+    const GLchar* source = (const GLchar*)m_vertexShaderSrc.c_str();
     glShaderSource(vertexShader, 1, &source, 0);
 
     // Compile the vertex shader
@@ -39,10 +57,11 @@ bool RendererShaderOpenGL3::Compile()
 
     // Create an empty fragment shader handle
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    m_fragmentShaderId = (uint32_t)fragmentShader;
 
     // Send the fragment shader source code to GL
     // Note that std::string's .c_str is NULL character terminated.
-    source = (const GLchar*)m_fragmentShaderSrc;
+    source = (const GLchar*)m_fragmentShaderSrc.c_str();
     glShaderSource(fragmentShader, 1, &source, 0);
 
     // Compile the fragment shader
