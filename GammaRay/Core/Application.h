@@ -13,6 +13,7 @@
 
 #include "Core/Renderer/Buffer.h"
 #include "Core/Renderer/RendererShader.h"
+#include "Core/Renderer/VertexArray.h"
 
 #define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
 
@@ -47,8 +48,12 @@ private:
     LayerStack m_layerStack;
 
 protected:
-    std::unique_ptr<VertexBuffer> m_vertexBuffer;
-    std::unique_ptr<IndexBuffer> m_indexBuffer;
+    std::shared_ptr<VertexArray> m_vertexArray;
+    std::shared_ptr<VertexBuffer> m_vertexBuffer;
+    std::shared_ptr<IndexBuffer> m_indexBuffer;
+
+    std::shared_ptr<VertexArray> m_squareVA;
+
     unsigned int vertexArray, vertexBuffer, vertexIndex;
     std::unique_ptr<RendererShader> m_shader;
 

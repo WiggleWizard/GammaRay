@@ -1,3 +1,7 @@
+/**
+ * Mostly code that abstracts away from VBOs.
+ */
+
 #pragma once
 
 #include "ShaderVariable.h"
