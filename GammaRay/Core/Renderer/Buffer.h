@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RendererShader.h"
+#include "ShaderVariable.h"
 
 
 struct BufferElement
