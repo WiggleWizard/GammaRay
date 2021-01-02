@@ -103,10 +103,7 @@ RenderServer::RenderServer()
         -0.5f, -0.5f, 0.0f,   0.8, 0.8, 0.2, 1.0,
         -0.5f,  0.5f, 0.0f,  1.0, 0.8, 0.2, 1.0,
     };
-    unsigned int indices[] = {
-        0, 1, 3, // first triangle
-        1, 2, 3  // second triangle
-    };
+    unsigned int indices[] = {0, 1, 2, 2, 3, 0};
 
     m_vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
 
@@ -117,7 +114,7 @@ RenderServer::RenderServer()
     m_vertexBuffer->SetLayout(layout);
     m_vertexArray->AddVertexBuffer(m_vertexBuffer);
 
-    m_indexBuffer.reset(IndexBuffer::Create(indices, 3));
+    m_indexBuffer.reset(IndexBuffer::Create(indices, 6));
     m_vertexArray->AddIndexBuffer(m_indexBuffer);
 
 
