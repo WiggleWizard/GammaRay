@@ -24,7 +24,10 @@ public:
 
     virtual uint32_t GetRendererId() { return m_rendererId; }
 
-    virtual void setMat4(const std::string& name, const glm::mat4& mat) const = 0;
+    virtual int GetUniformLoc(const std::string& name) const = 0;
+
+    virtual void SetMat4(const std::string& name, const glm::mat4& mat) const = 0;
+    virtual void SetMat4(int uniformLoc, const glm::mat4& mat) const = 0;
 
 protected:
     std::string m_name = "";

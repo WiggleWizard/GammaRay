@@ -25,10 +25,10 @@ public:
     virtual void Bind() const override;
     virtual void Unbind() const override;
 
-    virtual void setMat4(const std::string& name, const glm::mat4& mat) const override
-    {
-        glUniformMatrix4fv(glGetUniformLocation(m_rendererId, name.c_str()), 1, GL_FALSE, &mat[0][0]);
-    }
+    virtual int GetUniformLoc(const std::string& name) const override;
+
+    virtual void SetMat4(const std::string& name, const glm::mat4& mat) const override;
+    virtual void SetMat4(int uniformLoc, const glm::mat4& mat) const override;
 
     virtual ~RendererShaderOpenGL3();
 };

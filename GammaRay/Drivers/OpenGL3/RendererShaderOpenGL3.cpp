@@ -142,6 +142,20 @@ void RendererShaderOpenGL3::Unbind() const
     glUseProgram(0);
 }
 
+inline int RendererShaderOpenGL3::GetUniformLoc(const std::string& name) const
+{
+    return glGetUniformLocation(m_rendererId, name.c_str());
+}
+
+inline void RendererShaderOpenGL3::SetMat4(const std::string& name, const glm::mat4& mat) const
+{
+    glUniformMatrix4fv(glGetUniformLocation(m_rendererId, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+}
+
+void RendererShaderOpenGL3::SetMat4(int uniformLoc, const glm::mat4& mat) const
+{
+    glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, &mat[0][0]);
+}
 
 RendererShaderOpenGL3::~RendererShaderOpenGL3()
 {
