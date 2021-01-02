@@ -17,7 +17,7 @@ void main()
     v_color = model * a_color;
 
     gl_Position = projection * view * model * vec4(a_position, 1.0);
-    gl_Position = vec4(v_position, 1.0);
+    //gl_Position = vec4(v_position, 1.0);
 }
 
 #[fragment]
