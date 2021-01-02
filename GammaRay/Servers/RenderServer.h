@@ -11,20 +11,15 @@ public:
     static RenderServer* GetSingleton() { return m_singleton; }
 
     void OnUpdate();
+    unsigned int GetDrawCallCount() { return m_drawCallsThisFrame; }
 
     RenderServer();
 
 private:
     static RenderServer* m_singleton;
 
+    unsigned int m_drawCallsThisFrame = 0;
 
-    std::shared_ptr<VertexArray> m_vertexArray;
-    std::shared_ptr<VertexBuffer> m_vertexBuffer;
-    std::shared_ptr<IndexBuffer> m_indexBuffer;
-
-    std::shared_ptr<VertexArray> m_squareVA;
-
-    unsigned int vertexArray, vertexBuffer, vertexIndex;
     std::unique_ptr<RendererShader> m_shader;
 };
 

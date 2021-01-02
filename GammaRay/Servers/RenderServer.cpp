@@ -21,6 +21,8 @@ RenderServer* RenderServer::m_singleton = nullptr;
 
 void RenderServer::OnUpdate()
 {
+    m_drawCallsThisFrame = 0;
+
     SceneServer* sceneServer = SceneServer::GetSingleton();
 
     entt::registry& registry = sceneServer->GetRawRegistry();
@@ -73,7 +75,8 @@ void RenderServer::OnUpdate()
                 if(mesh3D.vertexArray.get())
                 {
                     mesh3D.vertexArray->Bind();
-                    glDrawElements(GL_TRIANGLES, m_indexBuffer->GetCount(), GL_UNSIGNED_INT, nullptr);
+                    glDrawElements(GL_TRIANGLES, mesh3D.indices->GetCount(), GL_UNSIGNED_INT, nullptr);
+                    m_drawCallsThisFrame++;
                 }
             }
         }
