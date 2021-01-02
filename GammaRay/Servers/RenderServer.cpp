@@ -21,6 +21,10 @@ RenderServer* RenderServer::m_singleton = nullptr;
 
 void RenderServer::OnUpdate()
 {
+    float time = (float)glfwGetTime();
+    m_frameTime = time - m_lastFrameTime;
+    m_lastFrameTime = time;
+
     m_drawCallsThisFrame = 0;
 
     SceneServer* sceneServer = SceneServer::GetSingleton();
@@ -72,7 +76,7 @@ void RenderServer::OnUpdate()
                 // TODO: Only set this when the camera projection changes
                 m_shader->SetMat4("projection", projection);
 
-                if(mesh3D.vertexArray.get())
+                if(mesh3D.vertexArray)
                 {
                     mesh3D.vertexArray->Bind();
                     glDrawElements(GL_TRIANGLES, mesh3D.indices->GetCount(), GL_UNSIGNED_INT, nullptr);

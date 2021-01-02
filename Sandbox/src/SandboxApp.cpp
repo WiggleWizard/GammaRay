@@ -17,13 +17,15 @@ public:
 
     virtual bool OnProcess(float deltaTimeMs)
     {
-        bool pressed = Input::GetSingleton()->IsKeyPressed(GR_KEY_A);
+        deltaTimeMs = RenderServer::GetSingleton()->GetFrameTime();
+
+        bool pressed = Input::GetSingleton()->IsKeyPressed(GR_KEY_R);
         if(pressed)
         {
             m_shader->LoadFromFile("D:\\Projects\\GammaRay\\test.glsl");
         }
 
-        float speed = 0.04;
+        float speed = 1.5f;
         float moveX = 0.f;
         if(Input::GetSingleton()->IsKeyPressed(GR_KEY_LEFT))
             moveX -= speed;
@@ -37,8 +39,8 @@ public:
             moveY -= speed;
 
         ComponentTransform3D& box1Transform = testBox2.GetComponent<ComponentTransform3D>();
-        box1Transform.position.x += moveX;
-        box1Transform.position.y += moveY;
+        box1Transform.position.x += moveX * deltaTimeMs;
+        box1Transform.position.y += moveY * deltaTimeMs;
 
         return true;
     }

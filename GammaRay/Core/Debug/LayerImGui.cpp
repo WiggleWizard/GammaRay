@@ -171,6 +171,8 @@ void LayerImGui::OnImGuiRender()
     ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
     if(ImGui::Begin("Debug", &p_open, window_flags))
     {
+        float frameTimeMs = RenderServer::GetSingleton()->GetFrameTime().GetMilliseconds();
+        ImGui::Text("FPS: %.0f (%.0f ms/frame)", round(1000.f / frameTimeMs), frameTimeMs);
         ImGui::Text("Draw Calls: %d", RenderServer::GetSingleton()->GetDrawCallCount());
 
         if(ImGui::BeginPopupContextWindow())
