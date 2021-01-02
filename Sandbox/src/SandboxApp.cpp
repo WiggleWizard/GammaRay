@@ -6,10 +6,13 @@
 
 class Sandbox : public Application
 {
+    ConceptMesh3DBox testBox1, testBox2;
+
 public:
     Sandbox() : Application()
     {
-        ConceptMesh3D testEntity = NewEntity(ConceptMesh3D, "Mesh1");
+        testBox1 = NewEntity(ConceptMesh3DBox, "Mesh1");
+        testBox2 = NewEntity(ConceptMesh3DBox, "Mesh2");
     }
 
     virtual bool OnProcess(float deltaTimeMs)
@@ -20,20 +23,22 @@ public:
             m_shader->LoadFromFile("D:\\Projects\\GammaRay\\test.glsl");
         }
 
+        float speed = 0.04;
         float moveX = 0.f;
         if(Input::GetSingleton()->IsKeyPressed(GR_KEY_LEFT))
-            moveX -= 0.01f;
+            moveX -= speed;
         if(Input::GetSingleton()->IsKeyPressed(GR_KEY_RIGHT))
-            moveX += 0.01f;
+            moveX += speed;
 
-        SceneServer* sceneServer = SceneServer::GetSingleton();
-        entt::registry& registry = sceneServer->GetRawRegistry();
-        const auto& view = registry.view<ComponentTransform3D>();
-        for(entt::entity entity : view)
-        {
-            ComponentTransform3D& transform3D = view.get<ComponentTransform3D>(entity);
-            transform3D.position.x += moveX;
-        }
+        float moveY = 0.f;
+        if(Input::GetSingleton()->IsKeyPressed(GR_KEY_UP))
+            moveY += speed;
+        if(Input::GetSingleton()->IsKeyPressed(GR_KEY_DOWN))
+            moveY -= speed;
+
+        ComponentTransform3D& box1Transform = testBox2.GetComponent<ComponentTransform3D>();
+        box1Transform.position.x += moveX;
+        box1Transform.position.y += moveY;
 
         return true;
     }
