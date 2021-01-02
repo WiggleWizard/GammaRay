@@ -5,6 +5,9 @@
 #include "Core/MainLoop.h"
 #include "Core/Application.h"
 
+#include "Servers/SceneServer.h"
+#include "Servers/RenderServer.h"
+
 class Engine;
 
 
@@ -28,6 +31,10 @@ private:
     // process of making a new application creates a singleton. But this is here for safety.
     static std::unique_ptr<Application> m_application;
     static std::unique_ptr<MainLoop> m_mainLoop;
+
+    static std::unique_ptr<SceneServer> Main::m_sceneServer;
+    static std::unique_ptr<RenderServer> Main::m_renderServer;
+
     static Engine* m_engine;
 };
 

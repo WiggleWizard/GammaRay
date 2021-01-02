@@ -18,12 +18,17 @@ Engine* Main::m_engine = nullptr;
 std::unique_ptr<MainLoop> Main::m_mainLoop       = nullptr;
 std::unique_ptr<Application> Main::m_application = nullptr;
 
+std::unique_ptr<SceneServer> Main::m_sceneServer = nullptr;
+std::unique_ptr<RenderServer> Main::m_renderServer = nullptr;
+
 uint32_t Main::frame = 0;
 
 
 void Main::Setup(int argc, char *argv[])
 {
     Log::Init();
+
+    m_sceneServer = std::make_unique<SceneServer>();
 
     m_engine = new Engine();
     input = std::make_unique<Input>();
@@ -32,6 +37,7 @@ void Main::Setup(int argc, char *argv[])
 bool Main::Start()
 {
     m_mainLoop = std::make_unique<MainLoop>();
+    m_renderServer = std::make_unique<RenderServer>();
 
     GR_CORE_TRACE("Main started");
 

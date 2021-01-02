@@ -1,7 +1,9 @@
 #pragma once
 
-#include <string>
 #include "ShaderVariable.h"
+
+#include <string>
+#include <glm/glm.hpp>
 
 #define INVALID_SHADER_ID 0
 
@@ -19,6 +21,10 @@ public:
     virtual bool Compile() = 0;
     virtual void Bind() const = 0;
     virtual void Unbind() const = 0;
+
+    virtual uint32_t GetRendererId() { return m_rendererId; }
+
+    virtual void setMat4(const std::string& name, const glm::mat4& mat) const = 0;
 
 protected:
     std::string m_name = "";
