@@ -62,15 +62,15 @@ void RenderServer::OnUpdate()
                 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
                 // Retrieve the matrix uniform locations
-                int modelLoc = glGetUniformLocation(m_shader->GetRendererId(), "model");
-                int viewLoc  = glGetUniformLocation(m_shader->GetRendererId(), "view");
+                int modelLoc = m_shader->GetUniformLoc("model");
+                int viewLoc  = m_shader->GetUniformLoc("view");
 
                 // pass them to the shaders (3 different ways)
-                glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-                glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
+                m_shader->SetMat4(modelLoc, model);
+                m_shader->SetMat4(viewLoc, view);
 
                 // TODO: Only set this when the camera projection changes
-                m_shader->setMat4("projection", projection);
+                m_shader->SetMat4("projection", projection);
 
                 if(mesh3D.vertexArray.get())
                 {
