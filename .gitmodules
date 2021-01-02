@@ -13,3 +13,6 @@
 [submodule "GammaRay/Thirdparty/glm"]
 	path = GammaRay/Thirdparty/glm
 	url = git@github.com:g-truc/glm.git
+[submodule "GammaRay/Thirdparty/entt"]
+	path = GammaRay/Thirdparty/entt
+	url = git@github.com:skypjack/entt.git
