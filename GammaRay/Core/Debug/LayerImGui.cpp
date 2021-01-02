@@ -88,5 +88,5 @@ void LayerImGui::End()
 void LayerImGui::OnImGuiRender()
 {
     static bool show = true;
-    ImGui::ShowDemoWindow(&show);
+    //ImGui::ShowDemoWindow(&show);
 }

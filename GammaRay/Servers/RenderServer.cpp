@@ -4,6 +4,7 @@
 #include "Servers/SceneServer.h"
 
 #include "Scene/Components/Transform.h"
+#include "Scene/Components/3D/Mesh.h"
 
 #include "Core/Renderer/Shaders/default.gen.h"
 
@@ -38,7 +39,7 @@ void RenderServer::OnUpdate()
 
     // Calculate matrices if dirty
     {
-        const auto& view = registry.view<ComponentTransform3D, ComponentRenderTransform3D>();
+        const auto& view = registry.view<ComponentTransform3D, ComponentRenderTransform3D, ComponentMesh3D>();
         for(entt::entity entity : view)
         {
             ComponentTransform3D transform3D = view.get<ComponentTransform3D>(entity);
@@ -47,6 +48,7 @@ void RenderServer::OnUpdate()
             //if(transform3D.isDirty())
             {
                 ComponentRenderTransform3D renderTransform3D = view.get<ComponentRenderTransform3D>(entity);
+                ComponentMesh3D mesh3D = view.get<ComponentMesh3D>(entity);
 
                 glm::mat4 model = glm::mat4(1.0f);
                 glm::mat4 view = glm::mat4(1.0f);
@@ -67,24 +69,15 @@ void RenderServer::OnUpdate()
 
                 // TODO: Only set this when the camera projection changes
                 m_shader->setMat4("projection", projection);
+
+                if(mesh3D.vertexArray.get())
+                {
+                    mesh3D.vertexArray->Bind();
+                    glDrawElements(GL_TRIANGLES, m_indexBuffer->GetCount(), GL_UNSIGNED_INT, nullptr);
+                }
             }
         }
     }
-
-    // Render
-    {
-        const auto& view = registry.view<ComponentRenderTransform3D>();
-        for(entt::entity entity : view)
-        {
-            ComponentRenderTransform3D renderTransform3D = view.get<ComponentRenderTransform3D>(entity);
-            
-        }
-    }
-
-    m_vertexArray->Bind();
-    //m_squareVA->Bind();
-
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 }
 
 RenderServer::RenderServer()
@@ -93,55 +86,4 @@ RenderServer::RenderServer()
 
     m_shader.reset(new RendererShaderDefault());
     m_shader->Compile();
-
-
-    m_vertexArray.reset(VertexArray::Create());
-
-    float vertices[] = {
-        // positions          // texture coords
-        0.5f,  0.5f, 0.0f,   0.8, 0.2, 0.8, 1.0,
-        0.5f, -0.5f, 0.0f,   0.2, 0.3, 0.8, 1.0,
-        -0.5f, -0.5f, 0.0f,   0.8, 0.8, 0.2, 1.0,
-        -0.5f,  0.5f, 0.0f,  1.0, 0.8, 0.2, 1.0,
-    };
-    unsigned int indices[] = {0, 1, 2, 2, 3, 0};
-
-    m_vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
-
-    BufferLayout layout = {
-        { ShaderDataType::Float3, "a_Position" },
-        { ShaderDataType::Float4, "a_Color" },
-    };
-    m_vertexBuffer->SetLayout(layout);
-    m_vertexArray->AddVertexBuffer(m_vertexBuffer);
-
-    m_indexBuffer.reset(IndexBuffer::Create(indices, 6));
-    m_vertexArray->AddIndexBuffer(m_indexBuffer);
-
-
-
-
-    /*
-
-    m_squareVA.reset(VertexArray::Create());
-
-    float squareVertices[3 * 3 * 4] = {
-        -0.5f, -0.5f, 0.0f,  0.8, 0.2, 0.8, 1.0,
-        0.5f, -0.5f, 0.0f,   0.2, 0.3, 0.8, 1.0,
-        0.0f, 0.5f, 0.0f,    0.8, 0.8, 0.2, 1.0,
-        0.5f, 0.5f, 0.0f,    1.0, 0.8, 0.2, 1.0,
-    };
-    std::shared_ptr<VertexBuffer> squareVB;
-    squareVB.reset(VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
-    squareVB->SetLayout({
-        { ShaderDataType::Float3, "a_Position" },
-        { ShaderDataType::Float4, "a_Color" },
-    });
-    m_squareVA->AddVertexBuffer(squareVB);
-
-    uint32_t squareIndices[6] = {0, 1, 2, 2, 3, 0};
-    std::shared_ptr<IndexBuffer> squareIB;
-    squareIB.reset(IndexBuffer::Create(squareIndices, 6));
-    m_squareVA->AddIndexBuffer(squareIB);
-    */
 }

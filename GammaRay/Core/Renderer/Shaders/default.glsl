@@ -14,10 +14,9 @@ uniform mat4 projection;
 void main()
 {
     v_position = a_position;
-    v_color = model * a_color;
+    v_color = vec4(a_position, 1.0);
 
     gl_Position = projection * view * model * vec4(a_position, 1.0);
-    //gl_Position = vec4(v_position, 1.0);
 }
 
 #[fragment]

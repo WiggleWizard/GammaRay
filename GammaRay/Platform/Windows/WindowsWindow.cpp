@@ -37,7 +37,7 @@ void WindowsWindow::PreRender()
 {
     const Color& clearColor = m_data.clearColor;
     glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void WindowsWindow::OnUpdate()
@@ -87,6 +87,8 @@ void WindowsWindow::Init(const WindowProps& props)
     SetVSync(true);
 
     SetupGLFWCallbacks();
+
+    glEnable(GL_DEPTH_TEST);
 }
 
 void WindowsWindow::SetupGLFWCallbacks()
