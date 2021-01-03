@@ -1,8 +1,8 @@
 #[vertex]
 #version 450 core
 
-layout(location = 0) in vec3 a_position;
-layout(location = 1) in vec4 a_color;
+layout(location = 0) in vec3 aPos;
+layout(location = 1) in vec4 aColor;
 
 out vec3 v_position;
 out vec4 v_color;
@@ -13,10 +13,10 @@ uniform mat4 projection;
 
 void main()
 {
-    v_position = a_position;
-    v_color = vec4(a_position, 1.0);
+    v_position = aPos;
+    v_color = vec4(aPos, 1.0);
 
-    gl_Position = projection * view * model * vec4(a_position, 1.0);
+    gl_Position = projection * view * model * vec4(aPos, 1.0);
 }
 
 #[fragment]

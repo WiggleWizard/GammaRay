@@ -34,13 +34,13 @@ public:
 
         float moveY = 0.f;
         if(Input::GetSingleton()->IsKeyPressed(GR_KEY_UP))
-            moveY += speed;
-        if(Input::GetSingleton()->IsKeyPressed(GR_KEY_DOWN))
             moveY -= speed;
+        if(Input::GetSingleton()->IsKeyPressed(GR_KEY_DOWN))
+            moveY += speed;
 
         ComponentTransform3D& box1Transform = testBox2.GetComponent<ComponentTransform3D>();
         box1Transform.position.x += moveX * deltaTimeMs;
-        box1Transform.position.y += moveY * deltaTimeMs;
+        box1Transform.position.z += moveY * deltaTimeMs;
 
         return true;
     }

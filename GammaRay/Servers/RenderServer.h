@@ -16,6 +16,9 @@ public:
     const Timestep& GetFrameTime() const { return m_frameTime; }
 
     RenderServer();
+    ~RenderServer();
+
+    unsigned int m_texDepth;
 
 private:
     static RenderServer* m_singleton;
@@ -25,5 +28,8 @@ private:
     float m_lastFrameTime = 0.f;
 
     std::unique_ptr<RendererShader> m_shader;
+    std::unique_ptr<RendererShader> m_shaderDepth;
+
+    unsigned int m_fboDepth;
 };
 
