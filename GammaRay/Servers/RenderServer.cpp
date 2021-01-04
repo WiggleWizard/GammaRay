@@ -4,6 +4,7 @@
 #include "Servers/SceneServer.h"
 
 #include "Scene/Components/Transform.h"
+#include "Scene/Components/Camera.h"
 #include "Scene/Components/3D/Mesh.h"
 
 #include "Core/Renderer/Shaders/default.gen.h"
@@ -41,12 +42,28 @@ void RenderServer::OnUpdate()
     //m_shader->Bind();
     m_shaderDepth->Bind();
 
+    glm::mat4 cameraMatrix;
+    glm::vec3 cameraPosition, cameraFront, cameraUp;
+    float cameraFov = 0.f;
+
     // Get camera in scene
     // TODO: How do we ensure this is our "active camera"
     {
-        const auto& view = registry.view<ComponentTransform3D, ComponentRenderTransform3D>();
+        const auto& view = registry.view<ComponentTransform3D, ComponentCamera3D>();
 
         // TODO: Set projection matrix (if camera dirty) of the shader
+        for(entt::entity entity : view)
+        {
+            ComponentTransform3D& cameraTransform = view.get<ComponentTransform3D>(entity);
+            ComponentCamera3D& camera = view.get<ComponentCamera3D>(entity);
+
+            cameraPosition = cameraTransform.position;
+            cameraFront    = camera.forward;
+            cameraUp       = camera.up;
+
+            cameraMatrix   = camera.GetViewMatrix();
+            cameraFov      = camera.fov;
+        }
     }
 
     // Calculate matrices if dirty
@@ -62,25 +79,16 @@ void RenderServer::OnUpdate()
                 ComponentRenderTransform3D renderTransform3D = view.get<ComponentRenderTransform3D>(entity);
                 ComponentMesh3D mesh3D = view.get<ComponentMesh3D>(entity);
 
-                glm::mat4 model = glm::mat4(1.0f);
-                glm::mat4 view = glm::mat4(1.0f);
-                glm::mat4 projection = glm::mat4(1.0f);
-
-                //model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-                model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-                view = glm::translate(view, transform3D.position);
-                projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-
-                // Retrieve the matrix uniform locations
-                int modelLoc = m_shader->GetUniformLoc("model");
-                int viewLoc  = m_shader->GetUniformLoc("view");
-
-                // pass them to the shaders (3 different ways)
-                m_shader->SetMat4(modelLoc, model);
-                m_shader->SetMat4(viewLoc, view);
-
-                // TODO: Only set this when the camera projection changes
+                glm::mat4 projection = glm::perspective(glm::radians(cameraFov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
                 m_shader->SetMat4("projection", projection);
+
+                glm::mat4 view = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
+                m_shader->SetMat4("view", view);
+
+                glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+                model = glm::translate(model, transform3D.position);
+                //model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+                m_shader->SetMat4("model", model);
 
                 if(mesh3D.vertexArray)
                 {
