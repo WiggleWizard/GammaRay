@@ -1,5 +1,7 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
 
 class InputEvent : public Object
 {
@@ -30,11 +32,13 @@ public:
 
 class InputEventMouse : public InputEventWithModifiers
 {
-    Point2i position;
+public:
+    glm::ivec2 position;
 };
 
 class InputEventMouseButton : public InputEventMouse
 {
+public:
     bool pressed = false;
     int buttonIndex = 0;
 };

@@ -88,6 +88,8 @@ void WindowsWindow::Init(const WindowProps& props)
 
     SetupGLFWCallbacks();
 
+    glfwSetInputMode(m_glfwWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
     glEnable(GL_DEPTH_TEST);
 }
 
@@ -175,8 +177,10 @@ void WindowsWindow::SetupGLFWCallbacks()
     {
         WindowData* windowData = (WindowData*)glfwGetWindowUserPointer(window);
 
-        EventMouseMoved event((float)x, (float)y);
-        windowData->eventCallback(event);
+        InputEventMouseMotion event;
+        event.position.x = (float)x;
+        event.position.y = (float)y;
+        Input::GetSingleton()->ProcessWindowInput(event);
     });
 }
 
