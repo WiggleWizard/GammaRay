@@ -27,6 +27,9 @@
 // Internal frequently used objects
 #include "Core/Object/Object.h"
 
+// Thirdparty frequently used
+#include <glm/glm.hpp>
+
 #ifdef GR_PLATFORM_WINDOWS
     #include <Windows.h>
 #endif
