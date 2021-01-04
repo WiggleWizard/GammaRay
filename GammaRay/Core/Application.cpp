@@ -4,6 +4,7 @@
 #include "Window.h"
 
 #include "Servers/RenderServer.h"
+#include "Servers/SceneServer.h"
 
 
 Application* Application::singleton = nullptr;
@@ -28,6 +29,8 @@ bool Application::_OnProcess(float deltaTimeMs)
     OnProcess(deltaTimeMs);
 
     m_windowMain->PreRender();
+
+    SceneServer::GetSingleton()->OnUpdate();
 
     RenderServer::GetSingleton()->OnUpdate();
 

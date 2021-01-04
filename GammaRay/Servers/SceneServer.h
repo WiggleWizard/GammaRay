@@ -1,8 +1,6 @@
 #pragma once
 
-#include "Scene/Components/Base.h"
-
-#include "entt/entt.hpp"
+#include <entt/entt.hpp>
 
 #define NewEntity(conceptType, entityName) SceneServer::GetSingleton()->CreateEntity<conceptType>(entityName)
 
@@ -35,6 +33,19 @@ public:
 
     entt::registry& GetRawRegistry() { return m_registry; }
 
+    void RegisterForOnUpdate(std::function<void()> cb)
+    {
+        m_updateCallbacks.push_back(cb);
+    }
+
+    void OnUpdate()
+    {
+        for(const auto& cb : m_updateCallbacks)
+        {
+            cb();
+        }
+    }
+
     SceneServer()
     {
         m_singleton = this;
@@ -43,79 +54,7 @@ public:
 private:
     static SceneServer* m_singleton;
     entt::registry m_registry;
+
+    std::vector<std::function<void()>> m_updateCallbacks;
 };
 
-
-/**
- * Simply an OOP wrapper around an entity ID
- */
-class Entity
-{
-    friend class SceneServer;
-
-public:
-    Entity()
-    {}
-
-    /**
-     * Allow direct wrapping of an entt ID.
-     */
-    Entity(entt::entity enttId)
-        : m_rid(enttId)
-    {}
-
-    Entity(const Entity& e)
-    {
-        m_rid = e.m_rid;
-    }
-
-    virtual void InitComponents() {};
-
-    const std::string& GetName()
-    {
-        ComponentSceneLink& component = GetComponent<ComponentSceneLink>();
-        return component.entityName;
-    }
-
-    template<typename T>
-    bool HasComponent()
-    {
-        return SceneServer::GetSingleton()->m_registry.has<T>(m_rid);
-    }
-
-    template<typename T>
-    T& AddComponent()
-    {
-        return SceneServer::GetSingleton()->m_registry.emplace<T>(m_rid);
-    }
-
-    template<typename T>
-    void RemoveComponent()
-    {
-        SceneServer::GetSingleton()->m_registry.remove<T>(m_rid);
-    }
-
-    template<typename T>
-    T& GetComponent()
-    {
-        return SceneServer::GetSingleton()->m_registry.get<T>(m_rid);
-    }
-
-    void Destroy()
-    {
-        SceneServer::GetSingleton()->m_registry.destroy(m_rid);
-    }
-
-    bool operator==(const Entity& other) const
-    {
-        return m_rid == other.m_rid;
-    }
-
-    bool operator!=(const Entity& other) const
-    {
-        return !(*this == other);
-    }
-
-private:
-    entt::entity m_rid;
-};

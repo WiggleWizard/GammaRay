@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/Object/Component.h"
 #include "Core/Math/Rect.h"
 
 #include <glm/glm.hpp>
@@ -9,12 +10,12 @@
 /**
  * Final renderer matrix
  */
-struct ComponentRenderTransform3D
+struct ComponentRenderTransform3D : public Component
 {
     glm::mat4 matrix;
 };
 
-struct ComponentTransform3D
+struct ComponentTransform3D : public Component
 {
     glm::vec3 position;
     // TODO: glm::quat rotation;
@@ -29,7 +30,7 @@ struct ComponentTransform3D
 
 };
 
-struct ComponentTransformRect
+struct ComponentTransformRect : public Component
 {
     Rect2 anchors;
     Rect2i rect;
