@@ -29,7 +29,7 @@ public:
 
     virtual void* GetNativeWindow() const override { return (void*)m_glfwWindow; }
 
-    virtual bool IsMouseLocked() override;
+    virtual bool IsMouseLocked() const override;
     virtual void LockMouse() override;
     virtual void UnlockMouse() override;
 private:
