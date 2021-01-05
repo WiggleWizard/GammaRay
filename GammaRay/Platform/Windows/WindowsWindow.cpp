@@ -64,13 +64,11 @@ bool WindowsWindow::IsMouseLocked()
 
 void WindowsWindow::LockMouse()
 {
-    // TODO: Use current cursor.
     glfwSetInputMode(m_glfwWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void WindowsWindow::UnlockMouse()
 {
-    // TODO: Use current cursor.
     glfwSetInputMode(m_glfwWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
