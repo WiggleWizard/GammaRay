@@ -57,6 +57,23 @@ bool WindowsWindow::IsVSync() const
     return m_data.vsyncEnabled;
 }
 
+bool WindowsWindow::IsMouseLocked()
+{
+    return glfwGetInputMode(m_glfwWindow, GLFW_CURSOR) == GLFW_CURSOR_DISABLED;
+}
+
+void WindowsWindow::LockMouse()
+{
+    // TODO: Use current cursor.
+    glfwSetInputMode(m_glfwWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+}
+
+void WindowsWindow::UnlockMouse()
+{
+    // TODO: Use current cursor.
+    glfwSetInputMode(m_glfwWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+}
+
 void WindowsWindow::Init(const WindowProps& props)
 {
     m_data.title = props.title;
@@ -88,7 +105,7 @@ void WindowsWindow::Init(const WindowProps& props)
 
     SetupGLFWCallbacks();
 
-    glfwSetInputMode(m_glfwWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    UnlockMouse();
 
     glEnable(GL_DEPTH_TEST);
 }
