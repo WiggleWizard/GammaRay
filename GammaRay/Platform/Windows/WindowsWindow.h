@@ -29,6 +29,9 @@ public:
 
     virtual void* GetNativeWindow() const override { return (void*)m_glfwWindow; }
 
+    virtual bool IsMouseLocked() override;
+    virtual void LockMouse() override;
+    virtual void UnlockMouse() override;
 private:
     virtual void Init(const WindowProps& props);
     virtual void SetupGLFWCallbacks();

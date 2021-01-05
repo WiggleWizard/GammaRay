@@ -39,5 +39,9 @@ public:
 
     virtual void* GetNativeWindow() const = 0;
 
+    virtual bool IsMouseLocked() = 0;
+    virtual void LockMouse() = 0;
+    virtual void UnlockMouse() = 0;
+
     static Window* Create(const WindowProps& props = WindowProps());
 };
