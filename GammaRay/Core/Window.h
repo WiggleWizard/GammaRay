@@ -39,7 +39,7 @@ public:
 
     virtual void* GetNativeWindow() const = 0;
 
-    virtual bool IsMouseLocked() = 0;
+    virtual bool IsMouseLocked() const = 0;
     virtual void LockMouse() = 0;
     virtual void UnlockMouse() = 0;
 

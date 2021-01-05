@@ -57,7 +57,7 @@ bool WindowsWindow::IsVSync() const
     return m_data.vsyncEnabled;
 }
 
-bool WindowsWindow::IsMouseLocked()
+bool WindowsWindow::IsMouseLocked() const
 {
     return glfwGetInputMode(m_glfwWindow, GLFW_CURSOR) == GLFW_CURSOR_DISABLED;
 }
