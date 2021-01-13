@@ -33,7 +33,8 @@ void RenderServer::OnUpdate()
 
     entt::registry& registry = sceneServer->GetRawRegistry();
 
-    glBindFramebuffer(GL_FRAMEBUFFER, m_fboDepth);
+    m_fboDepth->Bind();
+
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -99,8 +100,6 @@ void RenderServer::OnUpdate()
             }
         }
     }
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 RenderServer::RenderServer()
@@ -114,34 +113,30 @@ RenderServer::RenderServer()
     m_shaderDepth->Compile();
 
     // Gen FBO
-    glGenFramebuffers(1, &m_fboDepth);
-    glBindFramebuffer(GL_FRAMEBUFFER, m_fboDepth);
+    m_fboDepth.reset(FrameBuffer::Create());
+    m_fboDepth->Bind();
 
     // Gen RBO for depth and stencil access
-    unsigned int rbo;
-    glGenRenderbuffers(1, &rbo);
-    glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 800, 600);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+    m_rboDepth.reset(RenderBuffer::Create());
+    m_rboDepth->Bind();
+
+    m_rboDepth->SetStorage(GL_DEPTH24_STENCIL8, {800, 600});
+    m_fboDepth->AttachRenderBuffer(m_rboDepth.get(), GL_DEPTH_STENCIL_ATTACHMENT);
 
     // Gen and attach texture
-    glGenTextures(1, &m_texDepth);
-    glBindTexture(GL_TEXTURE_2D, m_texDepth);
+    m_texDepth.reset(TextureBuffer::Create());
+    m_texDepth->Bind();
+    m_texDepth->BindRGBTexture({800, 600});
 
+    // TODO: Abstract this
     glEnable(GL_DEPTH_TEST);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    m_fboDepth->AttachTextureBuffer(m_texDepth.get(), 0);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texDepth, 0);
-
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    m_texDepth->Unbind();
+    m_fboDepth->Unbind();
 }
 
 RenderServer::~RenderServer()
 {
-    glDeleteFramebuffers(1, &m_fboDepth);
 }

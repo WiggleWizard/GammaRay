@@ -131,8 +131,8 @@ void LayerImGui::End()
     ImGuiIO& io = ImGui::GetIO();
 
     Size2i windowSize = Application::GetSingleton()->GetWindowSize();
-    io.DisplaySize.x = (float)windowSize.width;
-    io.DisplaySize.y = (float)windowSize.height;
+    io.DisplaySize.x = (float)windowSize.x;
+    io.DisplaySize.y = (float)windowSize.y;
 
     float time = (float)glfwGetTime();
     io.DeltaTime = m_time > 0.f ? (time - m_time) : (1.f / 60.f);
@@ -191,7 +191,7 @@ void LayerImGui::OnImGuiRender()
     bool testOpen = true;
     ImGui::Begin("Depth Buffer");
     ImGui::GetWindowDrawList()->AddImage(
-        (void*)RenderServer::GetSingleton()->m_texDepth,
+        (void*)RenderServer::GetSingleton()->m_texDepth->GetRendererId(),
         ImVec2(ImGui::GetCursorScreenPos()),
         ImVec2(ImGui::GetCursorScreenPos().x + 800,
             ImGui::GetCursorScreenPos().y + 600), ImVec2(0, 1), ImVec2(1, 0));

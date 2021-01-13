@@ -2,17 +2,22 @@
 
 #include "Servers/SceneServer.h"
 #include "Scene/Concepts/Mesh.h"
+#include "Scene/Concepts/Camera.h"
 
 
 class Sandbox : public Application
 {
     ConceptMesh3DBox testBox1, testBox2;
+    ConceptEditorCamera3D testCamera1;
 
 public:
     Sandbox() : Application()
     {
         testBox1 = NewEntity(ConceptMesh3DBox, "Mesh1");
         testBox2 = NewEntity(ConceptMesh3DBox, "Mesh2");
+        testCamera1 = NewEntity(ConceptEditorCamera3D, "Mesh2");
+
+        //transform3D.position = glm::vec3(0.0f, 0.0f, -3.0f);
     }
 
     virtual bool OnProcess(float deltaTimeMs)

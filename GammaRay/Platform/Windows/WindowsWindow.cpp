@@ -78,7 +78,7 @@ void WindowsWindow::Init(const WindowProps& props)
     m_data.windowSize = props.windowSize;
     m_data.clearColor = props.clearColor;
 
-    GR_CORE_INFO("Creating window {0} ({1}, {2})", m_data.windowSize.width, m_data.windowSize.height);
+    GR_CORE_INFO("Creating window {0} ({1}, {2})", m_data.windowSize.x, m_data.windowSize.y);
 
     if(!m_glfwInitialized)
     {
@@ -92,7 +92,7 @@ void WindowsWindow::Init(const WindowProps& props)
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     }
 
-    m_glfwWindow = glfwCreateWindow(m_data.windowSize.width, m_data.windowSize.height, m_data.title.c_str(), nullptr, nullptr);
+    m_glfwWindow = glfwCreateWindow(m_data.windowSize.x, m_data.windowSize.y, m_data.title.c_str(), nullptr, nullptr);
 
     m_renderingSystem = new GraphicsContextOpenGL3();
     m_renderingSystem->SetGLFWContext(m_glfwWindow);
@@ -113,8 +113,8 @@ void WindowsWindow::SetupGLFWCallbacks()
     glfwSetWindowSizeCallback(m_glfwWindow, [](GLFWwindow* window, int w, int h)
     {
         WindowData* windowData = (WindowData*)glfwGetWindowUserPointer(window);
-        windowData->windowSize.height = h;
-        windowData->windowSize.width = w;
+        windowData->windowSize.x = h;
+        windowData->windowSize.y = w;
 
         EventWindowResize event(w, h);
         windowData->eventCallback(event);

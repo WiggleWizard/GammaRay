@@ -13,7 +13,7 @@ struct WindowProps
     Size2i windowSize;
     Color clearColor;
 
-    WindowProps(const std::string& windowTitle = "GammaRay Engine", const Size2i& windowSize = {800, 600}, const Color& color = {0.1f})
+    WindowProps(const std::string& windowTitle = "GammaRay Engine", const Size2i& windowSize = Size2i(800, 600), const Color& color = {0.1f})
         : title(windowTitle)
         , windowSize(windowSize)
         , clearColor(color)

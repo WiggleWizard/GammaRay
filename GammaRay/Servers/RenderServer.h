@@ -2,6 +2,9 @@
 
 #include "Core/Timestep.h"
 #include "Core/Renderer/Buffer.h"
+#include "Core/Renderer/FrameBuffer.h"
+#include "Core/Renderer/RenderBuffer.h"
+#include "Core/Renderer/TextureBuffer.h"
 #include "Core/Renderer/VertexArray.h"
 #include "Core/Renderer/RendererShader.h"
 
@@ -18,7 +21,7 @@ public:
     RenderServer();
     ~RenderServer();
 
-    unsigned int m_texDepth;
+    std::unique_ptr<TextureBuffer> m_texDepth;
 
 private:
     static RenderServer* m_singleton;
@@ -30,6 +33,9 @@ private:
     std::unique_ptr<RendererShader> m_shader;
     std::unique_ptr<RendererShader> m_shaderDepth;
 
-    unsigned int m_fboDepth;
+    std::unique_ptr<FrameBuffer> m_fboDepth;
+    std::unique_ptr<RenderBuffer> m_rboDepth;
+
+    //unsigned int m_fboDepth;
 };
 
