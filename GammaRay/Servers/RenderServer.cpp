@@ -40,8 +40,7 @@ void RenderServer::OnUpdate()
 
     // Bind default shader
     // TODO: At some point this obviously needs to be the active rendering component's material shader
-    //m_shader->Bind();
-    m_shaderDepth->Bind();
+    m_shader->Bind();
 
     glm::mat4 cameraMatrix;
     glm::vec3 cameraPosition, cameraFront, cameraUp;
@@ -100,6 +99,8 @@ void RenderServer::OnUpdate()
             }
         }
     }
+
+    m_shader->Unbind();
 }
 
 RenderServer::RenderServer()

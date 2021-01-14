@@ -74,6 +74,7 @@ void FrameBufferOpenGL::AttachTextureBuffer(TextureBuffer* textureBuffer, int at
 }
 
 FrameBufferOpenGL::FrameBufferOpenGL()
+    : m_rendererId(0)
 {
     glGenFramebuffers(1, &m_rendererId);
 }
@@ -99,6 +100,7 @@ void RenderBufferOpenGL::SetStorage(int mode, Size2i size)
 }
 
 RenderBufferOpenGL::RenderBufferOpenGL()
+    : m_rendererId(0)
 {
     glGenRenderbuffers(1, &m_rendererId);
 }
@@ -111,15 +113,15 @@ RenderBufferOpenGL::~RenderBufferOpenGL()
 void TextureBufferOpenGL::Bind() const
 {
     glBindTexture(GL_TEXTURE_2D, m_rendererId);
+
+    // TODO: Make these params
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
 void TextureBufferOpenGL::Unbind() const
 {
     glBindTexture(GL_TEXTURE_2D, 0);
-
-    // TODO: Make these params
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
 void TextureBufferOpenGL::BindRGBTexture(Size2i size)
