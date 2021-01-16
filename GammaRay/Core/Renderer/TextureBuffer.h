@@ -9,7 +9,7 @@ public:
 
     virtual RendererID GetRendererId() const = 0;
 
-    virtual void BindRGBTexture(Size2i size) = 0;
+    virtual void BindRGBTexture(Size2i size, int format) = 0;
 
     virtual ~TextureBuffer() {}
 

@@ -29,18 +29,15 @@ void RenderServer::OnUpdate()
 
     m_drawCallsThisFrame = 0;
 
+
     SceneServer* sceneServer = SceneServer::GetSingleton();
 
     entt::registry& registry = sceneServer->GetRawRegistry();
 
-    m_fboDepth->Bind();
-
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     // Bind default shader
     // TODO: At some point this obviously needs to be the active rendering component's material shader
     m_shader->Bind();
+    m_fboDepth->Bind();
 
     glm::mat4 cameraMatrix;
     glm::vec3 cameraPosition, cameraFront, cameraUp;
@@ -119,23 +116,24 @@ RenderServer::RenderServer()
 
     // Gen RBO for depth and stencil access
     m_rboDepth.reset(RenderBuffer::Create());
-    m_rboDepth->Bind();
-
-    m_rboDepth->SetStorage(GL_DEPTH24_STENCIL8, {800, 600});
-    m_fboDepth->AttachRenderBuffer(m_rboDepth.get(), GL_DEPTH_STENCIL_ATTACHMENT);
-
-    // Gen and attach texture
-    m_texDepth.reset(TextureBuffer::Create());
-    m_texDepth->Bind();
-    m_texDepth->BindRGBTexture({800, 600});
+    //m_rboDepth->Bind();
+    //m_rboDepth->SetStorage(GL_DEPTH24_STENCIL8, {800, 600});
+    //m_fboDepth->AttachRenderBuffer(m_rboDepth.get(), GL_DEPTH_STENCIL_ATTACHMENT);
 
     // TODO: Abstract this
     glEnable(GL_DEPTH_TEST);
 
-    m_fboDepth->AttachTextureBuffer(m_texDepth.get(), 0);
+    // Gen and attach texture
+    m_texDepth.reset(TextureBuffer::Create());
+    m_texDepth->Bind();
+    m_texDepth->BindRGBTexture({800, 600}, GL_DEPTH_COMPONENT);
 
-    m_texDepth->Unbind();
-    m_fboDepth->Unbind();
+    m_texColor.reset(TextureBuffer::Create());
+    m_texColor->Bind();
+    m_texColor->BindRGBTexture({800, 600}, GL_RGB);
+
+    m_fboDepth->AttachTextureBuffer(m_texDepth.get(), GL_DEPTH_ATTACHMENT);
+    m_fboDepth->AttachTextureBuffer(m_texColor.get(), GL_COLOR_ATTACHMENT0);
 }
 
 RenderServer::~RenderServer()

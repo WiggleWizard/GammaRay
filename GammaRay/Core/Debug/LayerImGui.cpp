@@ -188,10 +188,12 @@ void LayerImGui::OnImGuiRender()
     }
     ImGui::End();
 
+    int texId = RenderServer::GetSingleton()->m_texColor->GetRendererId();
+
     bool testOpen = true;
     ImGui::Begin("Depth Buffer");
     ImGui::GetWindowDrawList()->AddImage(
-        (void*)RenderServer::GetSingleton()->m_texDepth->GetRendererId(),
+        (void*)texId,
         ImVec2(ImGui::GetCursorScreenPos()),
         ImVec2(ImGui::GetCursorScreenPos().x + 800,
             ImGui::GetCursorScreenPos().y + 600), ImVec2(0, 1), ImVec2(1, 0));

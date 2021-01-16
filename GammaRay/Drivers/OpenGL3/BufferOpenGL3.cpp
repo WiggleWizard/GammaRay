@@ -69,8 +69,10 @@ void FrameBufferOpenGL::AttachRenderBuffer(RenderBuffer* renderBuffer, int attac
 
 void FrameBufferOpenGL::AttachTextureBuffer(TextureBuffer* textureBuffer, int attachmentLocation)
 {
-    m_boundTextureBuffers.push_back(dynamic_cast<TextureBufferOpenGL*>(textureBuffer));
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureBuffer->GetRendererId(), 0);
+    int textureBufferOpenGLId = textureBuffer->GetRendererId();
+
+    m_boundTextureBuffers[attachmentLocation] = dynamic_cast<TextureBufferOpenGL*>(textureBuffer);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentLocation, GL_TEXTURE_2D, textureBufferOpenGLId, 0);
 }
 
 FrameBufferOpenGL::FrameBufferOpenGL()
@@ -124,9 +126,14 @@ void TextureBufferOpenGL::Unbind() const
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void TextureBufferOpenGL::BindRGBTexture(Size2i size)
+void TextureBufferOpenGL::BindRGBTexture(Size2i size, int format)
 {
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, size.x, size.y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, format, size.x, size.y, 0, format, GL_UNSIGNED_BYTE, NULL);
+}
+
+inline RendererID TextureBufferOpenGL::GetRendererId() const
+{
+    return m_rendererId;
 }
 
 TextureBufferOpenGL::TextureBufferOpenGL()

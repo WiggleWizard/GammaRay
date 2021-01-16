@@ -75,7 +75,7 @@ private:
     // TODO: Ideally this would be a pointer/Ref to a render buffer but for now
     //       renderbuffer contains just an int so it's ok to copy here.
     RenderBufferOpenGL* m_attachedRenderBuffer;
-    std::vector<class TextureBufferOpenGL*> m_boundTextureBuffers;
+    std::map<int, class TextureBufferOpenGL*> m_boundTextureBuffers;
 };
 
 class TextureBufferOpenGL : public TextureBuffer
@@ -84,9 +84,9 @@ public:
     virtual void Bind() const override;
     virtual void Unbind() const override;
 
-    virtual void BindRGBTexture(Size2i size);
+    virtual void BindRGBTexture(Size2i size, int format);
 
-    RendererID GetRendererId() const { return m_rendererId; }
+    RendererID GetRendererId() const;
 
     TextureBufferOpenGL();
     ~TextureBufferOpenGL();

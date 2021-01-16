@@ -22,6 +22,7 @@ public:
     ~RenderServer();
 
     std::unique_ptr<TextureBuffer> m_texDepth;
+    std::unique_ptr<TextureBuffer> m_texColor;
 
 private:
     static RenderServer* m_singleton;
