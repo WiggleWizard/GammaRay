@@ -98,6 +98,7 @@ void RenderServer::OnUpdate()
     }
 
     m_shader->Unbind();
+    m_fboDepth->Unbind();
 }
 
 RenderServer::RenderServer()
@@ -134,6 +135,10 @@ RenderServer::RenderServer()
 
     m_fboDepth->AttachTextureBuffer(m_texDepth.get(), GL_DEPTH_ATTACHMENT);
     m_fboDepth->AttachTextureBuffer(m_texColor.get(), GL_COLOR_ATTACHMENT0);
+
+    m_texColor->Unbind();
+    m_fboDepth->Unbind();
+    m_fboDepth->Unbind();
 }
 
 RenderServer::~RenderServer()
