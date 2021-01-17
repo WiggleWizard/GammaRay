@@ -191,7 +191,7 @@ void LayerImGui::OnImGuiRender()
     int texId = RenderServer::GetSingleton()->m_texColor->GetRendererId();
 
     bool testOpen = true;
-    ImGui::Begin("Depth Buffer");
+    ImGui::Begin("Scene");
     ImGui::GetWindowDrawList()->AddImage(
         (void*)texId,
         ImVec2(ImGui::GetCursorScreenPos()),

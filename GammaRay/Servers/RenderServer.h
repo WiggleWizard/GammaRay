@@ -34,7 +34,7 @@ private:
     std::unique_ptr<RendererShader> m_shader;
     std::unique_ptr<RendererShader> m_shaderDepth;
 
-    std::unique_ptr<FrameBuffer> m_fboDepth;
+    std::unique_ptr<FrameBuffer> m_fboMain;
     std::unique_ptr<RenderBuffer> m_rboDepth;
 
     //unsigned int m_fboDepth;

@@ -36,7 +36,7 @@ void RenderServer::OnUpdate()
     // Bind default shader
     // TODO: At some point this obviously needs to be the active rendering component's material shader
     m_shader->Bind();
-    m_fboDepth->Bind();
+    m_fboMain->Bind();
 
     const Color& clearColor = {0.075f, 0.075f, 0.075f};
     glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
@@ -101,7 +101,7 @@ void RenderServer::OnUpdate()
     }
 
     m_shader->Unbind();
-    m_fboDepth->Unbind();
+    m_fboMain->Unbind();
 }
 
 RenderServer::RenderServer()
@@ -115,8 +115,8 @@ RenderServer::RenderServer()
     m_shaderDepth->Compile();
 
     // Gen FBO
-    m_fboDepth.reset(FrameBuffer::Create());
-    m_fboDepth->Bind();
+    m_fboMain.reset(FrameBuffer::Create());
+    m_fboMain->Bind();
 
     // Gen RBO for depth and stencil access
     m_rboDepth.reset(RenderBuffer::Create());
@@ -136,10 +136,10 @@ RenderServer::RenderServer()
     m_texColor->Bind();
     m_texColor->BindRGBTexture({800, 600}, GL_RGB);
 
-    m_fboDepth->AttachTextureBuffer(m_texDepth.get(), GL_DEPTH_ATTACHMENT);
-    m_fboDepth->AttachTextureBuffer(m_texColor.get(), GL_COLOR_ATTACHMENT0);
+    m_fboMain->AttachTextureBuffer(m_texDepth.get(), GL_DEPTH_ATTACHMENT);
+    m_fboMain->AttachTextureBuffer(m_texColor.get(), GL_COLOR_ATTACHMENT0);
 
-    m_fboDepth->Unbind();
+    m_fboMain->Unbind();
 }
 
 RenderServer::~RenderServer()
