@@ -29,7 +29,6 @@ void RenderServer::OnUpdate()
 
     m_drawCallsThisFrame = 0;
 
-
     SceneServer* sceneServer = SceneServer::GetSingleton();
 
     entt::registry& registry = sceneServer->GetRawRegistry();
@@ -38,6 +37,10 @@ void RenderServer::OnUpdate()
     // TODO: At some point this obviously needs to be the active rendering component's material shader
     m_shader->Bind();
     m_fboDepth->Bind();
+
+    const Color& clearColor = {0.075f, 0.075f, 0.075f};
+    glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glm::mat4 cameraMatrix;
     glm::vec3 cameraPosition, cameraFront, cameraUp;
@@ -136,8 +139,6 @@ RenderServer::RenderServer()
     m_fboDepth->AttachTextureBuffer(m_texDepth.get(), GL_DEPTH_ATTACHMENT);
     m_fboDepth->AttachTextureBuffer(m_texColor.get(), GL_COLOR_ATTACHMENT0);
 
-    m_texColor->Unbind();
-    m_fboDepth->Unbind();
     m_fboDepth->Unbind();
 }
 
