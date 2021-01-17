@@ -71,13 +71,13 @@ void RenderServer::OnUpdate()
         const auto& view = registry.view<ComponentTransform3D, ComponentRenderTransform3D, ComponentMesh3D>();
         for(entt::entity entity : view)
         {
-            ComponentTransform3D transform3D = view.get<ComponentTransform3D>(entity);
+            ComponentTransform3D& transform3D = view.get<ComponentTransform3D>(entity);
 
             // Take the transform3D and push it into the matrix if the component is dirty
             //if(transform3D.isDirty())
             {
-                ComponentRenderTransform3D renderTransform3D = view.get<ComponentRenderTransform3D>(entity);
-                ComponentMesh3D mesh3D = view.get<ComponentMesh3D>(entity);
+                ComponentRenderTransform3D& renderTransform3D = view.get<ComponentRenderTransform3D>(entity);
+                ComponentMesh3D& mesh3D = view.get<ComponentMesh3D>(entity);
 
                 glm::mat4 projection = glm::perspective(glm::radians(cameraFov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
                 m_shader->SetMat4("projection", projection);

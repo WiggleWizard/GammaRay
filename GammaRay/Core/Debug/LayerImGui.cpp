@@ -3,11 +3,15 @@
 
 #include "Core/Application.h"
 #include "Servers/RenderServer.h"
+#include "Servers/SceneServer.h"
+
+#include "Scene/Components/Gameplay/CameraMovement.h"
 
 #include "glfw/glfw3.h"
 
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_glfw.h"
+#include "imgui/imgui_internal.h"
 
 
 LayerImGui::LayerImGui()
@@ -96,7 +100,7 @@ void LayerImGui::OnAttach()
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
-    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+    //io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
 
     GLFWwindow* window = static_cast<GLFWwindow*>(Application::GetSingleton()->GetWindow()->GetNativeWindow());
 
@@ -151,55 +155,124 @@ void LayerImGui::End()
 
 void LayerImGui::OnImGuiRender()
 {
-    static bool p_open = true;
-    const float DISTANCE = 10.0f;
-    static int corner = 2;
-    ImGuiIO& io = ImGui::GetIO();
-    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
-    if(corner != -1)
     {
-        window_flags |= ImGuiWindowFlags_NoMove;
+        ImGuiIO& io = ImGui::GetIO();
+
+        bool open = true;
+
+        ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
         ImGuiViewport* viewport = ImGui::GetMainViewport();
-        ImVec2 work_area_pos = viewport->GetWorkPos();   // Instead of using viewport->Pos we use GetWorkPos() to avoid menu bars, if any!
-        ImVec2 work_area_size = viewport->GetWorkSize();
-        ImVec2 window_pos = ImVec2((corner & 1) ? (work_area_pos.x + work_area_size.x - DISTANCE) : (work_area_pos.x + DISTANCE), (corner & 2) ? (work_area_pos.y + work_area_size.y - DISTANCE) : (work_area_pos.y + DISTANCE));
-        ImVec2 window_pos_pivot = ImVec2((corner & 1) ? 1.0f : 0.0f, (corner & 2) ? 1.0f : 0.0f);
-        ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
+        ImGui::SetNextWindowPos(viewport->Pos);
+        ImGui::SetNextWindowSize(viewport->Size);
         ImGui::SetNextWindowViewport(viewport->ID);
-    }
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+        window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
-    ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
-    if(ImGui::Begin("Debug", &p_open, window_flags))
-    {
-        float frameTimeMs = RenderServer::GetSingleton()->GetFrameTime().GetMilliseconds();
-        ImGui::Text("FPS: %.0f (%.0f ms/frame)", round(1000.f / frameTimeMs), frameTimeMs);
-        ImGui::Text("Draw Calls: %d", RenderServer::GetSingleton()->GetDrawCallCount());
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+        ImGui::Begin("DockSpace", &open, window_flags);
+        ImGui::PopStyleVar();
 
-        if(ImGui::BeginPopupContextWindow())
+        ImGui::PopStyleVar(2);
+
+        if(ImGui::DockBuilderGetNode(ImGui::GetID("MyDockspace")) == NULL)
         {
-            if(ImGui::MenuItem("Custom", NULL, corner == -1)) corner = -1;
-            if(ImGui::MenuItem("Top-left", NULL, corner == 0)) corner = 0;
-            if(ImGui::MenuItem("Top-right", NULL, corner == 1)) corner = 1;
-            if(ImGui::MenuItem("Bottom-left", NULL, corner == 2)) corner = 2;
-            if(ImGui::MenuItem("Bottom-right", NULL, corner == 3)) corner = 3;
-            if(p_open && ImGui::MenuItem("Close")) p_open = false;
-            ImGui::EndPopup();
+            ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
+            ImGuiViewport* viewport = ImGui::GetMainViewport();
+            ImGui::DockBuilderRemoveNode(dockspace_id); // Clear out existing layout
+            ImGui::DockBuilderAddNode(dockspace_id); // Add empty node
+
+            ImGuiID dock_main_id = dockspace_id; // This variable will track the document node, however we are not using it here as we aren't docking anything into it.
+            ImGuiID dock_id_left = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Left, 0.20f, NULL, &dock_main_id);
+            ImGuiID dock_id_right = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Right, 0.20f, NULL, &dock_main_id);
+            ImGuiID dock_id_bottom = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.20f, NULL, &dock_main_id);
+
+            ImGui::DockBuilderDockWindow("Scene", dock_id_left);
+            ImGui::DockBuilderDockWindow("Renderer", dock_main_id);
+            ImGui::DockBuilderDockWindow("Inspector", dock_id_right);
+            ImGui::DockBuilderDockWindow("Asset Browser", dock_id_bottom);
+            ImGui::DockBuilderFinish(dockspace_id);
         }
+
+        ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
+        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), 0);
+        ImGui::End();
+
+        ImGui::Begin("Scene", &open, 0);
+        ImGui::End();
+
+        if(ImGui::Begin("Renderer", &open, 0))
+        {
+            int texId = RenderServer::GetSingleton()->m_texColor->GetRendererId();
+
+            SceneServer* sceneServer = SceneServer::GetSingleton();
+            entt::registry& registry = sceneServer->GetRawRegistry();
+
+            if(m_isControllingCamera == false && io.MouseDown[1] == true && ImGui::IsWindowHovered())
+            {
+                glfwSetInputMode((GLFWwindow*)Application::GetSingleton()->GetWindow()->GetNativeWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+                m_isControllingCamera = true;
+            }
+            else if(m_isControllingCamera == true && io.MouseDown[1] == false)
+            {
+                glfwSetInputMode((GLFWwindow*)Application::GetSingleton()->GetWindow()->GetNativeWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+                m_isControllingCamera = false;
+            }
+
+            if(m_isControllingCamera)
+            {
+                const auto& view = registry.view<ComponentEditorCamera3DMovement>();
+                for(entt::entity entity : view)
+                {
+                    ComponentEditorCamera3DMovement& camera3DMovement = view.get<ComponentEditorCamera3DMovement>(entity);
+                    camera3DMovement.UpdateRotationAndPosition({io.MouseDelta.x, io.MouseDelta.y});
+                }
+            }
+
+            ImGui::GetWindowDrawList()->AddImage(
+                (void*)texId,
+                ImVec2(ImGui::GetCursorScreenPos()),
+                ImVec2(ImGui::GetCursorScreenPos().x + 800,
+                    ImGui::GetCursorScreenPos().y + 600), ImVec2(0, 1), ImVec2(1, 0));
+
+            float frameTimeMs = RenderServer::GetSingleton()->GetFrameTime().GetMilliseconds();
+            ImGui::Text("FPS: %.0f (%.0f ms/frame)", round(1000.f / frameTimeMs), frameTimeMs);
+            ImGui::Text("Draw Calls: %d", RenderServer::GetSingleton()->GetDrawCallCount());
+        }
+        ImGui::End();
+
+        ImGui::Begin("Inspector", &open, 0);
+        ImGui::End();
+
+        ImGui::Begin("Asset Browser", &open, 0);
+        ImGui::End();
     }
-    ImGui::End();
 
-    int texId = RenderServer::GetSingleton()->m_texColor->GetRendererId();
+    return;
 
-    bool testOpen = true;
-    ImGui::Begin("Scene");
-    ImGui::GetWindowDrawList()->AddImage(
-        (void*)texId,
-        ImVec2(ImGui::GetCursorScreenPos()),
-        ImVec2(ImGui::GetCursorScreenPos().x + 800,
-            ImGui::GetCursorScreenPos().y + 600), ImVec2(0, 1), ImVec2(1, 0));
 
-    ImGui::End();
 
-    static bool show = true;
-    ImGui::ShowDemoWindow(&show);
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
 }

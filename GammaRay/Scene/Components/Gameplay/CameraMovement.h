@@ -3,33 +3,35 @@
 #include "Core/Object/Component.h"
 #include "Servers/SceneServer.h"
 #include "Core/Input/Input.h"
+#include "Core/Input/InputKeyCode.h"
 
+#include "Scene/Components/Transform.h"
+#include "Scene/Components/Camera.h"
 
 struct ComponentEditorCamera3DMovement : public Component
 {
     float moveSpeed = .04f;
     float rotationSpeed = 0.2f;
-
-    // TODO: This is just temporary largely because GetMouseVelocity is broken
-    glm::ivec2 prevMousePos = {0.f, 0.f};
+    bool isActiveCamera = true; // TODO: Needs to be false by default. But currently there's only one of these in the scene
+    Vector2i mouseDelta = {0.f, 0.f};
 
     virtual void OnInit() override
     {
-        SceneServer::GetSingleton()->RegisterForOnUpdate(std::bind(&ComponentEditorCamera3DMovement::OnUpdate, this));
+        //SceneServer::GetSingleton()->RegisterForOnUpdate(std::bind(&ComponentEditorCamera3DMovement::OnUpdate, this));
     }
 
     void OnUpdate()
     {
+    }
+
+    void UpdateRotationAndPosition(const Vector2i& mouseDelta)
+    {
         ComponentTransform3D& transform3D = owner.GetComponent<ComponentTransform3D>();
         ComponentCamera3D& camera = owner.GetComponent<ComponentCamera3D>();
 
-        Input* input = Input::GetSingleton();
-
-        glm::ivec2 mouseVelocity = input->GetMousePosition() - prevMousePos;
-
         // Rotate camera
-        transform3D.rotation.y += mouseVelocity.x * rotationSpeed;
-        transform3D.rotation.p -= mouseVelocity.y * rotationSpeed;
+        transform3D.rotation.y += mouseDelta.x * rotationSpeed;
+        transform3D.rotation.p -= mouseDelta.y * rotationSpeed;
 
         transform3D.rotation.p = glm::fclamp(transform3D.rotation.p, -89.f, 89.f);
 
@@ -41,11 +43,12 @@ struct ComponentEditorCamera3DMovement : public Component
 
         // Recalc other direction vectors
         camera.right = glm::normalize(glm::cross(camera.forward, {0.f, 1.f, 0.f}));
-        camera.up    = glm::normalize(glm::cross(camera.right, camera.forward));
+        camera.up = glm::normalize(glm::cross(camera.right, camera.forward));
 
         // Move camera
         glm::vec2 wishDir = {0.f, 0.f};
 
+        Input* input = Input::GetSingleton();
         if(input->IsKeyPressed(GR_KEY_A))
             wishDir.x = -1.f;
         if(input->IsKeyPressed(GR_KEY_D))
@@ -57,7 +60,5 @@ struct ComponentEditorCamera3DMovement : public Component
 
         transform3D.position += camera.forward * wishDir.y * moveSpeed;
         transform3D.position += camera.right * wishDir.x * moveSpeed;
-
-        prevMousePos = input->GetMousePosition();
     }
 };

@@ -20,4 +20,5 @@ public:
 
 private:
     float m_time = 0.f;
+    bool m_isControllingCamera = false;
 };
