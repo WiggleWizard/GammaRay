@@ -1,7 +1,7 @@
 #include "grpch.h"
 #include "VertexArrayOpenGL.h"
 
-#include "Drivers/OpenGL3/RendererShaderOpenGL3.h"
+#include "Drivers/OpenGL/RendererShaderOpenGL.h"
 
 #include <glad/glad.h>
 

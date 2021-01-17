@@ -4,7 +4,7 @@
 #include <glfw/glfw3.h>
 
 
-class GraphicsContextOpenGL3 : public GraphicsContext
+class GraphicsContextOpenGL : public GraphicsContext
 {
 public:
     void Init() override;
@@ -13,8 +13,8 @@ public:
 
     void SetGLFWContext(GLFWwindow* glfwWindow);
 
-    GraphicsContextOpenGL3();
-    ~GraphicsContextOpenGL3();
+    GraphicsContextOpenGL();
+    ~GraphicsContextOpenGL();
 
 private:
     GLFWwindow* m_windowHandle = nullptr;

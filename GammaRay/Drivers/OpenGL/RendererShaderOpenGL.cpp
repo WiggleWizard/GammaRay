@@ -1,10 +1,10 @@
 #include "grpch.h"
-#include "RendererShaderOpenGL3.h"
+#include "RendererShaderOpenGL.h"
 
 #include <glad/glad.h>
 
 
-bool RendererShaderOpenGL3::Compile()
+bool RendererShaderOpenGL::Compile()
 {
     // Destroy and release the shader program on the GPU
     if(m_rendererId != INVALID_SHADER_ID)
@@ -132,32 +132,32 @@ bool RendererShaderOpenGL3::Compile()
     return true;
 }
 
-void RendererShaderOpenGL3::Bind() const
+void RendererShaderOpenGL::Bind() const
 {
     glUseProgram(m_rendererId);
 }
 
-void RendererShaderOpenGL3::Unbind() const
+void RendererShaderOpenGL::Unbind() const
 {
     glUseProgram(0);
 }
 
-inline int RendererShaderOpenGL3::GetUniformLoc(const std::string& name) const
+inline int RendererShaderOpenGL::GetUniformLoc(const std::string& name) const
 {
     return glGetUniformLocation(m_rendererId, name.c_str());
 }
 
-inline void RendererShaderOpenGL3::SetMat4(const std::string& name, const glm::mat4& mat) const
+inline void RendererShaderOpenGL::SetMat4(const std::string& name, const glm::mat4& mat) const
 {
     glUniformMatrix4fv(glGetUniformLocation(m_rendererId, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
-void RendererShaderOpenGL3::SetMat4(int uniformLoc, const glm::mat4& mat) const
+void RendererShaderOpenGL::SetMat4(int uniformLoc, const glm::mat4& mat) const
 {
     glUniformMatrix4fv(uniformLoc, 1, GL_FALSE, &mat[0][0]);
 }
 
-RendererShaderOpenGL3::~RendererShaderOpenGL3()
+RendererShaderOpenGL::~RendererShaderOpenGL()
 {
     glDeleteProgram(m_rendererId);
 }

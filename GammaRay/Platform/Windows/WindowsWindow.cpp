@@ -11,7 +11,7 @@
 #include "Core/Input/Input.h"
 #include "Core/Input/InputEvent.h"
 
-#include "Drivers/OpenGL3/GraphicsContextOpenGL3.h"
+#include "Drivers/OpenGL/GraphicsContextOpenGL.h"
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
@@ -94,7 +94,7 @@ void WindowsWindow::Init(const WindowProps& props)
 
     m_glfwWindow = glfwCreateWindow(m_data.windowSize.x, m_data.windowSize.y, m_data.title.c_str(), nullptr, nullptr);
 
-    m_renderingSystem = new GraphicsContextOpenGL3();
+    m_renderingSystem = new GraphicsContextOpenGL();
     m_renderingSystem->SetGLFWContext(m_glfwWindow);
     m_renderingSystem->Init();
 

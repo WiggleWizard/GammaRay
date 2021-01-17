@@ -8,7 +8,7 @@
 #include "Core/Math/Rect.h"
 
 
-class VertexBufferOpenGL3 : public VertexBuffer
+class VertexBufferOpenGL : public VertexBuffer
 {
 public:
     virtual void Bind() const override;
@@ -17,15 +17,15 @@ public:
     virtual const BufferLayout& GetLayout() const override { return m_layout; }
     virtual void SetLayout(const BufferLayout& layout) override { m_layout = layout; }
 
-    VertexBufferOpenGL3(float* vertices, uint32_t size);
-    ~VertexBufferOpenGL3();
+    VertexBufferOpenGL(float* vertices, uint32_t size);
+    ~VertexBufferOpenGL();
 
 private:
     RendererID m_rendererId = 0;
     BufferLayout m_layout;
 };
 
-class IndexBufferOpenGL3 : public IndexBuffer
+class IndexBufferOpenGL : public IndexBuffer
 {
 public:
     virtual void Bind() const override;
@@ -33,8 +33,8 @@ public:
 
     virtual uint32_t GetCount() const { return m_count; }
 
-    IndexBufferOpenGL3(uint32_t* indices, uint32_t count);
-    ~IndexBufferOpenGL3();
+    IndexBufferOpenGL(uint32_t* indices, uint32_t count);
+    ~IndexBufferOpenGL();
 
 private:
     RendererID m_rendererId = 0;

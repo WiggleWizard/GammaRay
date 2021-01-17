@@ -18,7 +18,7 @@ static GLenum ShaderDataTypeToOpenGL(ShaderDataType type)
     return GL_FLOAT;
 }
 
-class RendererShaderOpenGL3 : public RendererShader
+class RendererShaderOpenGL : public RendererShader
 {
 public:
     virtual bool Compile() override;
@@ -30,6 +30,6 @@ public:
     virtual void SetMat4(const std::string& name, const glm::mat4& mat) const override;
     virtual void SetMat4(int uniformLoc, const glm::mat4& mat) const override;
 
-    virtual ~RendererShaderOpenGL3();
+    virtual ~RendererShaderOpenGL();
 };
 

@@ -31,7 +31,6 @@ bool Application::_OnProcess(float deltaTimeMs)
     m_windowMain->PreRender();
 
     SceneServer::GetSingleton()->OnUpdate();
-
     RenderServer::GetSingleton()->OnUpdate();
 
     for(Layer* layer : m_layerStack)

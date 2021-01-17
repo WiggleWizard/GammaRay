@@ -6,7 +6,7 @@
 
 #include "Renderer.h"
 
-#include "Drivers/OpenGL3/BufferOpenGL3.h"
+#include "Drivers/OpenGL/BufferOpenGL.h"
 
 
 VertexBuffer* VertexBuffer::Create(float* vertices, uint32_t size)
@@ -14,7 +14,7 @@ VertexBuffer* VertexBuffer::Create(float* vertices, uint32_t size)
     switch(Renderer::GetRendererAPI())
     {
         case RendererAPI::None:   return nullptr; break;
-        case RendererAPI::OpenGL: return new VertexBufferOpenGL3(vertices, size); break;
+        case RendererAPI::OpenGL: return new VertexBufferOpenGL(vertices, size); break;
         default:                  return nullptr; break;
     }
 
@@ -26,7 +26,7 @@ IndexBuffer* IndexBuffer::Create(uint32_t* indices, uint32_t count)
     switch(Renderer::GetRendererAPI())
     {
         case RendererAPI::None:   return nullptr; break;
-        case RendererAPI::OpenGL: return new IndexBufferOpenGL3(indices, count); break;
+        case RendererAPI::OpenGL: return new IndexBufferOpenGL(indices, count); break;
         default:                  return nullptr; break;
     }
 

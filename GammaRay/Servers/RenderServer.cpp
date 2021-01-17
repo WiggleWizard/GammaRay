@@ -8,7 +8,7 @@
 #include "Scene/Components/3D/Mesh.h"
 
 #include "Core/Renderer/Shaders/default.gen.h"
-#include "Drivers/OpenGL3/Shaders/depth.gen.h"
+#include "Drivers/OpenGL/Shaders/depth.gen.h"
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>

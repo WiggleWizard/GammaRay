@@ -2,10 +2,10 @@
 // Probably best if you don't touch this file.
 #pragma once
 
-#include "Drivers/OpenGL3/RendererShaderOpenGL3.h"
+#include "Drivers/OpenGL/RendererShaderOpenGL.h"
 
 
-class RendererShaderDefault : public RendererShaderOpenGL3
+class RendererShaderDefault : public RendererShaderOpenGL
 {
 public:
     RendererShaderDefault()

@@ -4,7 +4,7 @@
 #include "Core/Event/Event.h"
 
 struct GLFWwindow;
-class GraphicsContextOpenGL3;
+class GraphicsContextOpenGL;
 
 
 class WindowsWindow : public Window
@@ -40,7 +40,7 @@ private:
 private:
     // TODO: Who owns this GLFW window???
     GLFWwindow* m_glfwWindow = nullptr;
-    GraphicsContextOpenGL3* m_renderingSystem = nullptr;
+    GraphicsContextOpenGL* m_renderingSystem = nullptr;
 
     struct WindowData
     {

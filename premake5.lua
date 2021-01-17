@@ -105,7 +105,7 @@ project "GammaRay"
         -- Generate shaders from GLSL -> C headers
         prebuildcommands
         {
-            toolsdir .. "/shader2c/bin/shader2c.exe --in=" .. shaderdir .. "/default.glsl --out=" .. shaderdir.. "/default.gen.h --class=Default --inherits=RendererShaderOpenGL3 --inheritshpath=Drivers/OpenGL3/RendererShaderOpenGL3.h"
+            toolsdir .. "/shader2c/bin/shader2c.exe --in=" .. shaderdir .. "/default.glsl --out=" .. shaderdir.. "/default.gen.h --class=Default --inherits=RendererShaderOpenGL --inheritshpath=Drivers/OpenGL/RendererShaderOpenGL.h"
         }
 
         defines
