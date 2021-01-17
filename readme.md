@@ -4,6 +4,9 @@
 ## Introduction
 The aim of GammaRay is to be an open source crossplatform 3D game engine/application framework. The engine is primarily being developed to fit a specific game, however there's a lot of plans for the project above that.
 
+## Screenshots
+![Screenshot1](Docs/Images/simple_screenshot.png)
+
 ## Current Status
 Currently the engine's still in very early stages, so nothing of substance can be made yet.
 
