@@ -8,10 +8,11 @@
 #include "Scene/Components/Transform.h"
 #include "Scene/Components/Camera.h"
 
+
 struct ComponentEditorCamera3DMovement : public Component
 {
-    float moveSpeed = .04f;
-    float rotationSpeed = 0.2f;
+    float moveSpeed = 1.f;
+    float rotationSpeed = 20.f;
     bool isActiveCamera = true; // TODO: Needs to be false by default. But currently there's only one of these in the scene
     Vector2i mouseDelta = {0.f, 0.f};
 
@@ -24,14 +25,16 @@ struct ComponentEditorCamera3DMovement : public Component
     {
     }
 
-    void UpdateRotationAndPosition(const Vector2i& mouseDelta)
+    void UpdateRotationAndPosition(const Vector2i& mouseDelta, const Timestep& timestep)
     {
+        float deltaTime = timestep.GetSeconds();
+
         ComponentTransform3D& transform3D = owner.GetComponent<ComponentTransform3D>();
         ComponentCamera3D& camera = owner.GetComponent<ComponentCamera3D>();
 
         // Rotate camera
-        transform3D.rotation.y += mouseDelta.x * rotationSpeed;
-        transform3D.rotation.p -= mouseDelta.y * rotationSpeed;
+        transform3D.rotation.y += mouseDelta.x * rotationSpeed * deltaTime;
+        transform3D.rotation.p -= mouseDelta.y * rotationSpeed * deltaTime;
 
         transform3D.rotation.p = glm::fclamp(transform3D.rotation.p, -89.f, 89.f);
 
@@ -47,7 +50,6 @@ struct ComponentEditorCamera3DMovement : public Component
 
         // Move camera
         glm::vec2 wishDir = {0.f, 0.f};
-
         Input* input = Input::GetSingleton();
         if(input->IsKeyPressed(GR_KEY_A))
             wishDir.x = -1.f;
@@ -58,7 +60,7 @@ struct ComponentEditorCamera3DMovement : public Component
         if(input->IsKeyPressed(GR_KEY_S))
             wishDir.y = -1.f;
 
-        transform3D.position += camera.forward * wishDir.y * moveSpeed;
-        transform3D.position += camera.right * wishDir.x * moveSpeed;
+        transform3D.position += camera.forward * wishDir.y * moveSpeed * deltaTime;
+        transform3D.position += camera.right * wishDir.x * moveSpeed * deltaTime;
     }
 };

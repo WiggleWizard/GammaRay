@@ -27,7 +27,6 @@ struct ComponentTransform3D : public Component
     _FORCE_INLINE_ bool isDirty() { return flags & 1; }
     _FORCE_INLINE_ void setDirty() { flags |= 1; }
     _FORCE_INLINE_ void resetDirty() { flags &= 0; }
-
 };
 
 struct ComponentTransformRect : public Component
