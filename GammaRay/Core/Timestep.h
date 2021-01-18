@@ -10,8 +10,8 @@ public:
 
     operator float() const { return m_time; }
 
-    float GetSeconds() const { return m_time; }
-    float GetMilliseconds() const { return m_time * 1000.f; }
+    _FORCE_INLINE_ float GetSeconds() const { return m_time; }
+    _FORCE_INLINE_ float GetMilliseconds() const { return m_time * 1000.f; }
 
 private:
     float m_time;
