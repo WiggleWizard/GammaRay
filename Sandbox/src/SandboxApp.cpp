@@ -15,9 +15,7 @@ public:
     {
         testBox1 = NewEntity(ConceptMesh3DBox, "Mesh1");
         testBox2 = NewEntity(ConceptMesh3DBox, "Mesh2");
-        testCamera1 = NewEntity(ConceptEditorCamera3D, "Mesh2");
-
-        //transform3D.position = glm::vec3(0.0f, 0.0f, -3.0f);
+        testCamera1 = NewEntity(ConceptEditorCamera3D, "Camera");
     }
 
     virtual bool OnProcess(float deltaTimeMs)

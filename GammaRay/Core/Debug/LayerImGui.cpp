@@ -199,15 +199,27 @@ void LayerImGui::OnImGuiRender()
         ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), 0);
         ImGui::End();
 
-        ImGui::Begin("Scene", &open, 0);
+        SceneServer* sceneServer = SceneServer::GetSingleton();
+        entt::registry& registry = sceneServer->GetRawRegistry();
+
+        if(ImGui::Begin("Scene", &open, 0))
+        {
+            static ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
+            ImGuiTreeNodeFlags node_flags = base_flags;
+
+            const auto& view = registry.view<ComponentSceneLink>();
+            for(entt::entity entity : view)
+            {
+                const ComponentSceneLink& sceneLink = view.get<ComponentSceneLink>(entity);
+                node_flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen; // ImGuiTreeNodeFlags_Bullet
+                ImGui::TreeNodeEx((void*)(intptr_t)0, node_flags, "%s", sceneLink.entityName.c_str());
+            }
+        }
         ImGui::End();
 
         if(ImGui::Begin("Renderer", &open, 0))
         {
             int texId = RenderServer::GetSingleton()->m_texColor->GetRendererId();
-
-            SceneServer* sceneServer = SceneServer::GetSingleton();
-            entt::registry& registry = sceneServer->GetRawRegistry();
 
             if(m_isControllingCamera == false && io.MouseDown[1] == true && ImGui::IsWindowHovered())
             {
