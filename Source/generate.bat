@@ -1,0 +1,2 @@
+premake vs2022
+pause
