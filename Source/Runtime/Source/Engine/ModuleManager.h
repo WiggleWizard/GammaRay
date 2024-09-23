@@ -1,16 +1,15 @@
 ﻿#pragma once
 
+#include "Engine/EngineModule.h"
 #include "CoreMinimal.h"
 
 #include <functional>
 #include <memory>
 
-class EngineModule;
-
 class ModuleManager
 {
 public:
-    using CreateEngineModuleFn = std::function<std::unique_ptr<EngineModule>()>;
+    using CreateEngineModuleFn = std::function<EngineModule*()>;
     
 public:
     static ModuleManager& Get()

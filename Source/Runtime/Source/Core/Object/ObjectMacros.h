@@ -1,5 +1,15 @@
 #pragma once
 
+#include "Core/Object/ObjectRegistry.h"
+
 #define DECLARE_CLASS(clazz, superClass) \
     public:
-        
+
+/**
+ * Creates a shared pointer.
+ */
+template <class T, class... Args>
+ObjectPtr<T> MakeShared(Args&&... args)
+{
+    return ObjectRegistry::Get().CreateObject<T>(std::forward<Args...>(args)...);
+}

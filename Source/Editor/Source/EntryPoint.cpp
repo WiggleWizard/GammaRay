@@ -5,6 +5,6 @@
 
 ModuleManager::CreateEngineModuleFn fn = []()
 {
-    return std::make_unique<EditorModule>();
+    return static_cast<EngineModule*>(new EditorModule());
 };
 int moduleId = ModuleManager::Get().RegisterEngineModuleFactoryFunction("Editor", fn);

@@ -6,5 +6,6 @@
 
 #include "Core/Object/ObjectMacros.h"
 #include "Core/Object/Object.h"
+#include "Core/Object/ObjectPtr.h"
 
 #include "Core/Logging/LogMacros.h"

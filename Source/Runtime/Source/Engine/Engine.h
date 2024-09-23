@@ -1,20 +1,20 @@
 ﻿#pragma once
 
-class EngineModule;
+#include "Core/Object/Object.h"
+
+class ObjectRegistry;
 
 class Engine : public Object
 {
-    DECLARE_CLASS(Engine, Object)
-    
+    //DECLARE_CLASS(Engine, Object)
+
 public:
-    Engine(const Engine&) = delete;
-    Engine& operator =(const Engine&) = delete;
+    Engine();
+    ~Engine();
+
+    void Initialize();
 
 private:
-    Engine() {}
-    ~Engine() {}
-
-    std::vector<EngineModule*> modules;
 };
 
-static Engine* GEngine = nullptr;
+static ObjectPtr<Engine> GEngine = nullptr;
