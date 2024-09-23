@@ -2,8 +2,6 @@
 
 #include "CoreMinimal.h"
 
-#include "Engine/EngineModule.h"
-
 #include <functional>
 #include <memory>
 
@@ -31,7 +29,7 @@ public:
 
 private:
     std::unordered_map<StringName, CreateEngineModuleFn> engineModuleFactories;
-    std::vector<EngineModule*> engineModules;
+    std::unordered_map<StringName, std::unique_ptr<EngineModule>> engineModules;
     
 private:
     ModuleManager() {}

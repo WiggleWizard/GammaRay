@@ -2,10 +2,7 @@ project "Editor"
     kind "ConsoleApp"
     language "C++"
     cdialect "C17"
-    cppdialect "C++latest"
-    
-    --cppmodules "true"
-    buildstlmodules "On"
+    cppdialect "C++20"
     architecture "x64"
     staticruntime "On"
     
@@ -16,14 +13,11 @@ project "Editor"
     {
         "Source/**.h",
         "Source/**.cpp",
-        
-        "Source/**.cpp2"
     }
     
     includedirs
     {
         rootdir .. "/Runtime/Source",
-        rootdir .. "/Runtime/Thirdparty/cppfront"
     }
     
     externalincludedirs
@@ -47,22 +41,6 @@ project "Editor"
     defines
     {
     }
-    
-    buildoptions
-    {
-        "/std:c++latest"
-    }
-    
-    filter "files:Source/**.cpp2"
-        buildmessage "Compiling %{file.relpath}"
-        buildcommands {
-            'cppfront %{file.relpath} -p -o %{file.reldirectory}/%{file.basename}.cpp'
-        }
-        buildoutputs {
-            "%{file.reldirectory}/%{file.basename}.cpp"
-        }
-        
-        compilebuildoutputs "On"
         
     filter "system:windows"
 
