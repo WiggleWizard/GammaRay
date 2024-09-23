@@ -5,5 +5,5 @@ class EngineModule
 public:
     void PreEngineInit();
 
-    virtual void OnPreEngineInit();
+    virtual void OnPreEngineInit() {}
 };

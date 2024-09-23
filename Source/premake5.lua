@@ -1,6 +1,8 @@
 workspace "GammaRay"
     configurations { "Debug", "Release" }
     
+    cppfrontincludedir = "Runtime/Thirdparty/cppfront"
+    
     rootdir = _MAIN_SCRIPT_DIR;
     
     runtimedir = "Runtime"
