@@ -4,9 +4,7 @@
 #define GR_NAMESPACE_START namespace GammaRay {
 #define GR_NAMESPACE_END }
 
-#include "Core/Types/Types.h"
-#include "Core/Types/StringName.h"
-#include "Core/Types/String.h"
+#include "CoreMinimal.h"
 
 #include <malloc.h>
 #include <vector>

@@ -1,6 +1,7 @@
 ﻿#pragma once
 
-class Engine
+template<class T>
+class ObjectPtr
 {
 public:
     
