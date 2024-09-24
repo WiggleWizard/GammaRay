@@ -6,6 +6,8 @@
 
 #include "CoreMinimal.h"
 
+#include <spdlog/spdlog.h>
+
 #include <malloc.h>
 #include <vector>
 #include <string>

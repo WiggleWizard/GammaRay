@@ -1,12 +1,14 @@
 #include "Engine/Engine.h"
 #include "Engine/ModuleManager.h"
 
-DEFINE_LOG_CATEGORY_STATIC(LogMain, LogVerbosity::Type::Console)
+DEFINE_LOGGER_STATIC(LogMain, LogVerbosity::Type::Console)
 
 int main(int argc, char** argv)
 {
+    spdlog::set_pattern("[%H:%M:%S %z] [%n] [%L] %v");
+
     ModuleManager::Get().InitializeEngineModules();
 
-    GEngine = MakeShared<Engine>();
+    GEngine = NewObject<Engine>();
     GEngine->Initialize();
 }

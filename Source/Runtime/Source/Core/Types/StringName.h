@@ -19,6 +19,11 @@ struct StringName
         return !(lhs == rhs);
     }
 
+    const std::string& GetString() const
+    {
+        return name;
+    }
+
 private:
     std::string name;
 };

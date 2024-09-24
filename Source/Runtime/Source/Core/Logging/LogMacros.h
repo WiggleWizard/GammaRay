@@ -1,11 +1,10 @@
 #pragma once
 
 #include "LogVerbosity.h"
-#include "LogCategoryBase.h"
-#include "StructuredLogging.h"
+#include "LoggerCategorized.h"
 
-#define DEFINE_LOG_CATEGORY_STATIC(CategoryName, DefaultVerbosity) \
-    static struct LogCategory##CategoryName : public LogCategoryBase \
+#define DEFINE_LOGGER_STATIC(CategoryName, DefaultVerbosity) \
+    static struct LoggerCategorized##CategoryName : public LoggerCategorized \
     { \
-        LogCategory##CategoryName() : LogCategoryBase(#CategoryName, DefaultVerbosity) {} \
+        LoggerCategorized##CategoryName() : LoggerCategorized(#CategoryName, DefaultVerbosity) {} \
     } CategoryName;
