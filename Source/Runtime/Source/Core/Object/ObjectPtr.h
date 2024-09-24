@@ -6,11 +6,6 @@
 #include <cstdint>
 #include <type_traits>
 
-#define __atomic_add_fetch std::atomic_fetch_add_explicit
-#define __atomic_sub_fetch std::atomic_fetch_sub_explicit
-#define __ATOMIC_RELAXED std::memory_order_relaxed
-#define __ATOMIC_RELEASE std::memory_order_release
-
 // forward declare weak ptr so we can befriend it in the shared ptr
 template <class T>
 class ObjectPtr;
@@ -127,7 +122,7 @@ private:
         if (this->info)
         {
             // TODO: ensure there cannot be an overflow
-            __atomic_add_fetch(&this->info->useCount, 1, __ATOMIC_RELAXED);
+            info->useCount.fetch_add(1);
         }
     }
 
@@ -140,14 +135,14 @@ private:
         if (this->info)
         {
             // decrement strong references
-            if (!__atomic_sub_fetch(&this->info->useCount, 1, __ATOMIC_RELEASE))
+            if (info->useCount.fetch_sub(1) == 0)
             {
                 // no strong references remain, so deallocate the pointee
                 this->info->destroy();
                 this->ptr = nullptr;
 
                 // if there are no weak references remaining, deallocate info block
-                if (!__atomic_sub_fetch(&this->info->weakCount, 1, __ATOMIC_RELEASE))
+                if (!this->info->weakCount.fetch_sub(1))
                 {
                     delete this->info;
                     this->info = nullptr;
@@ -372,7 +367,7 @@ public:
     size_t getStrongRefs() const
     {
         if (!this->info) return 0;
-        return __atomic_load_n(&this->info->useCount, __ATOMIC_RELAXED);
+        return info->useCount.load();
     }
 
     /**
@@ -384,7 +379,7 @@ public:
     size_t getWeakRefs() const
     {
         if (!this->info) return 0;
-        return __atomic_load_n(&this->info->weakCount, __ATOMIC_RELAXED);
+        return info->weakCount.load();
     }
 };
 
@@ -410,7 +405,7 @@ private:
         if (this->info)
         {
             // TODO: ensure there cannot be an overflow
-            __atomic_add_fetch(&this->info->weakCount, 1, __ATOMIC_RELAXED);
+            info->weakCount.fetch_add(1);
         }
     }
 
@@ -426,7 +421,7 @@ private:
     inline void decrementWeakRefs()
     {
         // if there are no weak references remaining, deallocate info block
-        if (this->info && !__atomic_sub_fetch(&this->info->weakCount, 1, __ATOMIC_RELEASE))
+        if (this->info && !info->weakCount.fetch_sub(1))
         {
             delete this->info;
             this->info = nullptr;
@@ -545,7 +540,7 @@ public:
     size_t getWeakRefs() const
     {
         if (!this->info) return 0;
-        return __atomic_load_n(&this->info->weakCount, __ATOMIC_RELAXED);
+        return info->weakCount.load();
     }
 
     /**
@@ -618,8 +613,3 @@ private:
      */
     WeakObjectPtr<T> _weakRef;
 };
-
-#undef __atomic_add_fetch
-#undef __atomic_sub_fetch
-#undef __ATOMIC_RELAXED
-#undef __ATOMIC_RELEASE
