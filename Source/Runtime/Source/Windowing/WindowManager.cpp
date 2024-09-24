@@ -19,7 +19,7 @@ void WindowManager::NewWindow(const StringName windowTitle)
     SDL_Window* window = SDL_CreateWindow(windowTitle.GetString().c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
     if (window == nullptr)
     {
-        LogWindowManager.Critical("Could not create SDL window");
+        LogWindowManager.Critical("Could not create a new window");
         return;
     }
     

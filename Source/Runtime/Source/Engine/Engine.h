@@ -4,6 +4,7 @@
 
 class WindowManager;
 class ObjectRegistry;
+class MainLoop;
 
 class Engine : public Object
 {
@@ -15,8 +16,17 @@ public:
 
     void Initialize();
 
+    void Quit();
+    bool WantsToQuit() const;
+
 private:
+    bool TryExit();
+    void Cleanup();
+    
     ObjectPtr<WindowManager> windowManager = nullptr;
+    ObjectPtr<MainLoop> mainLoop = nullptr;
+
+    bool wantsToQuit = false;
 };
 
-static ObjectPtr<Engine> GEngine = nullptr;
+extern ObjectPtr<Engine> GEngine;
