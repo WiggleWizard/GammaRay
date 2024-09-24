@@ -21,6 +21,7 @@ public:
     int RegisterEngineModuleFactoryFunction(const StringName& moduleName, CreateEngineModuleFn& factoryFn);
 
     void InitializeEngineModules();
+    void EngineInitialized();
 
 public:
     ModuleManager(const ModuleManager&) = delete;

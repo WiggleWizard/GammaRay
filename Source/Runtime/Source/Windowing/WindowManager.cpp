@@ -1,12 +1,15 @@
 ﻿#include "WindowManager.h"
 
+#include "Engine/Engine.h"
+#include "Windowing/Window.h"
+
 #include <SDL.h>
 
 DEFINE_LOGGER_STATIC(LogWindowManager, LogVerbosity::Verbose);
 
 void WindowManager::Initialize()
 {
-    const int sdlResult = SDL_Init(SDL_INIT_VIDEO);
+    const int sdlResult = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
     if (sdlResult != 0)
     {
         LogWindowManager.Critical("Could not initialize SDL, error {}", sdlResult);
@@ -14,14 +17,50 @@ void WindowManager::Initialize()
     }
 }
 
-void WindowManager::NewWindow(const StringName windowTitle)
+ObjectPtr<Window> WindowManager::NewWindow(const StringName windowTitle)
 {
-    SDL_Window* window = SDL_CreateWindow(windowTitle.GetString().c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
+    const auto window = NewObject<Window>(windowTitle.GetString());
     if (window == nullptr)
     {
         LogWindowManager.Critical("Could not create a new window");
-        return;
+        return nullptr;
     }
     
     windows.push_back(window);
 }
+
+void WindowManager::PollEvents()
+{
+    SDL_Event event;
+    SDL_PollEvent(&event);
+
+    switch (event.type)
+    {
+    case SDL_WINDOWEVENT:
+        OnWindowEvent(reinterpret_cast<SDL_WindowEvent*>(&event));
+        break;
+    default: break;
+    };
+}
+
+void WindowManager::OnWindowEvent(const SDL_WindowEvent* event)
+{
+    switch (event->event)
+    {
+    case SDL_WINDOWEVENT_CLOSE:
+    {
+        // Find the right window to close
+        for (const auto& window : windows)
+        {
+            if (window->GetWindowID() == event->windowID)
+            {
+                window->OnCloseRequested();
+            }
+        }
+    } break;
+        
+    default: break;
+    }
+    
+}
+

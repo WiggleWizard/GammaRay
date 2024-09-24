@@ -1,6 +1,7 @@
 ﻿#include "Engine.h"
 
 #include "MainLoop.h"
+#include "ModuleManager.h"
 #include "Windowing/WindowManager.h"
 
 DEFINE_LOGGER_STATIC(LogEngine, LogVerbosity::VeryVerbose)
@@ -28,6 +29,8 @@ void Engine::Initialize()
 
     if (TryExit())
         return;
+
+    ModuleManager::Get().EngineInitialized();
     
     mainLoop->Loop();
 
@@ -39,9 +42,30 @@ void Engine::Quit()
     wantsToQuit = true;
 }
 
+void Engine::RequestQuit()
+{
+    Quit();
+}
+
 bool Engine::WantsToQuit() const
 {
     return wantsToQuit;
+}
+
+void Engine::NewWindow(const String& windowTitle)
+{
+    if (IsValid(windowManager))
+    {
+        windowManager->NewWindow(windowTitle);
+    }
+}
+
+void Engine::Process()
+{
+    if (IsValid(windowManager))
+    {
+        windowManager->PollEvents();
+    }
 }
 
 bool Engine::TryExit()

@@ -4,3 +4,8 @@ void EngineModule::PreEngineInit()
 {
     OnPreEngineInit();
 }
+
+void EngineModule::EngineInitialized()
+{
+    OnEngineInitialized();
+}

@@ -14,3 +14,11 @@ void ModuleManager::InitializeEngineModules()
         engineModules[moduleName] = std::unique_ptr<EngineModule>(engineModuleInstance);
     }
 }
+
+void ModuleManager::EngineInitialized()
+{
+    for (const auto& [moduleName, moduleInstance] : engineModules)
+    {
+        moduleInstance->EngineInitialized();
+    }
+}

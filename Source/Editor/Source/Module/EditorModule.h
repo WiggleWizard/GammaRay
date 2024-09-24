@@ -5,5 +5,5 @@
 class EditorModule : public EngineModule
 {
 public:
-    
+    void OnEngineInitialized() override;
 };

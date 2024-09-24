@@ -1,6 +1,7 @@
 ﻿#pragma once
 
-struct SDL_Window;
+class Window;
+struct SDL_WindowEvent;
 
 class WindowManager : public Object
 {
@@ -11,8 +12,12 @@ public:
     ~WindowManager() {}
     
     void Initialize();
-    void NewWindow(const StringName windowTitle);
+    ObjectPtr<Window> NewWindow(const StringName windowTitle);
+
+    void PollEvents();
 
 private:
-    std::vector<SDL_Window*> windows;
+    void OnWindowEvent(const SDL_WindowEvent* event);
+    
+    std::vector<ObjectPtr<Window>> windows = {};
 };

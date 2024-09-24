@@ -11,6 +11,6 @@ void MainLoop::Loop()
 {
     while (!GEngine->WantsToQuit())
     {
-        
+        GEngine->Process();
     }
 }
