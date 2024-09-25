@@ -5,6 +5,7 @@ local thirdpartydir = rootdir .. "/Runtime/Thirdparty"
 group "Dependencies"
     include(thirdpartydir .. "/SDL_lib_p5.lua")
     include(thirdpartydir .. "/spdlog_p5.lua")
+    include(thirdpartydir .. "/bgfx_p5.lua")
 group ""
 
 group "Projects"
@@ -36,7 +37,9 @@ project "Runtime"
     externalincludedirs
     {
         thirdpartydir .. "/%{includedirectory.sdl2}",
-        thirdpartydir .. "/%{includedirectory.spdlog}"
+        thirdpartydir .. "/%{includedirectory.spdlog}",
+        
+        path.join(thirdpartydir, "/%{public_includes.bgfx}"),
     }
     runtimeincludedirs["spdlog"] = thirdpartydir .. "/%{includedirectory.spdlog}"
     
@@ -53,7 +56,8 @@ project "Runtime"
     links
     {
         "SDL2",
-        "spdlog"
+        "spdlog",
+        "bgfx"
     }
     
     defines
