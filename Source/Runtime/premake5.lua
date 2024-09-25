@@ -5,7 +5,7 @@ local thirdpartydir = rootdir .. "/Runtime/Thirdparty"
 group "Dependencies"
     include(thirdpartydir .. "/SDL_lib_p5.lua")
     include(thirdpartydir .. "/spdlog_p5.lua")
-    include(thirdpartydir .. "/bgfx_p5.lua")
+    include(thirdpartydir .. "/diligent_core_p5.lua")
 group ""
 
 group "Projects"
@@ -22,6 +22,8 @@ project "Runtime"
     
     pchheader "RuntimePCH.h"
     pchsource "Source/RuntimePCH.cpp"
+    
+    DEGFX_Bind("ThirdParty/DiligentEngine")
 
     files
     {
@@ -31,15 +33,14 @@ project "Runtime"
     
     includedirs
     {
-        "Source"
+        "Source",
+        "ThirdParty/DiligentCore"
     }
     
     externalincludedirs
     {
         thirdpartydir .. "/%{includedirectory.sdl2}",
         thirdpartydir .. "/%{includedirectory.spdlog}",
-        
-        path.join(thirdpartydir, "/%{public_includes.bgfx}"),
     }
     runtimeincludedirs["spdlog"] = thirdpartydir .. "/%{includedirectory.spdlog}"
     
@@ -57,7 +58,7 @@ project "Runtime"
     {
         "SDL2",
         "spdlog",
-        "bgfx"
+        "glew"
     }
     
     defines
@@ -78,5 +79,6 @@ project "Runtime"
     filter "configurations:Release"
         defines { "NDEBUG" }
         optimize "On"
+        
         
 group ""
