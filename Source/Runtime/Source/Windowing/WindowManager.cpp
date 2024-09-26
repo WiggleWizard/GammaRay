@@ -40,7 +40,15 @@ void WindowManager::PollEvents()
         OnWindowEvent(reinterpret_cast<SDL_WindowEvent*>(&event));
         break;
     default: break;
-    };
+    }
+}
+
+void WindowManager::Update()
+{
+    for (const auto& window : windows)
+    {
+        window->Update();
+    }
 }
 
 void WindowManager::OnWindowEvent(const SDL_WindowEvent* event)
@@ -61,6 +69,5 @@ void WindowManager::OnWindowEvent(const SDL_WindowEvent* event)
         
     default: break;
     }
-    
 }
 

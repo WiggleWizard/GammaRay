@@ -65,6 +65,7 @@ void Engine::Process()
     if (IsValid(windowManager))
     {
         windowManager->PollEvents();
+        windowManager->Update();
     }
 }
 

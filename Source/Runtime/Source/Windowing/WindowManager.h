@@ -15,6 +15,7 @@ public:
     ObjectPtr<Window> NewWindow(const StringName windowTitle);
 
     void PollEvents();
+    void Update();
 
 private:
     void OnWindowEvent(const SDL_WindowEvent* event);
