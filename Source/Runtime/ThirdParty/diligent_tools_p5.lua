@@ -47,10 +47,12 @@ build_data.project_declare[project_names.imgui] = function(base_dir)
     project "DiligentToolsImGui"
         location(dep_root_path)
         kind "StaticLib"
-        staticruntime "on"
         language "C++"
         cppdialect "C++17"
         architecture "x64"
+        
+        staticruntime "On"
+        runtime "Debug"
         
         targetdir (path.join(dep_root_path, BUILD_BIN_DIR, outputdir))
         objdir (path.join(dep_root_path, BUILD_OBJ_DIR, outputdir))

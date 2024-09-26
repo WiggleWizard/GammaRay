@@ -6,6 +6,11 @@ group "Dependencies"
     include(thirdpartydir .. "/SDL_lib_p5.lua")
     include(thirdpartydir .. "/spdlog_p5.lua")
     include(thirdpartydir .. "/diligent_core_p5.lua")
+    include(thirdpartydir .. "/diligent_tools_p5.lua")
+    include(thirdpartydir .. "/imgui_p5.lua")
+    
+    build_data.project_declare["DiligentToolsImGui"]("ThirdParty")
+    build_data.project_declare["ImGui"]("ThirdParty/DiligentTools/ThirdParty/imgui")
 group ""
 
 group "Projects"
@@ -34,7 +39,8 @@ project "Runtime"
     includedirs
     {
         "Source",
-        "ThirdParty/DiligentCore"
+        "ThirdParty/DiligentCore",
+        table.unpack(build_data.project_public_includes["ImGui"]("ThirdParty/DiligentTools/ThirdParty/imgui")),
     }
     
     externalincludedirs
@@ -58,7 +64,9 @@ project "Runtime"
     {
         "SDL2",
         "spdlog",
-        "glew"
+        "glew",
+        "DiligentToolsImGui",
+        "ImGui"
     }
     
     defines
