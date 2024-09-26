@@ -187,7 +187,7 @@ function DEGFX_IncludeProjects()
         location "Generated"
         
         files {
-            degfx_diligentSourceDir .. "ThirdParty/glew/src/*.c",
+            degfx_diligentSourceDir .. "ThirdParty/glew/src/glew.c",
         }
         
         includedirs {
