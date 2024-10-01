@@ -1,12 +1,18 @@
 local project_name = "ImGui"
 
+local config = {
+    lib_dir = "",
+    sdl_include_dir = ""
+}
+
 
 --==============================
 -- Project Configurations
 --==============================
 
-build_data.project_configure[project_name] = function(lib_dir)
-    -- No Configuration Needed
+build_data.project_configure[project_name] = function(lib_dir, sdl_include_dir)
+    config.lib_dir = lib_dir
+    config.sdl_include_dir = sdl_include_dir
 end
 
 
@@ -14,9 +20,9 @@ end
 -- Public Includes
 --==============================
 
-build_data.project_public_includes[project_name] = function(lib_dir)
+build_data.project_public_includes[project_name] = function()
     return {
-        lib_dir
+        config.lib_dir
     }
 end
 
@@ -25,7 +31,9 @@ end
 -- Project Declarations
 --==============================
 
-build_data.project_declare[project_name] = function(lib_dir)
+build_data.project_declare[project_name] = function()
+    local lib_dir = config.lib_dir
+
     project "ImGui"
         location(lib_dir)
         kind "StaticLib"
@@ -44,6 +52,7 @@ build_data.project_declare[project_name] = function(lib_dir)
         
         includedirs {
             lib_dir,
+            config.sdl_include_dir,
         }
         
         files {
@@ -55,7 +64,8 @@ build_data.project_declare[project_name] = function(lib_dir)
             
         filter "system:windows"
             files {
-                path.join(lib_dir, "backends/imgui_impl_win32.cpp")
+                path.join(lib_dir, "backends/imgui_impl_win32.cpp"),
+                path.join(lib_dir, "backends/imgui_impl_sdl.cpp")
             }
             
         filter "configurations:Release"

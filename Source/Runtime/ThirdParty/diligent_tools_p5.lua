@@ -27,8 +27,10 @@ end
 -- Public Includes
 --==============================
 
-build_data.project_public_includes[project_names.imgui] = function()
-
+build_data.project_public_includes[project_names.imgui] = function(base_dir)
+    return {
+        path.join(base_dir, "Imgui/interface")
+    }
 end
 
 

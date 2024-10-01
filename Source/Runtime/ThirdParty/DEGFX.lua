@@ -33,6 +33,20 @@ local degfx_engineD3D12 = ""
 local degfx_engineGL = ""
 local degfx_engineVulkan = ""
 
+local project_names = {
+    Common = "DiligentCoreCommon"
+}
+
+--==============================
+-- Public Includes
+--==============================
+
+build_data.project_public_includes[project_names["Common"]] = function(lib_dir)
+    return {
+        path.join(lib_dir, "Common/interface")
+    }
+end
+
 function DEGFX_InitPaths(deSrcDir, baseDir)
     degfx_diligentSourceDir = deSrcDir
     degfx_baseDir = baseDir

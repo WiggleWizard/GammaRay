@@ -1,16 +1,24 @@
 runtimeincludedirs = {}
 
-local thirdpartydir = rootdir .. "/Runtime/Thirdparty"
+local thirdpartydir = path.join(rootdir, "/Runtime/Thirdparty")
 
 group "Dependencies"
-    include(thirdpartydir .. "/SDL_lib_p5.lua")
     include(thirdpartydir .. "/spdlog_p5.lua")
+    include(thirdpartydir .. "/SDL_lib_p5.lua")
     include(thirdpartydir .. "/diligent_core_p5.lua")
     include(thirdpartydir .. "/diligent_tools_p5.lua")
     include(thirdpartydir .. "/imgui_p5.lua")
     
+    build_data.project_configure["spdlog"]("ThirdParty/spdlog")
+    build_data.project_declare["spdlog"]()
+    
+    build_data.project_configure["SDL2"]("ThirdParty/SDL2")
+    build_data.project_declare["SDL2"]()
+    
     build_data.project_declare["DiligentToolsImGui"]("ThirdParty")
-    build_data.project_declare["ImGui"]("ThirdParty/DiligentTools/ThirdParty/imgui")
+    
+    build_data.project_configure["ImGui"]("ThirdParty/DiligentTools/ThirdParty/imgui", table.unpack(build_data.project_public_includes["SDL2"]()))
+    build_data.project_declare["ImGui"]()
 group ""
 
 group "Projects"
@@ -22,8 +30,8 @@ project "Runtime"
     architecture "x64"
     staticruntime "On"
     
-    targetdir("Build/Binaries/" .. outputdir)
-    objdir("Build/Intermediate/" .. outputdir)
+    targetdir(path.join(BUILD_BIN_DIR, outputdir))
+    objdir(path.join(BUILD_OBJ_DIR, outputdir))
     
     pchheader "RuntimePCH.h"
     pchsource "Source/RuntimePCH.cpp"
@@ -39,14 +47,18 @@ project "Runtime"
     includedirs
     {
         "Source",
-        "ThirdParty/DiligentCore",
-        table.unpack(build_data.project_public_includes["ImGui"]("ThirdParty/DiligentTools/ThirdParty/imgui")),
     }
     
     externalincludedirs
     {
-        thirdpartydir .. "/%{includedirectory.sdl2}",
-        thirdpartydir .. "/%{includedirectory.spdlog}",
+        table.unpack(build_data.project_public_includes["spdlog"]()),
+        
+        table.unpack(build_data.project_public_includes["SDL2"]()),
+        
+        "ThirdParty/DiligentCore",
+        table.unpack(build_data.project_public_includes["ImGui"]()),
+        table.unpack(build_data.project_public_includes["DiligentCoreCommon"]("ThirdParty/DiligentCore")),
+        table.unpack(build_data.project_public_includes["DiligentToolsImGui"]("ThirdParty/DiligentTools")),
     }
     runtimeincludedirs["spdlog"] = thirdpartydir .. "/%{includedirectory.spdlog}"
     
@@ -57,7 +69,6 @@ project "Runtime"
     
     -- Just here as a placeholder for a feature I intend to add at some point
     runtimelinks = {
-        "SDL2",
     }
     
     links
