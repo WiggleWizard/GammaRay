@@ -33,6 +33,11 @@ void WindowManager::PollEvents()
 {
     SDL_Event event;
     SDL_PollEvent(&event);
+    
+    for (const auto& window : windows)
+    {
+        window->OnEvent(&event);
+    }
 
     switch (event.type)
     {

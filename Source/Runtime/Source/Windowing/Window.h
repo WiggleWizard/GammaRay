@@ -1,9 +1,7 @@
 ﻿#pragma once
+#include <SDL_events.h>
 
-namespace Diligent
-{
-    class ImGuiImplWin32;
-}
+class ImGuiImplSDLDiligent;
 
 namespace Diligent
 {
@@ -21,6 +19,7 @@ public:
     uint32 GetWindowID();
     void* GetWindowNativeID();
 
+    void OnEvent(const SDL_Event* event);
     void OnCloseRequested();
     
     void Update();
@@ -30,5 +29,5 @@ protected:
     void CreateResources();
     
     SDL_Window* windowPtr = nullptr;
-    std::shared_ptr<Diligent::ImGuiImplWin32> imguiRenderer = nullptr;
+    std::shared_ptr<ImGuiImplSDLDiligent> imguiRenderer = nullptr;
 };

@@ -2,6 +2,7 @@
 
 #include "../../Thirdparty/DiligentTools/Imgui/interface/ImGuiImplWin32.hpp"
 #include "../../ThirdParty/DiligentTools/ThirdParty/imgui/imgui.h"
+#include "Rendering/ImGui/ImGuiImplSDLDiligent.h"
 
 #include <SDL.h>
 #include <SDL_syswm.h>
@@ -106,6 +107,11 @@ void* Window::GetWindowNativeID()
     SDL_VERSION(&wmInfo.version);
     SDL_GetWindowWMInfo(windowPtr, &wmInfo);
     return (void*)wmInfo.info.win.window;
+}
+
+void Window::OnEvent(const ::SDL_Event* event)
+{
+    imguiRenderer->ProcessEvent(event);
 }
 
 void Window::OnCloseRequested()
@@ -218,5 +224,5 @@ void Window::CreateResources()
     imguiCreateInfo.pDevice = pDevice;
     imguiCreateInfo.BackBufferFmt = scDesc.ColorBufferFormat;
     imguiCreateInfo.DepthBufferFmt = scDesc.DepthBufferFormat;
-    imguiRenderer.reset(new Diligent::ImGuiImplWin32(imguiCreateInfo, (HWND)GetWindowNativeID()));
+    imguiRenderer.reset(new ImGuiImplSDLDiligent(imguiCreateInfo, windowPtr));
 }
