@@ -19,7 +19,7 @@ public:
     uint32 GetWindowID();
     void* GetWindowNativeID();
 
-    void OnEvent(const SDL_Event* event);
+    bool ProcessEvent(const SDL_Event* event);
     void OnCloseRequested();
     
     void Update();

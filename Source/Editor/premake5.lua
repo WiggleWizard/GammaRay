@@ -1,3 +1,8 @@
+local includes = build_data.project_public_includes["spdlog"]()
+for k, v in pairs(includes) do
+    includes[k] = path.join("../Runtime", includes[k])
+end
+
 project "Editor"
     kind "ConsoleApp"
     language "C++"
@@ -9,37 +14,31 @@ project "Editor"
     targetdir("Build/Binaries/" .. outputdir)
     objdir("Build/Intermediate/" .. outputdir)
 
-    files
-    {
+    files {
         "Source/**.h",
         "Source/**.cpp",
     }
     
-    includedirs
-    {
+    includedirs {
         rootdir .. "/Runtime/Source",
     }
     
-    externalincludedirs
-    {
-        runtimeincludedirs["spdlog"]
+    externalincludedirs {
+        table.unpack(includes)
     }
     
-    forceincludes
-    {
+    forceincludes {
         -- "EditorPCH.h"
     }
     
     -- pchheader "EditorPCH.h"
     -- pchsource "Source/EditorPCH.cpp"
     
-    links
-    {
+    links {
         "Runtime",
     }
     
-    defines
-    {
+    defines {
     }
         
     filter "system:windows"

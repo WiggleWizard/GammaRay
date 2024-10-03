@@ -3,12 +3,15 @@
 #include "../../Thirdparty/DiligentTools/Imgui/interface/ImGuiImplWin32.hpp"
 #include "../../ThirdParty/DiligentTools/ThirdParty/imgui/imgui.h"
 #include "Rendering/ImGui/ImGuiImplSDLDiligent.h"
+#include "UI/ImGuiComponentViewport.h"
 
 #include <SDL.h>
 #include <SDL_syswm.h>
 #include <Common/interface/RefCntAutoPtr.hpp>
 
 #include <Graphics/GraphicsEngineOpenGL/interface/EngineFactoryOpenGL.h>
+
+using namespace Diligent;
 
 static const char* VSSource = R"(
 struct PSInput 
@@ -55,14 +58,16 @@ void main(in  PSInput  PSIn,
 }
 )";
 
-Diligent::IRenderDevice* pDevice = nullptr;
+RefCntAutoPtr<IRenderDevice> pDevice;
+RefCntAutoPtr<ISwapChain> pSwapChain;
 Diligent::IDeviceContext* pImmediateContext = nullptr;
-Diligent::ISwapChain* pSwapChain = nullptr;
 Diligent::IPipelineState* pPSO = nullptr;
+
+SharedPtr<ImGuiComponentViewport> viewport = nullptr;
 
 void Present()
 {
-    pSwapChain->Present();
+    
 }
 
 Window::Window(const String& windowTitle)
@@ -109,9 +114,9 @@ void* Window::GetWindowNativeID()
     return (void*)wmInfo.info.win.window;
 }
 
-void Window::OnEvent(const ::SDL_Event* event)
+bool Window::ProcessEvent(const ::SDL_Event* event)
 {
-    imguiRenderer->ProcessEvent(event);
+    return imguiRenderer->ProcessEvent(event);
 }
 
 void Window::OnCloseRequested()
@@ -121,29 +126,21 @@ void Window::OnCloseRequested()
 
 void Window::Update()
 {
-    auto scDesc = pSwapChain->GetDesc();
-    imguiRenderer->NewFrame(scDesc.Width, scDesc.Height, scDesc.PreTransform);
-    
     Render();
     Present();
 }
 
 void Window::Render()
 {
-    static bool showDemoWindow = true;
-    ImGui::ShowDemoWindow(&showDemoWindow);
-    
     // Set render targets before issuing any draw command.
     // Note that Present() unbinds the back buffer if it is set as render target.
-    auto* pRTV = pSwapChain->GetCurrentBackBufferRTV();
-    auto* pDSV = pSwapChain->GetDepthBufferDSV();
-    pImmediateContext->SetRenderTargets(1, &pRTV, pDSV, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    pImmediateContext->SetRenderTargets(1, &viewport->GetRenderViewTarget(), viewport->GetViewDepthStencil(), Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
 
     // Clear the back buffer
     const float ClearColor[] = {0.350f, 0.350f, 0.350f, 1.0f};
     // Let the engine perform required state transitions
-    pImmediateContext->ClearRenderTarget(pRTV, ClearColor, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-    pImmediateContext->ClearDepthStencil(pDSV, Diligent::CLEAR_DEPTH_FLAG, 1.f, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    pImmediateContext->ClearRenderTarget(viewport->GetRenderViewTarget(), ClearColor, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    pImmediateContext->ClearDepthStencil(viewport->GetViewDepthStencil(), Diligent::CLEAR_DEPTH_FLAG, 1.f, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
 
     // Set the pipeline state in the immediate context
     pImmediateContext->SetPipelineState(pPSO);
@@ -155,8 +152,24 @@ void Window::Render()
     drawAttrs.NumVertices = 3; // Render 3 vertices
     pImmediateContext->Draw(drawAttrs);
 
+
+
+    auto scDesc = pSwapChain->GetDesc();
+    imguiRenderer->NewFrame(scDesc.Width, scDesc.Height, scDesc.PreTransform);
+
+    auto* pRTV = pSwapChain->GetCurrentBackBufferRTV();
+    auto* pDSV = pSwapChain->GetDepthBufferDSV();
     pImmediateContext->SetRenderTargets(1, &pRTV, pDSV, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    pImmediateContext->ClearRenderTarget(pRTV, ClearColor, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    pImmediateContext->ClearDepthStencil(pDSV, Diligent::CLEAR_DEPTH_FLAG, 1.f, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    
+    static bool showDemoWindow = true;
+    ImGui::ShowDemoWindow(&showDemoWindow);
+    viewport->Draw();
+    
     imguiRenderer->Render(pImmediateContext);
+
+    pSwapChain->Present(true);
 }
 
 void Window::CreateResources()
@@ -225,4 +238,6 @@ void Window::CreateResources()
     imguiCreateInfo.BackBufferFmt = scDesc.ColorBufferFormat;
     imguiCreateInfo.DepthBufferFmt = scDesc.DepthBufferFormat;
     imguiRenderer.reset(new ImGuiImplSDLDiligent(imguiCreateInfo, windowPtr));
+
+    viewport = MakeShared<ImGuiComponentViewport>(pSwapChain, pDevice);
 }

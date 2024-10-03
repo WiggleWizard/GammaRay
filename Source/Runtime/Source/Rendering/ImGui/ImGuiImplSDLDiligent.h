@@ -17,7 +17,7 @@ public:
 
     virtual void NewFrame(Diligent::Uint32 RenderSurfaceWidth, Diligent::Uint32 RenderSurfaceHeight, Diligent::SURFACE_TRANSFORM SurfacePreTransform) override final;
     
-    void ProcessEvent(const SDL_Event* event);
+    bool ProcessEvent(const SDL_Event* event);
 
 private:
     SDL_Window* windowPtr = nullptr;

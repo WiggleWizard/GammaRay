@@ -36,7 +36,11 @@ void WindowManager::PollEvents()
     
     for (const auto& window : windows)
     {
-        window->OnEvent(&event);
+        // If any window has processed this event, then don't bubble it elsewhere
+        if (window->ProcessEvent(&event))
+        {
+            return;
+        }
     }
 
     switch (event.type)

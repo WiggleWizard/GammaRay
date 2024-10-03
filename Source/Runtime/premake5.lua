@@ -10,15 +10,17 @@ group "Dependencies"
     include(thirdpartydir .. "/imgui_p5.lua")
     
     build_data.project_configure["spdlog"]("ThirdParty/spdlog")
-    build_data.project_declare["spdlog"]()
     
     build_data.project_configure["SDL2"]("ThirdParty/SDL2")
-    build_data.project_declare["SDL2"]()
     
-    build_data.project_declare["DiligentToolsImGui"]("ThirdParty")
-    
+    build_data.project_configure["SDL2"]("ThirdParty/SDL2")
+    build_data.project_configure["DiligentCore"]("ThirdParty/DiligentCore")
     build_data.project_configure["ImGui"]("ThirdParty/DiligentTools/ThirdParty/imgui", table.unpack(build_data.project_public_includes["SDL2"]()))
+    
+    build_data.project_declare["spdlog"]()
+    build_data.project_declare["SDL2"]()
     build_data.project_declare["ImGui"]()
+    build_data.project_declare["DiligentToolsImGui"]("ThirdParty")
 group ""
 
 group "Projects"
@@ -57,7 +59,8 @@ project "Runtime"
         
         "ThirdParty/DiligentCore",
         table.unpack(build_data.project_public_includes["ImGui"]()),
-        table.unpack(build_data.project_public_includes["DiligentCoreCommon"]("ThirdParty/DiligentCore")),
+        table.unpack(build_data.project_public_includes["DiligentCoreCommon"]()),
+        table.unpack(build_data.project_public_includes["DiligentCoreGraphics"]()),
         table.unpack(build_data.project_public_includes["DiligentToolsImGui"]("ThirdParty/DiligentTools")),
     }
     runtimeincludedirs["spdlog"] = thirdpartydir .. "/%{includedirectory.spdlog}"

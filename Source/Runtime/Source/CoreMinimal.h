@@ -3,6 +3,9 @@
 #include "Core/Types/Types.h"
 #include "Core/Types/StringName.h"
 #include "Core/Types/String.h"
+#include "Core/Types/UUID.h"
+
+#include "Core/Memory/SharedPtr.h"
 
 #include "Core/Object/ObjectMacros.h"
 #include "Core/Object/Object.h"

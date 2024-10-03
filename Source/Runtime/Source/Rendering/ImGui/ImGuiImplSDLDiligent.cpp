@@ -26,7 +26,7 @@ void ImGuiImplSDLDiligent::NewFrame(Diligent::Uint32 RenderSurfaceWidth, Diligen
     ImGuiImplDiligent::NewFrame(RenderSurfaceWidth, RenderSurfaceHeight, SurfacePreTransform);
 }
 
-void ImGuiImplSDLDiligent::ProcessEvent(const SDL_Event* event)
+bool ImGuiImplSDLDiligent::ProcessEvent(const SDL_Event* event)
 {
-    ImGui_ImplSDL2_ProcessEvent(event);
+    return ImGui_ImplSDL2_ProcessEvent(event);
 }
