@@ -4,6 +4,10 @@
 
 #include "ImGuiComponent.h"
 
+#include <BasicMath.hpp>
+
+class RenderTarget;
+
 namespace Diligent
 {
     struct IRenderDevice;
@@ -11,29 +15,19 @@ namespace Diligent
     struct ITexture;
     struct ITextureView;
 }
-using namespace Diligent;
+namespace Dg = Diligent;
 
 class ImGuiComponentViewport : public ImGuiComponent
 {
 public:
-    ImGuiComponentViewport(RefCntAutoPtr<ISwapChain> swapChain, RefCntAutoPtr<IRenderDevice> renderDevice);
+    ImGuiComponentViewport(ObjectPtr<RenderTarget> viewport);
     
     virtual void Draw() override;
     
-    void OnResized();
-
-    RefCntAutoPtr<ITextureView> GetRenderViewTarget() { return renderViewTarget; }
-    RefCntAutoPtr<ITextureView> GetRenderResourceShader() { return renderResourceShader; }
-    RefCntAutoPtr<ITextureView> GetViewDepthStencil() { return viewDepthStencil; }
+    void OnResized(uint32 width, uint32 height);
 
 private:
-    RefCntAutoPtr<ISwapChain> swapChain;
-    RefCntAutoPtr<IRenderDevice> renderDevice;
-    
-    RefCntAutoPtr<ITexture> renderTargetTextureColor;
-    RefCntAutoPtr<ITextureView> renderViewTarget;
-    RefCntAutoPtr<ITextureView> renderResourceShader;
-    RefCntAutoPtr<ITextureView> viewDepthStencil;
-    
     UUID uuid;
+    Dg::Vector2<uint32> prevWindowSize;
+    ObjectPtr<RenderTarget> viewport = nullptr;
 };

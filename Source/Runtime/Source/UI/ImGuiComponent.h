@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-class ImGuiComponent
+class ImGuiComponent : public Object
 {
 public:
     ImGuiComponent() = default;

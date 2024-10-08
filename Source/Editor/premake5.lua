@@ -28,11 +28,11 @@ project "Editor"
     }
     
     forceincludes {
-        -- "EditorPCH.h"
+        "EditorPCH.h"
     }
     
-    -- pchheader "EditorPCH.h"
-    -- pchsource "Source/EditorPCH.cpp"
+    pchheader "EditorPCH.h"
+    pchsource "Source/EditorPCH.cpp"
     
     links {
         "Runtime",

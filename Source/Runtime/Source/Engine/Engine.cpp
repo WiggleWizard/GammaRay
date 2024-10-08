@@ -2,6 +2,9 @@
 
 #include "MainLoop.h"
 #include "ModuleManager.h"
+#include "World.h"
+#include "WorldContext.h"
+#include "Rendering/Renderer3D.h"
 #include "Windowing/WindowManager.h"
 
 DEFINE_LOGGER_STATIC(LogEngine, LogVerbosity::VeryVerbose)
@@ -29,12 +32,19 @@ void Engine::Initialize()
 
     if (TryExit())
         return;
+    
+    renderer3D = NewObject<Renderer3D>();
 
     ModuleManager::Get().EngineInitialized();
     
     mainLoop->Loop();
 
     // TODO: Cleanup
+}
+
+void Engine::RegisterMainWorldContext(ObjectPtr<WorldContext> context)
+{
+    worldContext = context;
 }
 
 void Engine::Quit()
@@ -65,8 +75,38 @@ void Engine::Process()
     if (IsValid(windowManager))
     {
         windowManager->PollEvents();
-        windowManager->Update();
+        windowManager->PreProcess();
     }
+
+    if (IsValid(worldContext))
+    {
+        worldContext->Process();
+    }
+
+    if (IsValid(renderer3D))
+    {
+        renderer3D->Render();
+    }
+}
+
+bool Engine::OpenWorld(String url)
+{
+    if (url.empty())
+    {
+        
+    }
+
+    return false;
+}
+
+bool Engine::NewWorld()
+{
+    return false;    
+}
+
+ObjectPtr<Renderer3D> Engine::GetRenderer3D()
+{
+    return renderer3D;
 }
 
 bool Engine::TryExit()

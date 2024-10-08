@@ -11,7 +11,7 @@
 
 #include <Graphics/GraphicsEngineOpenGL/interface/EngineFactoryOpenGL.h>
 
-using namespace Diligent;
+namespace Dg = Diligent;
 
 static const char* VSSource = R"(
 struct PSInput 
@@ -20,8 +20,7 @@ struct PSInput
     float3 Color : COLOR; 
 };
 
-void main(in  uint    VertId : SV_VertexID,
-          out PSInput PSIn) 
+void main(in uint VertId : SV_VertexID, out PSInput PSIn) 
 {
     float4 Pos[3];
     Pos[0] = float4(-0.5, -0.5, 0.0, 1.0);
@@ -51,19 +50,14 @@ struct PSOutput
     float4 Color : SV_TARGET; 
 };
 
-void main(in  PSInput  PSIn,
-          out PSOutput PSOut)
+void main(in PSInput  PSIn, out PSOutput PSOut)
 {
     PSOut.Color = float4(PSIn.Color.rgb, 1.0);
 }
 )";
 
-RefCntAutoPtr<IRenderDevice> pDevice;
-RefCntAutoPtr<ISwapChain> pSwapChain;
-Diligent::IDeviceContext* pImmediateContext = nullptr;
-Diligent::IPipelineState* pPSO = nullptr;
 
-SharedPtr<ImGuiComponentViewport> viewport = nullptr;
+
 
 void Present()
 {
@@ -73,17 +67,12 @@ void Present()
 Window::Window(const String& windowTitle)
 {
     windowPtr = SDL_CreateWindow(windowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
-
-    SDL_SysWMinfo wmInfo;
-    SDL_VERSION(&wmInfo.version);
-    SDL_GetWindowWMInfo(windowPtr, &wmInfo);
-    HWND hwnd = wmInfo.info.win.window;
     
     Diligent::SwapChainDesc scDesc;
     auto* pFactoryOpenGL = Diligent::GetEngineFactoryOpenGL();
     
     Diligent::EngineGLCreateInfo engineCI;
-    engineCI.Window.hWnd = hwnd;
+    engineCI.Window.hWnd = GetWindowNativeID();
 
     pFactoryOpenGL->CreateDeviceAndSwapChainGL(engineCI, &pDevice, &pImmediateContext, scDesc, &pSwapChain);
 
@@ -114,7 +103,7 @@ void* Window::GetWindowNativeID()
     return (void*)wmInfo.info.win.window;
 }
 
-bool Window::ProcessEvent(const ::SDL_Event* event)
+bool Window::PreProcessEvent(const SDL_Event* event)
 {
     return imguiRenderer->ProcessEvent(event);
 }
@@ -124,7 +113,13 @@ void Window::OnCloseRequested()
     
 }
 
-void Window::Update()
+bool Window::IsFocused() const
+{
+    const uint32 windowFlags = SDL_GetWindowFlags(windowPtr);
+    return (windowFlags & SDL_WINDOW_INPUT_FOCUS) != 0;
+}
+
+void Window::PreProcess()
 {
     Render();
     Present();
@@ -132,44 +127,81 @@ void Window::Update()
 
 void Window::Render()
 {
-    // Set render targets before issuing any draw command.
-    // Note that Present() unbinds the back buffer if it is set as render target.
-    pImmediateContext->SetRenderTargets(1, &viewport->GetRenderViewTarget(), viewport->GetViewDepthStencil(), Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    // // Set render targets before issuing any draw command.
+    // // Note that Present() unbinds the back buffer if it is set as render target.
+    // pImmediateContext->SetRenderTargets(1, &viewport->GetRenderViewTarget(), viewport->GetViewDepthStencil(), Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    //
+    // // Clear the back buffer
+    // const float ClearColor[] = {0.350f, 0.350f, 0.350f, 1.0f};
+    // // Let the engine perform required state transitions
+    // pImmediateContext->ClearRenderTarget(viewport->GetRenderViewTarget(), ClearColor, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    // pImmediateContext->ClearDepthStencil(viewport->GetViewDepthStencil(), Diligent::CLEAR_DEPTH_FLAG, 1.f, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    //
+    // // Set the pipeline state in the immediate context
+    // pImmediateContext->SetPipelineState(pPSO);
+    //
+    // // Typically we should now call CommitShaderResources(), however shaders in this example don't
+    // // use any resources.
+    //
+    // Diligent::DrawAttribs drawAttrs;
+    // drawAttrs.NumVertices = 3; // Render 3 vertices
+    // pImmediateContext->Draw(drawAttrs);
+    //
+    //
+    //
+    // auto scDesc = pSwapChain->GetDesc();
+    // imguiRenderer->NewFrame(scDesc.Width, scDesc.Height, scDesc.PreTransform);
+    //
+    // auto* pRTV = pSwapChain->GetCurrentBackBufferRTV();
+    // auto* pDSV = pSwapChain->GetDepthBufferDSV();
+    // pImmediateContext->SetRenderTargets(1, &pRTV, pDSV, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    // pImmediateContext->ClearRenderTarget(pRTV, ClearColor, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    // pImmediateContext->ClearDepthStencil(pDSV, Diligent::CLEAR_DEPTH_FLAG, 1.f, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    //
+    // static bool showDemoWindow = true;
+    // ImGui::ShowDemoWindow(&showDemoWindow);
+    // viewport->Draw();
+    //
+    // imguiRenderer->Render(pImmediateContext);
+    //
+    // pSwapChain->Present(true);
+}
 
-    // Clear the back buffer
-    const float ClearColor[] = {0.350f, 0.350f, 0.350f, 1.0f};
-    // Let the engine perform required state transitions
-    pImmediateContext->ClearRenderTarget(viewport->GetRenderViewTarget(), ClearColor, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-    pImmediateContext->ClearDepthStencil(viewport->GetViewDepthStencil(), Diligent::CLEAR_DEPTH_FLAG, 1.f, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+void Window::OnWindowEvent(const SDL_WindowEvent* event)
+{
+}
 
-    // Set the pipeline state in the immediate context
-    pImmediateContext->SetPipelineState(pPSO);
+void Window::OnMouseMove(const SDL_MouseMotionEvent* event)
+{
+}
 
-    // Typically we should now call CommitShaderResources(), however shaders in this example don't
-    // use any resources.
+void Window::OnMouseButtonPressed(const SDL_MouseButtonEvent* event)
+{
+}
 
-    Diligent::DrawAttribs drawAttrs;
-    drawAttrs.NumVertices = 3; // Render 3 vertices
-    pImmediateContext->Draw(drawAttrs);
+void Window::OnMouseWheel(const SDL_MouseWheelEvent* event)
+{
+}
 
+void Window::OnKeyboardPressed(const SDL_KeyboardEvent* event)
+{
+}
 
+void Window::OnJoyAxisMotion(SDL_JoyAxisEvent* event)
+{
+}
 
-    auto scDesc = pSwapChain->GetDesc();
-    imguiRenderer->NewFrame(scDesc.Width, scDesc.Height, scDesc.PreTransform);
+void Window::OnJoyButtonPressed(SDL_JoyButtonEvent* event)
+{
+}
 
-    auto* pRTV = pSwapChain->GetCurrentBackBufferRTV();
-    auto* pDSV = pSwapChain->GetDepthBufferDSV();
-    pImmediateContext->SetRenderTargets(1, &pRTV, pDSV, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-    pImmediateContext->ClearRenderTarget(pRTV, ClearColor, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-    pImmediateContext->ClearDepthStencil(pDSV, Diligent::CLEAR_DEPTH_FLAG, 1.f, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-    
-    static bool showDemoWindow = true;
-    ImGui::ShowDemoWindow(&showDemoWindow);
-    viewport->Draw();
-    
-    imguiRenderer->Render(pImmediateContext);
+void Window::OnTextInput(const SDL_TextInputEvent* event)
+{
+}
 
-    pSwapChain->Present(true);
+void Window::AttachViewport(ObjectPtr<WindowViewport> inViewport)
+{
+    viewport = inViewport;
 }
 
 void Window::CreateResources()
@@ -239,5 +271,7 @@ void Window::CreateResources()
     imguiCreateInfo.DepthBufferFmt = scDesc.DepthBufferFormat;
     imguiRenderer.reset(new ImGuiImplSDLDiligent(imguiCreateInfo, windowPtr));
 
-    viewport = MakeShared<ImGuiComponentViewport>(pSwapChain, pDevice);
+    //renderTarget = NewObject<RenderTarget>(pSwapChain, pDevice);
+    
+    viewport = NewObject<ImGuiComponentViewport>(renderTarget);
 }
