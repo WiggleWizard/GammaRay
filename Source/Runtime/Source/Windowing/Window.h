@@ -1,17 +1,20 @@
 ﻿#pragma once
-#include <SDL_events.h>
 
 class ImGuiComponentViewport;
 class RenderTarget;
 class ImGuiImplSDLDiligent;
 class WindowViewport;
 
-namespace Diligent
-{
-    class ImGuiDiligentRenderer;
-}
-
 struct SDL_Window;
+struct SDL_WindowEvent;
+struct SDL_KeyboardEvent;
+struct SDL_MouseMotionEvent;
+struct SDL_MouseButtonEvent;
+struct SDL_MouseWheelEvent;
+struct SDL_JoyAxisEvent;
+struct SDL_JoyButtonEvent;
+struct SDL_TextInputEvent;
+union SDL_Event;
 
 class Window : public Object
 {
@@ -49,6 +52,8 @@ protected:
     
     ObjectPtr<RenderTarget> renderTarget = nullptr;
     //ObjectPtr<ImGuiComponentViewport> viewport = nullptr;
+
+    // Non-owned viewport reference
     ObjectPtr<WindowViewport> viewport = nullptr;
 
     std::shared_ptr<ImGuiImplSDLDiligent> imguiRenderer = nullptr;

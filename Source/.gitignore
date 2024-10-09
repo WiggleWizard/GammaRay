@@ -63,6 +63,8 @@ Makefile
 .settings
 .buildpath
 *.vs
+*.idb
+*.log
 
 # IDE Stuff
 *.sln.DotSettings.user

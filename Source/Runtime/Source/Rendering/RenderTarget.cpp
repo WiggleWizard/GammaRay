@@ -7,7 +7,7 @@ RenderTarget::RenderTarget()
 {
 }
 
-RenderTarget::RenderTarget(Dg::RefCntAutoPtr<Dg::ISwapChain> swapChain, Dg::RefCntAutoPtr<Dg::IRenderDevice> renderDevice)
+RenderTarget::RenderTarget(Dg::RefCntAutoPtr<Dg::ISwapChain>& swapChain, Dg::RefCntAutoPtr<Dg::IRenderDevice>& renderDevice)
     : swapChain(swapChain)
     , renderDevice(renderDevice)
 {

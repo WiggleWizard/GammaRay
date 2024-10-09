@@ -1,6 +1,7 @@
 ﻿#include "WindowManager.h"
 
 #include "Engine/Engine.h"
+#include "Rendering/Renderer3D.h"
 #include "Windowing/Window.h"
 
 #include <SDL.h>
@@ -26,7 +27,9 @@ ObjectPtr<Window> WindowManager::NewWindow(const StringName windowTitle)
         return nullptr;
     }
 
-    windowRegisteredDelegate.Broadcast(window);
+    GEngine->GetRenderer3D()->RegisterWindow(window);
+
+    GEngine->GetRenderer3D()->NewWindowViewport(window);
     
     windows.push_back(window);
 }

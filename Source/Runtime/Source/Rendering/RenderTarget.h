@@ -18,17 +18,17 @@ class RenderTarget : public Object
 {
 public:
     RenderTarget();
-    RenderTarget(Dg::RefCntAutoPtr<Dg::ISwapChain> swapChain, Dg::RefCntAutoPtr<Dg::IRenderDevice> renderDevice);
+    RenderTarget(Dg::RefCntAutoPtr<Dg::ISwapChain>& swapChain, Dg::RefCntAutoPtr<Dg::IRenderDevice>& renderDevice);
 
-    Dg::RefCntAutoPtr<Dg::ITextureView> GetRenderViewTarget() { return renderViewTarget; }
-    Dg::RefCntAutoPtr<Dg::ITextureView> GetRenderResourceShader() { return renderResourceShader; }
-    Dg::RefCntAutoPtr<Dg::ITextureView> GetViewDepthStencil() { return viewDepthStencil; }
+    virtual Dg::RefCntAutoPtr<Dg::ITextureView> GetRenderViewTarget() { return renderViewTarget; }
+    virtual Dg::RefCntAutoPtr<Dg::ITextureView> GetRenderResourceShader() { return renderResourceShader; }
+    virtual Dg::RefCntAutoPtr<Dg::ITextureView> GetViewDepthStencil() { return viewDepthStencil; }
 
     void SetRenderTargetAndClear(Dg::IDeviceContext* deviceContext);
     
     virtual void Resize(uint32 width, uint32 height);
     
-private:
+protected:
     Dg::RefCntAutoPtr<Dg::ISwapChain> swapChain;
     Dg::RefCntAutoPtr<Dg::IRenderDevice> renderDevice;
     

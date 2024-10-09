@@ -13,7 +13,7 @@
 template<class T, class... Args>
 ObjectPtr<T> NewObject(Args&&... args)
 {
-    return ObjectRegistry::Get().CreateObject<T>(std::forward<Args...>(args)...);
+    return ObjectRegistry::Get().CreateObject<T>(std::forward<Args>(args)...);
 }
 
 template<class T>

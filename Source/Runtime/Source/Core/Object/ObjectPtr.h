@@ -613,3 +613,35 @@ private:
      */
     WeakObjectPtr<T> _weakRef;
 };
+
+template <typename To, typename From>
+ObjectPtr<To> Cast(const ObjectPtr<From>& from)
+{
+    if (from == nullptr)
+    {
+        return ObjectPtr<To>();
+    }
+
+    // Try dynamic_cast for downcasting
+    if (To* toPtr = dynamic_cast<To*>(from.get()))
+    {
+        return ObjectPtr<To>(toPtr, [from](To*)
+        {
+            // This custom deleter keeps the original ObjectPtr alive
+            // We don't actually delete the object here, as it's managed by 'from'
+        });
+    }
+
+    // If dynamic_cast fails, try static_cast for upcasting
+    if constexpr (std::is_base_of_v<To, From>)
+    {
+        To* toPtr = static_cast<To*>(from.get());
+        return ObjectPtr<To>(toPtr, [from](To*)
+        {
+            // Custom deleter to keep the original ObjectPtr alive
+        });
+    }
+
+    // If both casts fail, return nullptr
+    return ObjectPtr<To>();
+}

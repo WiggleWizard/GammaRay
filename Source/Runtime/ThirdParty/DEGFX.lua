@@ -34,16 +34,33 @@ local degfx_engineGL = ""
 local degfx_engineVulkan = ""
 
 local project_names = {
-    Common = "DiligentCoreCommon"
+    diligent = "DiligentCore",
+    common = "DiligentCoreCommon",
+    graphics = "DiligentCoreGraphics",
+}
+
+local config = {
+    src_dir = ""
 }
 
 --==============================
 -- Public Includes
 --==============================
 
-build_data.project_public_includes[project_names["Common"]] = function(lib_dir)
+build_data.project_configure[project_names.diligent] = function(src_dir)
+    config.src_dir = src_dir
+end
+
+build_data.project_public_includes[project_names.common] = function()
     return {
-        path.join(lib_dir, "Common/interface")
+        path.join(config.src_dir, "Common/interface")
+    }
+end
+
+build_data.project_public_includes[project_names.graphics] = function()
+    return {
+        path.join(config.src_dir, "Graphics/GraphicsEngine/interface"),
+        path.join(config.src_dir, "Graphics/GraphicsEngine/include"),
     }
 end
 
@@ -278,11 +295,11 @@ function DEGFX_IncludeProjects()
         location "Generated"
         staticruntime "On"
         runtime "Debug"
-        
+
         targetdir (degfx_baseDir .. "DiligentGraphics/%{cfg.buildcfg}")
         dependson { "DiligentCoreCommon", "DiligentPrimitives", "DiligentPlatformBasic", "DiligentPlatformWin" }
         links { "DiligentCoreCommon", "DiligentPrimitives", "DiligentPlatformBasic", "DiligentPlatformWin" }
-        
+
         files {
             degfx_diligentSourceDir .. "Graphics/GraphicsEngine/src/**.cpp"
         }
@@ -291,14 +308,14 @@ function DEGFX_IncludeProjects()
             degfx_diligentSourceDir .. "Primitives/interface",
             degfx_diligentSourceDir .. "Platforms/interface",
             degfx_diligentSourceDir .. "Platforms/Basic/interface",
-            
+
             degfx_diligentSourceDir .. "Graphics/GraphicsEngine/include",
             degfx_diligentSourceDir .. "Graphics/GraphicsEngine/interface",        
             degfx_diligentSourceDir .. "Graphics/GraphicsAccessories/interface"
         }
-        
+
         defines { "GL_SUPPORTED" }
-        
+
         DEGFX_AttachDefines()
         
     project "DiligentGraphicsAcc"

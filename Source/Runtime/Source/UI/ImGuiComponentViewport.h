@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include <RefCntAutoPtr.hpp>
-
 #include "ImGuiComponent.h"
 
 #include <BasicMath.hpp>
@@ -27,7 +25,6 @@ public:
     void OnResized(uint32 width, uint32 height);
 
 private:
-    UUID uuid;
     Dg::Vector2<uint32> prevWindowSize;
     ObjectPtr<RenderTarget> viewport = nullptr;
 };

@@ -11,8 +11,6 @@ struct SDL_JoyButtonEvent;
 struct SDL_TextInputEvent;
 union SDL_Event;
 
-DECLARE_MULTICAST_DELEGATE(OnWindowRegisteredDelegate, ObjectPtr<Window>);
-
 class WindowManager : public Object
 {
     DECLARE_CLASS(WindowManager, Object)
@@ -29,8 +27,6 @@ public:
     void PollEvents();
     void PreProcess();
 
-    OnWindowRegisteredDelegate onWindowRegistered() { return windowRegisteredDelegate; }
-
 private:
     void OnWindowEvent(const SDL_WindowEvent* event);
     void OnMouseMove(const SDL_MouseMotionEvent* event);
@@ -44,6 +40,4 @@ private:
     void SendEventToFocusedWindow(const SDL_Event* event);
     
     std::vector<ObjectPtr<Window>> windows = {};
-    
-    OnWindowRegisteredDelegate windowRegisteredDelegate;
 };

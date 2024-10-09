@@ -7,4 +7,7 @@ public:
     virtual ~ImGuiComponent() = default;
     
     virtual void Draw() {}
+
+protected:
+    UUID uuid;
 };

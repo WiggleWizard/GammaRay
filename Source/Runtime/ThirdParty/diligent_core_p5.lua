@@ -1,129 +1,3 @@
--- -- Folder that the repo sits in
--- local dep_root_path = "DiligentCore"
--- -- The ID to add the include path(s) to
--- local include_id = "diligent-core"
--- -- Actual include directory path
--- local include_dir = path.join(dep_root_path, "include")
--- 
--- public_includes[include_id] = {
---     
--- }
--- 
--- project "DiligentCore"
---     location "DiligentCore"
---     kind "StaticLib"
---     staticruntime "On"
---     language "C++"
---     cppdialect "C++17"
---     architecture "x64"
---     
---     targetdir (path.join(dep_root_path, BUILD_BIN_DIR, outputdir))
---     objdir (path.join(dep_root_path, BUILD_OBJ_DIR, outputdir))
---     
---     flags {}
---     
---     defines {}
---     
---     includedirs {
---         path.join(dep_root_path, "Common/interface"),
---         path.join(dep_root_path, "Common/include"),
---         path.join(dep_root_path, "Platforms/interface"),
---         path.join(dep_root_path, "Platforms/Basic/interface"),
---         path.join(dep_root_path, "Primitives/interface"),
---         
---         path.join(dep_root_path, "Graphics/ShaderTools/include"),
---         path.join(dep_root_path, "Graphics/Archiver/include"),
---         path.join(dep_root_path, "Graphics/Archiver/interface"),
---         path.join(dep_root_path, "Graphics/GraphicsEngine/include"),
---         path.join(dep_root_path, "Graphics/GraphicsEngine/interface"),
---         path.join(dep_root_path, "Graphics/GraphicsAccessories/interface"),
---         path.join(dep_root_path, "Graphics/HLSL2GLSLConverterLib/include"),
---         path.join(dep_root_path, "Graphics/HLSL2GLSLConverterLib/interface"),
---         "DiligentCoreGen",
---         
---         -- OpenGL specifics
--- 		path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/include"),
--- 		path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/interface"),
---         path.join(dep_root_path, "ThirdParty/glew/include"),
---         path.join(dep_root_path, "ThirdParty/glslang"),
---     }
---     
---     files {
--- 		path.join(dep_root_path, "Primitives/src/**.cpp"),
--- 		path.join(dep_root_path, "Common/src/**.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngine/src/**.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsAccessories/src/**.cpp"),
---         path.join(dep_root_path, "Graphics/HLSL2GLSLConverterLib/src/**.cpp"),
--- 		
--- 		-- OpenGL specifics
--- 		path.join(dep_root_path, "Graphics/Archiver/src/Archiver_GL.cpp"),
---         path.join(dep_root_path, "ThirdParty/glew/src/**.c"),
---         path.join(dep_root_path, "Graphics/ShaderTools/src/GLSL*.cpp"),
---         
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/BufferGLImpl.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/BufferViewGLImpl.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/DeviceContextGLImpl.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/DeviceObjectArchiveGL.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/DearchiverGLImpl.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/EngineFactoryOpenGL.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/FBOCache.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/FenceGLImpl.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/FramebufferGLImpl.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/GLContextState.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/GLObjectWrapper.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/GLProgram.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/GLProgramCache.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/GLTypeConversions.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/PipelineResourceSignatureGLImpl.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/PipelineStateGLImpl.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/QueryGLImpl.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/RenderDeviceGLImpl.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/RenderPassGLImpl.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/SamplerGLImpl.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/ShaderGLImpl.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/ShaderResourceBindingGLImpl.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/ShaderResourceCacheGL.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/ShaderResourcesGL.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/ShaderVariableManagerGL.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/Texture1D_GL.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/Texture1DArray_GL.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/Texture2D_GL.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/Texture2DArray_GL.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/Texture3D_GL.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/TextureBaseGL.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/TextureCube_GL.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/TextureCubeArray_GL.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/TextureViewGLImpl.cpp"),
---         path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/VAOCache.cpp"),
---     }
---     excludes {
--- 		path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/GLContextAndroid.cpp"),
--- 		path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/GLContextEmscripten.cpp"),
--- 		path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/GLContextLinux.cpp"),
---     }
---     
---     filter "system:windows"
---         defines {
---             "PLATFORM_WIN32"
---         }
---         
---         includedirs {
---             path.join(dep_root_path, "Platforms/Win32/interface")
---         }
---     
---         files {
---             path.join(dep_root_path, "Platforms/Win32/src/**.cpp"),
---             
---             path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/GLContextWindows.cpp"),
---             path.join(dep_root_path, "Graphics/GraphicsEngineOpenGL/src/SwapChainGLImpl.cpp"),
---         }
---         
---     filter "action:vs*"
---         buildoptions { "/permissive-" }
---         
---     filter "configurations:Release"
---     filter "configurations:Debug"
-
 include "DEGFX.lua"
 
 DEGFX_InitRenderers(false, false, false)
@@ -136,3 +10,89 @@ project "DiligentEngine"
     cppdialect "C++17"
     architecture "x64"
     DEGFX_Bind("DiligentCore")
+-- 
+-- 
+-- local project_names = {
+--     graphics = "DiligentGraphics"
+-- }
+-- 
+-- local config = {
+--     src_dir = nil
+-- }
+-- 
+-- 
+-- --==============================
+-- -- Project Configurations
+-- --==============================
+-- 
+-- build_data.project_configure[project_names.graphics] = function(src_dir)
+--     config.src_dir = src_dir
+-- end
+-- 
+-- 
+-- --==============================
+-- -- Public Includes
+-- --==============================
+-- 
+-- build_data.project_public_includes[project_names.graphics] = function(base_dir)
+--     return {
+--     }
+-- end
+-- 
+-- 
+-- --==============================
+-- -- Project Declarations
+-- --==============================
+-- 
+-- build_data.project_declare[project_names.graphics] = function()
+--     project "DiligentGraphics"
+--         location(dep_root_path)
+--         kind "StaticLib"
+--         language "C++"
+--         cppdialect "C++17"
+--         architecture "x64"
+--         
+--         staticruntime "On"
+--         runtime "Debug"
+--         
+--         targetdir (path.join(dep_root_path, BUILD_BIN_DIR, outputdir))
+--         objdir (path.join(dep_root_path, BUILD_OBJ_DIR, outputdir))
+--         
+--         dependson { "DiligentCoreCommon", "DiligentPrimitives", "DiligentPlatformBasic", "DiligentPlatformWin" }
+--         
+--         flags {}
+--         
+--         defines {
+--             "GL_SUPPORTED"
+--         }
+--         
+--         includedirs {
+--             path.join(config.src_dir, "Common/interface"),
+--             path.join(config.src_dir, "Primitives/interface"),
+--             path.join(config.src_dir, "Platforms/interface"),
+--             path.join(config.src_dir, "Platforms/Basic/interface"),
+--             
+--             path.join(config.src_dir, "Graphics/GraphicsEngine/include"),
+--             path.join(config.src_dir, "Graphics/GraphicsEngine/interface"),
+--             path.join(config.src_dir, "Graphics/GraphicsAccessories/interface"),
+--         }
+--         
+--         files {
+--             path.join(config.src_dir, "Graphics/GraphicsEngine/src/**.cpp"),
+--         }
+--         excludes {}
+--         
+--         links { "DiligentCoreCommon", "DiligentPrimitives", "DiligentPlatformBasic", "DiligentPlatformWin" }
+--             
+--         filter "action:vs*"
+--             defines "PLATFORM_WIN32"
+--             
+--         filter "system:windows"
+--             files {
+--             }
+--             
+--         filter "configurations:Release"
+--         filter "configurations:Debug"
+--         
+--         DEGFX_AttachDefines()
+-- end
