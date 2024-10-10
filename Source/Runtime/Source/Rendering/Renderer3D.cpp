@@ -60,25 +60,25 @@ void Renderer3D::Render()
     {
         viewport->PreRender(contextImmediate);
         
-        // Set render targets before issuing any draw command.
-        // Note that Present() unbinds the back buffer if it is set as render target.
-        contextImmediate->SetRenderTargets(1, &viewport->GetRenderViewTarget(), viewport->GetViewDepthStencil(), Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-        
-        // Clear the back buffer
-        const float ClearColor[] = {0.350f, 0.350f, 0.350f, 1.0f};
-        // Let the engine perform required state transitions
-        contextImmediate->ClearRenderTarget(viewport->GetRenderViewTarget(), ClearColor, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-        contextImmediate->ClearDepthStencil(viewport->GetViewDepthStencil(), Diligent::CLEAR_DEPTH_FLAG, 1.f, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-        
-        // Set the pipeline state in the immediate context
-        contextImmediate->SetPipelineState(pPSO);
-        
-        // Typically we should now call CommitShaderResources(), however shaders in this example don't
-        // use any resources.
-        
-        Diligent::DrawAttribs drawAttrs;
-        drawAttrs.NumVertices = 3; // Render 3 vertices
-        contextImmediate->Draw(drawAttrs);
+        // // Set render targets before issuing any draw command.
+        // // Note that Present() unbinds the back buffer if it is set as render target.
+        // contextImmediate->SetRenderTargets(1, &viewport->GetRenderViewTarget(), viewport->GetViewDepthStencil(), Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+        //
+        // // Clear the back buffer
+        // const float ClearColor[] = {0.350f, 0.350f, 0.350f, 1.0f};
+        // // Let the engine perform required state transitions
+        // contextImmediate->ClearRenderTarget(viewport->GetRenderViewTarget(), ClearColor, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+        // contextImmediate->ClearDepthStencil(viewport->GetViewDepthStencil(), Diligent::CLEAR_DEPTH_FLAG, 1.f, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+        //
+        // // Set the pipeline state in the immediate context
+        // contextImmediate->SetPipelineState(pPSO);
+        //
+        // // Typically we should now call CommitShaderResources(), however shaders in this example don't
+        // // use any resources.
+        //
+        // Diligent::DrawAttribs drawAttrs;
+        // drawAttrs.NumVertices = 3; // Render 3 vertices
+        // contextImmediate->Draw(drawAttrs);
         
         
         
