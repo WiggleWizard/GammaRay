@@ -9,6 +9,7 @@ class WorldContext;
 class WindowManager;
 class ObjectRegistry;
 class MainLoop;
+class Window;
 
 class Engine : public Object
 {
@@ -27,7 +28,7 @@ public:
     void RequestQuit();
     bool WantsToQuit() const;
 
-    void NewWindow(const String& windowTitle);
+    ObjectPtr<Window> NewWindow(const String& windowTitle);
 
     void Process();
 

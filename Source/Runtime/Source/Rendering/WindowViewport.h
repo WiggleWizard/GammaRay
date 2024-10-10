@@ -8,7 +8,16 @@ public:
     WindowViewport();
     WindowViewport(Dg::RefCntAutoPtr<Dg::ISwapChain>& swapChain, Dg::RefCntAutoPtr<Dg::IRenderDevice>& renderDevice);
 
-    virtual Dg::RefCntAutoPtr<Dg::ITextureView> GetRenderViewTarget();
-    virtual Dg::RefCntAutoPtr<Dg::ITextureView> GetRenderResourceShader();
-    virtual Dg::RefCntAutoPtr<Dg::ITextureView> GetViewDepthStencil();
+    virtual bool PreProcessEvent(const SDL_Event* event) override;
+    virtual void PreProcess() override;
+    virtual void Render(Dg::RefCntAutoPtr<Dg::IDeviceContext> deviceContext) override;
+
+    virtual Dg::RefCntAutoPtr<Dg::ITextureView> GetRenderViewTarget() override;
+    virtual Dg::RefCntAutoPtr<Dg::ITextureView> GetRenderResourceShader() override;
+    virtual Dg::RefCntAutoPtr<Dg::ITextureView> GetViewDepthStencil() override;
+
+    virtual void SetImguiRenderer(ImGuiImplSDLDiligent* inImguiRenderer);
+
+protected:
+    std::shared_ptr<ImGuiImplSDLDiligent> imguiRenderer = nullptr;
 };

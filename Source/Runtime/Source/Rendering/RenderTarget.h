@@ -20,6 +20,8 @@ public:
     RenderTarget();
     RenderTarget(Dg::RefCntAutoPtr<Dg::ISwapChain>& swapChain, Dg::RefCntAutoPtr<Dg::IRenderDevice>& renderDevice);
 
+    Dg::RefCntAutoPtr<Dg::ISwapChain> GetSwapChain() { return swapChain; }
+    Dg::RefCntAutoPtr<Dg::IRenderDevice> GetRenderDevice() { return renderDevice; }
     virtual Dg::RefCntAutoPtr<Dg::ITextureView> GetRenderViewTarget() { return renderViewTarget; }
     virtual Dg::RefCntAutoPtr<Dg::ITextureView> GetRenderResourceShader() { return renderResourceShader; }
     virtual Dg::RefCntAutoPtr<Dg::ITextureView> GetViewDepthStencil() { return viewDepthStencil; }

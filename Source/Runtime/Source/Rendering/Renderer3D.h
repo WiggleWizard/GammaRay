@@ -3,6 +3,7 @@
 #include <RefCntAutoPtr.hpp>
 #include <RenderDevice.h>
 #include <SwapChain.h>
+#include <DeviceContext.h>
 
 class Viewport;
 class Window;
@@ -25,7 +26,16 @@ public:
     void RegisterWindow(ObjectPtr<Window> window);
 
     ObjectPtr<Viewport> NewViewport();
-    ObjectPtr<WindowViewport> NewWindowViewport(ObjectPtr<Window> forWindow);
+
+    template<class T>
+    ObjectPtr<T> NewWindowViewport(ObjectPtr<Window> forWindow)
+    {
+        static_assert(std::is_base_of_v<Viewport, T>, "T must inherit from Viewport");
+        
+        ObjectPtr<T> viewport = NewObject<T>(renderSwapChain, renderDevice);
+        viewports.push_back(Cast<Viewport>(viewport));
+        return viewport;
+    }
 
 private:
     void CreateResources();
@@ -34,6 +44,6 @@ private:
 
     Dg::RefCntAutoPtr<Dg::IRenderDevice> renderDevice;
     Dg::RefCntAutoPtr<Dg::ISwapChain> renderSwapChain;
-    Dg::IDeviceContext* contextImmediate = nullptr;
+    Dg::RefCntAutoPtr<Dg::IDeviceContext> contextImmediate;
     Dg::IPipelineState* pPSO = nullptr;
 };

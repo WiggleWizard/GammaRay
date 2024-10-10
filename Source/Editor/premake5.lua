@@ -1,6 +1,13 @@
-local includes = build_data.project_public_includes["spdlog"]()
-for k, v in pairs(includes) do
-    includes[k] = path.join("../Runtime", includes[k])
+
+local external_includes = {
+    "spdlog", "DiligentCoreCommon", "DiligentCoreGraphics",
+}
+local includes = {}
+
+for _, public_include_name in pairs(external_includes) do
+    for k, v in pairs(build_data.project_public_includes[public_include_name]()) do
+        table.insert(includes, path.join("../Runtime", v))
+    end
 end
 
 project "Editor"
@@ -42,6 +49,7 @@ project "Editor"
     }
         
     filter "system:windows"
+        defines { "PLATFORM_WIN32" }
 
     filter "configurations:Debug"
         defines { "DEBUG" }

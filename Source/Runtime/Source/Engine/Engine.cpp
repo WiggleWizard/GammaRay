@@ -62,12 +62,13 @@ bool Engine::WantsToQuit() const
     return wantsToQuit;
 }
 
-void Engine::NewWindow(const String& windowTitle)
+ObjectPtr<Window> Engine::NewWindow(const String& windowTitle)
 {
     if (IsValid(windowManager))
     {
-        windowManager->NewWindow(windowTitle);
+        return windowManager->NewWindow(windowTitle);
     }
+    return nullptr;
 }
 
 void Engine::Process()

@@ -55,7 +55,5 @@ protected:
 
     // Non-owned viewport reference
     ObjectPtr<WindowViewport> viewport = nullptr;
-
-    std::shared_ptr<ImGuiImplSDLDiligent> imguiRenderer = nullptr;
 };
 

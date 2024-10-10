@@ -28,10 +28,10 @@ ObjectPtr<Window> WindowManager::NewWindow(const StringName windowTitle)
     }
 
     GEngine->GetRenderer3D()->RegisterWindow(window);
-
-    GEngine->GetRenderer3D()->NewWindowViewport(window);
     
     windows.push_back(window);
+
+    return window;
 }
 
 ObjectPtr<Window> WindowManager::GetFocusedWindow()

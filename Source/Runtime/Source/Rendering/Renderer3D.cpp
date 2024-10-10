@@ -58,6 +58,8 @@ void Renderer3D::Render()
 {
     for (auto viewport : viewports)
     {
+        viewport->PreRender(contextImmediate);
+        
         // Set render targets before issuing any draw command.
         // Note that Present() unbinds the back buffer if it is set as render target.
         contextImmediate->SetRenderTargets(1, &viewport->GetRenderViewTarget(), viewport->GetViewDepthStencil(), Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
@@ -95,8 +97,10 @@ void Renderer3D::Render()
         //
         // imguiRenderer->Render(pImmediateContext);
         
-        renderSwapChain->Present(true);
+        viewport->Render(contextImmediate);
     }
+    
+    renderSwapChain->Present(true);
 }
 
 void Renderer3D::RegisterWindow(ObjectPtr<Window> window)
@@ -114,18 +118,8 @@ void Renderer3D::RegisterWindow(ObjectPtr<Window> window)
 
 ObjectPtr<Viewport> Renderer3D::NewViewport()
 {
-    auto viewport = NewObject<Viewport>();
+    auto viewport = NewObject<Viewport>(renderSwapChain, renderDevice);
     viewports.push_back(viewport);
-    return viewport;
-}
-
-ObjectPtr<WindowViewport> Renderer3D::NewWindowViewport(ObjectPtr<Window> forWindow)
-{
-    ObjectPtr<WindowViewport> viewport = NewObject<WindowViewport>(renderSwapChain, renderDevice);
-    viewports.push_back(Cast<Viewport>(viewport));
-
-    forWindow->AttachViewport(viewport);
-    
     return viewport;
 }
 

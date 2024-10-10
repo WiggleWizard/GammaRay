@@ -1,5 +1,9 @@
 ﻿#include "Window.h"
 
+#include "Rendering/WindowViewport.h"
+#include "Rendering/ImGui/ImGuiImplSDLDiligent.h"
+
+#include <imgui.h>
 #include <SDL.h>
 #include <SDL_syswm.h>
 
@@ -26,6 +30,7 @@ uint32 Window::GetWindowID()
         windowID = SDL_GetWindowID(windowPtr);
     }
 
+
     return windowID;
 }
 
@@ -39,7 +44,11 @@ void* Window::GetWindowNativeID()
 
 bool Window::PreProcessEvent(const SDL_Event* event)
 {
-    //return imguiRenderer->ProcessEvent(event);
+    if (IsValid(viewport))
+    {
+        return viewport->PreProcessEvent(event);
+    }
+    
     return false;
 }
 
@@ -56,8 +65,10 @@ bool Window::IsFocused() const
 
 void Window::PreProcess()
 {
-    Render();
-    Present();
+    if (IsValid(viewport))
+    {
+        viewport->PreProcess();
+    }
 }
 
 void Window::Render()
@@ -99,6 +110,13 @@ void Window::OnTextInput(const SDL_TextInputEvent* event)
 void Window::AttachViewport(ObjectPtr<WindowViewport> inViewport)
 {
     viewport = inViewport;
+
+    Diligent::ImGuiDiligentCreateInfo imguiCreateInfo;
+    imguiCreateInfo.pDevice = viewport->GetRenderDevice();
+    auto swapChain = viewport->GetSwapChain();
+    imguiCreateInfo.BackBufferFmt = swapChain->GetDesc().ColorBufferFormat;
+    imguiCreateInfo.DepthBufferFmt = swapChain->GetDesc().DepthBufferFormat;
+    viewport->SetImguiRenderer(new ImGuiImplSDLDiligent(imguiCreateInfo, windowPtr));
 }
 
 void Window::CreateResources()
