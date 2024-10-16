@@ -4,6 +4,9 @@
 #define GR_NAMESPACE_START namespace GammaRay {
 #define GR_NAMESPACE_END }
 
+namespace Diligent {}
+namespace Dg = Diligent;
+
 #include "CoreMinimal.h"
 
 #include <spdlog/spdlog.h>

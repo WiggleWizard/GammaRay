@@ -39,8 +39,6 @@ void WindowViewport::Render(Dg::RefCntAutoPtr<Dg::IDeviceContext> deviceContext)
     if (imguiRenderer != nullptr)
     {
         imguiRenderer->EndFrame();
-
-        SetRenderTargetAndClear(deviceContext);
         
         // Set the pipeline state in the immediate context
         //deviceContext->SetPipelineState(pPSO);

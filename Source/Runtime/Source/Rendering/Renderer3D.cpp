@@ -1,12 +1,19 @@
 ﻿#include "Renderer3D.h"
 
+#include "Engine/World.h"
 #include "ImGui/ImGuiImplSDLDiligent.h"
 #include "Windowing/Window.h"
 #include "Rendering/Viewport.h"
 #include "Rendering/WindowViewport.h"
+#include "Scene/Components/CameraComponent.h"
+#include "Scene/Components/TransformComponent.h"
+#include "Scene/Components/StaticMeshComponent.h"
+#include "Scene3D.h"
 
 #include <GraphicsTypes.h>
 #include <ImGuiImplDiligent.hpp>
+#include <entt/entt.hpp>
+#include <BasicMath.hpp>
 
 #include <Graphics/GraphicsEngine/interface/SwapChain.h>
 #include <Graphics/GraphicsEngineOpenGL/interface/EngineFactoryOpenGL.h>
@@ -54,50 +61,16 @@ void main(in PSInput  PSIn, out PSOutput PSOut)
 }
 )";
 
+Renderer3D::Renderer3D()
+{
+    scene = NewObject<Scene3D>();
+}
+
 void Renderer3D::Render()
 {
     for (auto viewport : viewports)
     {
-        viewport->PreRender(contextImmediate);
-        
-        // // Set render targets before issuing any draw command.
-        // // Note that Present() unbinds the back buffer if it is set as render target.
-        // contextImmediate->SetRenderTargets(1, &viewport->GetRenderViewTarget(), viewport->GetViewDepthStencil(), Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-        //
-        // // Clear the back buffer
-        // const float ClearColor[] = {0.350f, 0.350f, 0.350f, 1.0f};
-        // // Let the engine perform required state transitions
-        // contextImmediate->ClearRenderTarget(viewport->GetRenderViewTarget(), ClearColor, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-        // contextImmediate->ClearDepthStencil(viewport->GetViewDepthStencil(), Diligent::CLEAR_DEPTH_FLAG, 1.f, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-        //
-        // // Set the pipeline state in the immediate context
-        // contextImmediate->SetPipelineState(pPSO);
-        //
-        // // Typically we should now call CommitShaderResources(), however shaders in this example don't
-        // // use any resources.
-        //
-        // Diligent::DrawAttribs drawAttrs;
-        // drawAttrs.NumVertices = 3; // Render 3 vertices
-        // contextImmediate->Draw(drawAttrs);
-        
-        
-        
-        // auto scDesc = pSwapChain->GetDesc();
-        // imguiRenderer->NewFrame(scDesc.Width, scDesc.Height, scDesc.PreTransform);
-        //
-        // auto* pRTV = pSwapChain->GetCurrentBackBufferRTV();
-        // auto* pDSV = pSwapChain->GetDepthBufferDSV();
-        // pImmediateContext->SetRenderTargets(1, &pRTV, pDSV, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-        // pImmediateContext->ClearRenderTarget(pRTV, ClearColor, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-        // pImmediateContext->ClearDepthStencil(pDSV, Diligent::CLEAR_DEPTH_FLAG, 1.f, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-        //
-        // static bool showDemoWindow = true;
-        // ImGui::ShowDemoWindow(&showDemoWindow);
-        // viewport->Draw();
-        //
-        // imguiRenderer->Render(pImmediateContext);
-        
-        viewport->Render(contextImmediate);
+        RenderViewport(viewport);
     }
     
     renderSwapChain->Present(true);
@@ -121,6 +94,13 @@ ObjectPtr<Viewport> Renderer3D::NewViewport()
     auto viewport = NewObject<Viewport>(renderSwapChain, renderDevice);
     viewports.push_back(viewport);
     return viewport;
+}
+
+UUID Renderer3D::MeshCreateFromComponent(StaticMeshComponent* staticMeshComponent)
+{
+    if (!IsValid(scene))
+        return UUID::CreateInvalid();
+    return scene->MeshCreateFromComponent(renderDevice, staticMeshComponent);
 }
 
 void Renderer3D::CreateResources()
@@ -193,4 +173,83 @@ void Renderer3D::CreateResources()
     //renderTarget = NewObject<RenderTarget>(pSwapChain, pDevice);
     
     // viewport = NewObject<ImGuiComponentViewport>(renderTarget);
+}
+
+void Renderer3D::RenderViewport(ObjectPtr<Viewport> viewport)
+{
+    RenderViewportChildren(viewport);
+    
+    viewport->PreRender(contextImmediate);
+
+    viewport->SetRenderTargetAndClear(contextImmediate);
+
+    auto world = viewport->GetWorld();
+    if (IsValid(world))
+    {
+        Dg::float4x4 mainCameraViewMatrix;
+        Dg::float4x4 mainCameraProjectionMatrix;
+        
+        auto registry = world->GetRegistry();
+        auto viewCameras = registry->view<const TransformComponent, CameraComponent>();
+        viewCameras.each([&mainCameraProjectionMatrix, &mainCameraViewMatrix](const auto& entity, const TransformComponent& xform, CameraComponent& camera)
+        {
+            mainCameraViewMatrix = xform.matrix;
+            
+            camera.ComputeProjectionMatrix(1);
+            mainCameraProjectionMatrix = camera.frustum;
+        });
+
+        auto viewMeshes = registry->view<const TransformComponent, StaticMeshComponent>();
+        viewMeshes.each([&](const auto& entity, const TransformComponent& xform, StaticMeshComponent& meshComponent)
+        {
+            
+        });
+    }
+    
+    // // Set render targets before issuing any draw command.
+    // // Note that Present() unbinds the back buffer if it is set as render target.
+    // contextImmediate->SetRenderTargets(1, &viewport->GetRenderViewTarget(), viewport->GetViewDepthStencil(), Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    //
+    // // Clear the back buffer
+    // const float ClearColor[] = {0.350f, 0.350f, 0.350f, 1.0f};
+    // // Let the engine perform required state transitions
+    // contextImmediate->ClearRenderTarget(viewport->GetRenderViewTarget(), ClearColor, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    // contextImmediate->ClearDepthStencil(viewport->GetViewDepthStencil(), Diligent::CLEAR_DEPTH_FLAG, 1.f, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    //
+    // // Set the pipeline state in the immediate context
+    // contextImmediate->SetPipelineState(pPSO);
+    //
+    // // Typically we should now call CommitShaderResources(), however shaders in this example don't
+    // // use any resources.
+    //
+    // Diligent::DrawAttribs drawAttrs;
+    // drawAttrs.NumVertices = 3; // Render 3 vertices
+    // contextImmediate->Draw(drawAttrs);
+    
+    
+    
+    // auto scDesc = pSwapChain->GetDesc();
+    // imguiRenderer->NewFrame(scDesc.Width, scDesc.Height, scDesc.PreTransform);
+    //
+    // auto* pRTV = pSwapChain->GetCurrentBackBufferRTV();
+    // auto* pDSV = pSwapChain->GetDepthBufferDSV();
+    // pImmediateContext->SetRenderTargets(1, &pRTV, pDSV, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    // pImmediateContext->ClearRenderTarget(pRTV, ClearColor, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    // pImmediateContext->ClearDepthStencil(pDSV, Diligent::CLEAR_DEPTH_FLAG, 1.f, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    //
+    // static bool showDemoWindow = true;
+    // ImGui::ShowDemoWindow(&showDemoWindow);
+    // viewport->Draw();
+    //
+    // imguiRenderer->Render(pImmediateContext);
+    
+    viewport->Render(contextImmediate);
+}
+
+void Renderer3D::RenderViewportChildren(ObjectPtr<Viewport> viewport)
+{
+    for (auto childViewport : viewport->GetChildViewports())
+    {
+        RenderViewport(childViewport);
+    }
 }

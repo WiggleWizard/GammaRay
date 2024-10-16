@@ -5,9 +5,11 @@
 #include <SwapChain.h>
 #include <DeviceContext.h>
 
+class Scene3D;
 class Viewport;
 class Window;
 class WindowViewport;
+class StaticMeshComponent;
 
 namespace Diligent
 {
@@ -21,6 +23,8 @@ namespace Dg = Diligent;
 class Renderer3D : public Object
 {
 public:
+    Renderer3D();
+    
     void Render();
     
     void RegisterWindow(ObjectPtr<Window> window);
@@ -37,8 +41,13 @@ public:
         return viewport;
     }
 
+    UUID MeshCreateFromComponent(StaticMeshComponent* staticMeshComponent);
+
 private:
     void CreateResources();
+
+    void RenderViewport(ObjectPtr<Viewport> viewport);
+    void RenderViewportChildren(ObjectPtr<Viewport> viewport);
     
     std::vector<ObjectPtr<Viewport>> viewports;
 
@@ -46,4 +55,6 @@ private:
     Dg::RefCntAutoPtr<Dg::ISwapChain> renderSwapChain;
     Dg::RefCntAutoPtr<Dg::IDeviceContext> contextImmediate;
     Dg::IPipelineState* pPSO = nullptr;
+
+    ObjectPtr<Scene3D> scene = nullptr;
 };

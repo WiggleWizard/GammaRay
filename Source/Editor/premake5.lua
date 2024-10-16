@@ -1,6 +1,6 @@
 
 local external_includes = {
-    "spdlog", "DiligentCoreCommon", "DiligentCoreGraphics",
+    "spdlog", "DiligentCoreCommon", "DiligentCoreGraphics", "entt"
 }
 local includes = {}
 
@@ -31,7 +31,7 @@ project "Editor"
     }
     
     externalincludedirs {
-        table.unpack(includes)
+        table.unpack(includes),
     }
     
     forceincludes {

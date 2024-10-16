@@ -2,6 +2,8 @@
 
 #include "RenderTarget.h"
 
+class World;
+
 class ImGuiImplSDLDiligent;
 union SDL_Event;
 
@@ -21,5 +23,12 @@ public:
 
     virtual void PostPresent() {}
 
+    void SetWorld(ObjectPtr<World> inWorld);
+    virtual ObjectPtr<World> GetWorld() { return world; }
+
+    std::vector<ObjectPtr<Viewport>> GetChildViewports();
+
 protected:
+    ObjectPtr<World> world = nullptr;
+    std::vector<ObjectPtr<Viewport>> children;
 };

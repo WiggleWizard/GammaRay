@@ -11,6 +11,8 @@ public:
     
     void LoadWorld(ObjectPtr<World> world);
 
+    virtual ObjectPtr<World> GetMainWorld() { return nullptr; }
+
 private:
     ObjectPtr<RenderTarget> viewport = nullptr;
     ObjectPtr<World> currentWorld = nullptr;

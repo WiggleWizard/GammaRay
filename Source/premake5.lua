@@ -1,18 +1,4 @@
-BuildData = {}
-
-function BuildData:new(o)
-    o = o or {}   -- create object if user does not provide one
-    setmetatable(o, self)
-    self.__index = self
-    
-    self.project_public_includes = {}
-    self.project_configure = {}
-    self.project_declare = {}
-    
-    return o
-end
-
-build_data = BuildData:new();
+include "Premake/BuildStructure.lua"
 
 workspace "GammaRay"
     configurations { "Debug", "Release" }

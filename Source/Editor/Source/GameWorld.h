@@ -1,7 +1,9 @@
 ﻿#pragma once
 
-class GameWorld
+#include "Engine/World.h"
+
+class GameWorld : public World
 {
 public:
-    
+    GameWorld();
 };

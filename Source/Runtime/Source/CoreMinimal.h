@@ -3,6 +3,7 @@
 #include "Core/Types/Types.h"
 #include "Core/Types/StringName.h"
 #include "Core/Types/String.h"
+#include "Core/Types/Maths.h"
 #include "Core/Types/UUID.h"
 
 #include "Core/Eventing/DelegateMulticast.h"

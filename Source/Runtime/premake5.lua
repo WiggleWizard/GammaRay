@@ -8,6 +8,7 @@ group "Dependencies"
     include(thirdpartydir .. "/diligent_core_p5.lua")
     include(thirdpartydir .. "/diligent_tools_p5.lua")
     include(thirdpartydir .. "/imgui_p5.lua")
+    include(thirdpartydir .. "/entt_p5.lua")
     
     build_data.project_configure["spdlog"]("ThirdParty/spdlog")
     
@@ -21,6 +22,10 @@ group "Dependencies"
     build_data.project_declare["SDL2"]()
     build_data.project_declare["ImGui"]()
     build_data.project_declare["DiligentToolsImGui"]("ThirdParty")
+    
+    dep_configure_and_decl("entt", { "ThirdParty/entt" })
+    
+    include(path.join(thirdpartydir, "entt_p5.lua"))
 group ""
 
 group "Projects"
@@ -62,6 +67,10 @@ project "Runtime"
         table.unpack(build_data.project_public_includes["DiligentCoreCommon"]()),
         table.unpack(build_data.project_public_includes["DiligentCoreGraphics"]()),
         table.unpack(build_data.project_public_includes["DiligentToolsImGui"]("ThirdParty/DiligentTools")),
+        
+        --table.unpack(build_data.project_public_includes["entt"]()),
+        
+        dep_inject_public_includes("entt")
     }
     runtimeincludedirs["spdlog"] = thirdpartydir .. "/%{includedirectory.spdlog}"
     

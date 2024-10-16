@@ -1,7 +1,14 @@
 ﻿#pragma once
 
+#include <entt/fwd.hpp>
+
 class World : public Object
 {
 public:
-    // Scene Tree
+    World();
+
+    SharedPtr<entt::registry> GetRegistry() { return registry; }
+    
+protected:
+    SharedPtr<entt::registry> registry = nullptr;
 };
