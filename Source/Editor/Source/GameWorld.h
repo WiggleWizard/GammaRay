@@ -6,4 +6,6 @@ class GameWorld : public World
 {
 public:
     GameWorld();
+
+    void Initialize();
 };

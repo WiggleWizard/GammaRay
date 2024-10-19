@@ -9,13 +9,18 @@
 
 GameWorld::GameWorld()
 {
+
+}
+
+void GameWorld::Initialize()
+{
     auto cameraEntity = registry->create();
     registry->emplace<TransformComponent>(cameraEntity);
     registry->emplace<CameraComponent>(cameraEntity);
 
     auto simpleMeshEntity = registry->create();
-    TransformComponent xformComponent = registry->emplace<TransformComponent>(simpleMeshEntity);
-    xformComponent.matrix.Translation(0, 0, -5.f);
+    TransformComponent& xformComponent = registry->emplace<TransformComponent>(simpleMeshEntity);
+    xformComponent.matrix = xformComponent.matrix.Translation(0, 0, -5.f);
     SimpleMeshComponent simpleMeshComponent = registry->emplace<SimpleMeshComponent>(simpleMeshEntity);
     simpleMeshComponent.GenerateMesh();
 }

@@ -10,7 +10,11 @@ class EditorWorldContext : public WorldContext
 public:
     EditorWorldContext();
 
+    void Initialize();
+
     virtual ObjectPtr<World> GetMainWorld() override;
+
+    ObjectPtr<GameWorld> GetGameWorld() { return gameWorld; }
     
 private:
     ObjectPtr<EditorWorld> editorWorld = nullptr;

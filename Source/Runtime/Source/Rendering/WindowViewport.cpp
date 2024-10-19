@@ -27,9 +27,9 @@ void WindowViewport::PreProcess()
     if (imguiRenderer != nullptr)
     {
         imguiRenderer->NewFrame(800, 600, Dg::SURFACE_TRANSFORM_IDENTITY);
-
-        ImGui::ShowDemoWindow();
     }
+
+    DrawImGui();
 }
 
 void WindowViewport::Render(Dg::RefCntAutoPtr<Dg::IDeviceContext> deviceContext)
@@ -65,4 +65,8 @@ Dg::RefCntAutoPtr<Dg::ITextureView> WindowViewport::GetViewDepthStencil()
 void WindowViewport::SetImguiRenderer(ImGuiImplSDLDiligent* inImguiRenderer)
 {
     imguiRenderer.reset(inImguiRenderer);
+}
+
+void WindowViewport::DrawImGui()
+{
 }

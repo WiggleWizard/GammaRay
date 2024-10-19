@@ -11,7 +11,11 @@ class UUID
 {
 public:
     // Default constructor generates a new UUID
-    UUID() { Generate(); }
+    UUID()
+    {
+        Generate();
+        Invalidate();
+    }
 
     // Constructor from string
     explicit UUID(const std::string& uuidString) { FromString(uuidString); }

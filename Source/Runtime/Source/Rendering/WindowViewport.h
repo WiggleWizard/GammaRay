@@ -19,5 +19,7 @@ public:
     virtual void SetImguiRenderer(ImGuiImplSDLDiligent* inImguiRenderer);
 
 protected:
+    virtual void DrawImGui();
+    
     std::shared_ptr<ImGuiImplSDLDiligent> imguiRenderer = nullptr;
 };

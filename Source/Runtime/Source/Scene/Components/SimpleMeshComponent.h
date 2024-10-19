@@ -12,5 +12,5 @@ public:
     void GenerateMesh();
 
     void SetupVertexBuffer(Dg::BufferDesc* descriptor, Dg::BufferData* data) override;
-    void SetupIndexBuffer(Dg::BufferDesc* descriptor, Dg::BufferData* data) override;
+    uint32 SetupIndexBuffer(Dg::BufferDesc* descriptor, Dg::BufferData* data) override;
 };

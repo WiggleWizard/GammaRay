@@ -22,6 +22,12 @@ namespace Dg = Diligent;
 
 class Renderer3D : public Object
 {
+    struct VSConstants
+    {
+        Dg::float4x4 worldViewProj;
+        Dg::float4x4 world;
+    };
+    
 public:
     Renderer3D();
     
@@ -55,6 +61,10 @@ private:
     Dg::RefCntAutoPtr<Dg::ISwapChain> renderSwapChain;
     Dg::RefCntAutoPtr<Dg::IDeviceContext> contextImmediate;
     Dg::IPipelineState* pPSO = nullptr;
+
+    Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> shaderBinding;
+
+    Dg::RefCntAutoPtr<Dg::IBuffer> vsConstantsBuffer;
 
     ObjectPtr<Scene3D> scene = nullptr;
 };

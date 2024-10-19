@@ -14,6 +14,11 @@ void Viewport::SetWorld(ObjectPtr<World> inWorld)
     world = inWorld;
 }
 
+void Viewport::AttachChildViewport(ObjectPtr<Viewport> viewport)
+{
+    children.push_back(viewport);
+}
+
 std::vector<ObjectPtr<Viewport>> Viewport::GetChildViewports()
 {
     return children;

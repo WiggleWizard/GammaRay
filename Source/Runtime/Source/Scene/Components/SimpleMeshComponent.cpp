@@ -15,32 +15,34 @@ void SimpleMeshComponent::GenerateMesh()
 
 void SimpleMeshComponent::SetupVertexBuffer(Dg::BufferDesc* descriptor, Dg::BufferData* data)
 {
-    const Vertex cubeVerts[8] =
+    const size_t vertexCount = 8;
+    Vertex* cubeVerts = new Vertex[vertexCount]
     {
-        {Dg::float3(-1,-1,-1), Dg::float4(1,0,0,1)},
-        {Dg::float3(-1,+1,-1), Dg::float4(0,1,0,1)},
-        {Dg::float3(+1,+1,-1), Dg::float4(0,0,1,1)},
-        {Dg::float3(+1,-1,-1), Dg::float4(1,1,1,1)},
+        {Dg::float3(-1,-1,-1), Dg::float3(0,0,0), Dg::float2(0,0), Dg::float4(1,0,0,1)},
+        {Dg::float3(-1,+1,-1), Dg::float3(0,0,0), Dg::float2(0,0), Dg::float4(0,1,0,1)},
+        {Dg::float3(+1,+1,-1), Dg::float3(0,0,0), Dg::float2(0,0), Dg::float4(0,0,1,1)},
+        {Dg::float3(+1,-1,-1), Dg::float3(0,0,0), Dg::float2(0,0), Dg::float4(1,1,1,1)},
 
-        {Dg::float3(-1,-1,+1), Dg::float4(1,1,0,1)},
-        {Dg::float3(-1,+1,+1), Dg::float4(0,1,1,1)},
-        {Dg::float3(+1,+1,+1), Dg::float4(1,0,1,1)},
-        {Dg::float3(+1,-1,+1), Dg::float4(0.2f,0.2f,0.2f,1)},
+        {Dg::float3(-1,-1,+1), Dg::float3(0,0,0), Dg::float2(0,0), Dg::float4(1,1,0,1)},
+        {Dg::float3(-1,+1,+1), Dg::float3(0,0,0), Dg::float2(0,0), Dg::float4(0,1,1,1)},
+        {Dg::float3(+1,+1,+1), Dg::float3(0,0,0), Dg::float2(0,0), Dg::float4(1,0,1,1)},
+        {Dg::float3(+1,-1,+1), Dg::float3(0,0,0), Dg::float2(0,0), Dg::float4(0.2f,0.2f,0.2f,1)},
     };
 
     // Create a vertex buffer that stores cube vertices
     descriptor->Name      = "Cube vertex buffer";
     descriptor->Usage     = Dg::USAGE_IMMUTABLE;
     descriptor->BindFlags = Dg::BIND_VERTEX_BUFFER;
-    descriptor->Size      = sizeof(cubeVerts);
+    descriptor->Size      = vertexCount * sizeof(Vertex);
     
     data->pData    = cubeVerts;
-    data->DataSize = sizeof(cubeVerts);
+    data->DataSize = vertexCount * sizeof(Vertex);
 }
 
-void SimpleMeshComponent::SetupIndexBuffer(Dg::BufferDesc* descriptor, Dg::BufferData* data)
+uint32 SimpleMeshComponent::SetupIndexBuffer(Dg::BufferDesc* descriptor, Dg::BufferData* data)
 {
-    const uint32 indices[] =
+    const uint32 indexCount = 36;  // 12 triangles * 3 vertices per triangle
+    uint32* indices = new uint32[indexCount]
     {
         2,0,1, 2,3,0,
         4,6,5, 4,7,6,
@@ -53,8 +55,10 @@ void SimpleMeshComponent::SetupIndexBuffer(Dg::BufferDesc* descriptor, Dg::Buffe
     descriptor->Name      = "Cube index buffer";
     descriptor->Usage     = Dg::USAGE_IMMUTABLE;
     descriptor->BindFlags = Dg::BIND_INDEX_BUFFER;
-    descriptor->Size      = sizeof(indices);
+    descriptor->Size      = indexCount * sizeof(uint32);
 
     data->pData    = indices;
-    data->DataSize = sizeof(indices);
+    data->DataSize = indexCount * sizeof(uint32);
+
+    return indexCount;  // returning number of triangles
 }

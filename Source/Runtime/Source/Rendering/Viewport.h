@@ -26,6 +26,7 @@ public:
     void SetWorld(ObjectPtr<World> inWorld);
     virtual ObjectPtr<World> GetWorld() { return world; }
 
+    void AttachChildViewport(ObjectPtr<Viewport> viewport);
     std::vector<ObjectPtr<Viewport>> GetChildViewports();
 
 protected:

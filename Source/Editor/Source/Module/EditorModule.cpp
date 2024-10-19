@@ -10,11 +10,14 @@
 
 void EditorModule::OnEngineInitialized()
 {
+    auto editorWorld = NewObject<EditorWorldContext>();
+    GEngine->RegisterMainWorldContext(editorWorld);
+
     ObjectPtr<Window> editorWindow = GEngine->NewWindow("Test");
 
     auto renderer = GEngine->GetRenderer3D();
     auto editorViewport = renderer->NewWindowViewport<EditorWindowViewport>(editorWindow);
     editorWindow->AttachViewport(editorViewport);
-    
-    GEngine->RegisterMainWorldContext(NewObject<EditorWorldContext>());
+
+    editorWorld->Initialize();
 }

@@ -9,6 +9,7 @@
 #include "Scene/Components/TransformComponent.h"
 #include "Scene/Components/StaticMeshComponent.h"
 #include "Scene3D.h"
+#include "Scene/Components/SimpleMeshComponent.h"
 
 #include <GraphicsTypes.h>
 #include <ImGuiImplDiligent.hpp>
@@ -17,47 +18,74 @@
 
 #include <Graphics/GraphicsEngine/interface/SwapChain.h>
 #include <Graphics/GraphicsEngineOpenGL/interface/EngineFactoryOpenGL.h>
+#include <Graphics/GraphicsTools/interface/MapHelper.hpp>
+
+DEFINE_LOGGER_STATIC(LogRenderer3D, LogVerbosity::Type::Warning);
 
 static const char* VSSource = R"(
-struct PSInput 
-{ 
-    float4 Pos   : SV_POSITION; 
-    float3 Color : COLOR; 
+// Attributes
+layout(location = 0) in vec3 ATTRIB0_Position;
+layout(location = 1) in vec3 ATTRIB1_Normal;
+layout(location = 2) in vec2 ATTRIB2_UV;
+layout(location = 3) in vec4 ATTRIB3_Color;
+
+// Constant buffer
+layout(std140, binding = 0) uniform VSConstants
+{
+    mat4 g_WorldViewProj;
+    mat4 g_World;
 };
 
-void main(in uint VertId : SV_VertexID, out PSInput PSIn) 
+// Outputs to fragment shader
+layout(location = 0) out vec3 out_WorldPos;
+layout(location = 1) out vec3 out_Normal;
+layout(location = 2) out vec2 out_UV;
+layout(location = 3) out vec4 out_Color;
+
+void main()
 {
-    float4 Pos[3];
-    Pos[0] = float4(-0.5, -0.5, 0.0, 1.0);
-    Pos[1] = float4( 0.0, +0.5, 0.0, 1.0);
-    Pos[2] = float4(+0.5, -0.5, 0.0, 1.0);
+    // Transform world position
+    vec4 worldPos = g_World * vec4(ATTRIB0_Position, 1.0);
+    out_WorldPos = worldPos.xyz;
+    
+    // Transform to clip space
+    gl_Position = g_WorldViewProj * vec4(ATTRIB0_Position, 1.0);
+    
+    // Transform normal to world space
+    out_Normal = mat3(g_World) * ATTRIB1_Normal;
+    
+    // Pass through texture coordinates
+    out_UV = ATTRIB2_UV;
 
-    float3 Col[3];
-    Col[0] = float3(1.0, 0.0, 0.0); // red
-    Col[1] = float3(0.0, 1.0, 0.0); // green
-    Col[2] = float3(0.0, 0.0, 1.0); // blue
-
-    PSIn.Pos   = Pos[VertId];
-    PSIn.Color = Col[VertId];
+    out_Color = ATTRIB3_Color;
 }
 )";
 
 // Pixel shader simply outputs interpolated vertex color
 static const char* PSSource = R"(
-struct PSInput 
-{ 
-    float4 Pos   : SV_POSITION; 
-    float3 Color : COLOR; 
-};
+// Inputs from vertex shader
+layout(location = 0) in vec3 in_WorldPos;
+layout(location = 1) in vec3 in_Normal;
+layout(location = 2) in vec2 in_UV;
+layout(location = 3) in vec4 in_Color;
 
-struct PSOutput
-{ 
-    float4 Color : SV_TARGET; 
-};
+// Output
+layout(location = 0) out vec4 out_Color;
 
-void main(in PSInput  PSIn, out PSOutput PSOut)
+void main()
 {
-    PSOut.Color = float4(PSIn.Color.rgb, 1.0);
+    vec3 Normal = normalize(in_Normal);
+    
+    // Simple lighting calculation
+    vec3 LightDir = normalize(vec3(1.0, 1.0, -1.0));
+    float NdotL = max(dot(Normal, LightDir), 0.0);
+    
+    // Base color (you could add texture sampling here)
+    vec3 BaseColor = vec3(0.7, 0.7, 0.7);
+    
+    // Final color with simple diffuse lighting
+    vec3 FinalColor = BaseColor * (NdotL * 0.7 + 0.3); // 0.3 is ambient
+    out_Color = vec4(FinalColor, 1.0);
 }
 )";
 
@@ -98,9 +126,15 @@ ObjectPtr<Viewport> Renderer3D::NewViewport()
 
 UUID Renderer3D::MeshCreateFromComponent(StaticMeshComponent* staticMeshComponent)
 {
-    if (!IsValid(scene))
-        return UUID::CreateInvalid();
-    return scene->MeshCreateFromComponent(renderDevice, staticMeshComponent);
+    UUID id = UUID::CreateInvalid();
+    
+    if (IsValid(scene))
+    {
+        id = scene->MeshCreateFromComponent(renderDevice, staticMeshComponent);
+        staticMeshComponent->rendererMeshID = id;
+    }    
+    
+    return id;
 }
 
 void Renderer3D::CreateResources()
@@ -128,51 +162,92 @@ void Renderer3D::CreateResources()
     // No back face culling for this tutorial
     PSOCreateInfo.GraphicsPipeline.RasterizerDesc.CullMode      = Dg::CULL_MODE_NONE;
     // Disable depth testing
-    PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthEnable = Dg::False;
+    PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthEnable = true;
+    PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthWriteEnable = true;
     // clang-format on
 
     Dg::ShaderCreateInfo ShaderCI;
     // Tell the system that the shader source code is in HLSL.
     // For OpenGL, the engine will convert this into GLSL under the hood
-    ShaderCI.SourceLanguage = Dg::SHADER_SOURCE_LANGUAGE_HLSL;
+    ShaderCI.SourceLanguage = Dg::SHADER_SOURCE_LANGUAGE_GLSL;
     // OpenGL backend requires emulated combined HLSL texture samplers (g_Texture + g_Texture_sampler combination)
     ShaderCI.Desc.UseCombinedTextureSamplers = true;
     // Create a vertex shader
     Dg::RefCntAutoPtr<Dg::IShader> pVS;
     {
+        Diligent::RefCntAutoPtr<Dg::IDataBlob> shaderCompilerOutput;
+        
         ShaderCI.Desc.ShaderType = Dg::SHADER_TYPE_VERTEX;
         ShaderCI.EntryPoint      = "main";
         ShaderCI.Desc.Name       = "Triangle vertex shader";
         ShaderCI.Source          = VSSource;
-        renderDevice->CreateShader(ShaderCI, &pVS);
+        renderDevice->CreateShader(ShaderCI, &pVS, &shaderCompilerOutput);
+
+        if (shaderCompilerOutput)
+        {
+            LogRenderer3D.Error("An error occurred during vertex shader compilation: {}", (char*)shaderCompilerOutput->GetDataPtr());
+        }
     }
 
     // Create a pixel shader
     Dg::RefCntAutoPtr<Dg::IShader> pPS;
     {
+        Diligent::RefCntAutoPtr<Dg::IDataBlob> shaderCompilerOutput;
+        
         ShaderCI.Desc.ShaderType = Dg::SHADER_TYPE_PIXEL;
         ShaderCI.EntryPoint      = "main";
         ShaderCI.Desc.Name       = "Triangle pixel shader";
         ShaderCI.Source          = PSSource;
         renderDevice->CreateShader(ShaderCI, &pPS);
+
+        if (shaderCompilerOutput)
+        {
+            LogRenderer3D.Error("An error occurred during pixel shader compilation: {}", (char*)shaderCompilerOutput->GetDataPtr());
+        }
     }
 
-    // Finally, create the pipeline state
+    // Create constant buffer for the vertex shader
+    Diligent::BufferDesc VSConstantBufferDesc;
+    VSConstantBufferDesc.Name = "VS constants buffer";
+    VSConstantBufferDesc.Size = sizeof(VSConstants);
+    VSConstantBufferDesc.Usage = Diligent::USAGE_DYNAMIC;
+    VSConstantBufferDesc.BindFlags = Diligent::BIND_UNIFORM_BUFFER;
+    VSConstantBufferDesc.CPUAccessFlags = Diligent::CPU_ACCESS_WRITE;
+
+    renderDevice->CreateBuffer(VSConstantBufferDesc, nullptr, &vsConstantsBuffer);
+    
+    // When creating the PSO, make sure to set up the resource layout
+    Diligent::PipelineResourceLayoutDesc ResourceLayout;
+    Diligent::ShaderResourceVariableDesc Variables[] = {
+        {Diligent::SHADER_TYPE_VERTEX, "VSConstants", Diligent::SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE}
+    };
+    ResourceLayout.Variables = Variables;
+    ResourceLayout.NumVariables = _countof(Variables);
+
+    Diligent::LayoutElement LayoutElems[] =
+    {
+        // Attribute 0 - vertex position
+        Diligent::LayoutElement{0, 0, 3, Diligent::VT_FLOAT32, false},
+        // Attribute 1 - vertex normal
+        Diligent::LayoutElement{1, 0, 3, Diligent::VT_FLOAT32, false},
+        // Attribute 2 - texture coordinates
+        Diligent::LayoutElement{2, 0, 2, Diligent::VT_FLOAT32, false},
+        Diligent::LayoutElement{3, 0, 4, Diligent::VT_FLOAT32, false}
+    };
+    PSOCreateInfo.GraphicsPipeline.InputLayout.LayoutElements = LayoutElems;
+    PSOCreateInfo.GraphicsPipeline.InputLayout.NumElements = _countof(LayoutElems);
+    
+    PSOCreateInfo.PSODesc.ResourceLayout = ResourceLayout;
     PSOCreateInfo.pVS = pVS;
     PSOCreateInfo.pPS = pPS;
     renderDevice->CreateGraphicsPipelineState(PSOCreateInfo, &pPSO);
 
-    auto scDesc = renderSwapChain->GetDesc();
-
-    // Dg::ImGuiDiligentCreateInfo imguiCreateInfo;
-    // imguiCreateInfo.pDevice = pDevice;
-    // imguiCreateInfo.BackBufferFmt = scDesc.ColorBufferFormat;
-    // imguiCreateInfo.DepthBufferFmt = scDesc.DepthBufferFormat;
-    // imguiRenderer.reset(new ImGuiImplSDLDiligent(imguiCreateInfo, windowPtr));
-
-    //renderTarget = NewObject<RenderTarget>(pSwapChain, pDevice);
-    
-    // viewport = NewObject<ImGuiComponentViewport>(renderTarget);
+    pPSO->CreateShaderResourceBinding(&shaderBinding, true);
+    auto shaderVarConstants = shaderBinding->GetVariableByName(Diligent::SHADER_TYPE_VERTEX, "VSConstants");
+    if (shaderVarConstants)
+    {
+        shaderVarConstants->Set(vsConstantsBuffer);
+    }
 }
 
 void Renderer3D::RenderViewport(ObjectPtr<Viewport> viewport)
@@ -199,49 +274,82 @@ void Renderer3D::RenderViewport(ObjectPtr<Viewport> viewport)
             mainCameraProjectionMatrix = camera.frustum;
         });
 
-        auto viewMeshes = registry->view<const TransformComponent, StaticMeshComponent>();
-        viewMeshes.each([&](const auto& entity, const TransformComponent& xform, StaticMeshComponent& meshComponent)
+        // Set render targets before issuing any draw command.
+        // Note that Present() unbinds the back buffer if it is set as render target.
+        contextImmediate->SetRenderTargets(1, &viewport->GetRenderViewTarget(), viewport->GetViewDepthStencil(), Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+
+        // Clear the back buffer
+        const float ClearColor[] = {0.350f, 0.350f, 0.350f, 1.0f};
+        // Let the engine perform required state transitions
+        contextImmediate->ClearRenderTarget(viewport->GetRenderViewTarget(), ClearColor, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+        contextImmediate->ClearDepthStencil(viewport->GetViewDepthStencil(), Diligent::CLEAR_DEPTH_FLAG, 1.f, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+
+        // Set the pipeline state in the immediate context
+        contextImmediate->SetPipelineState(pPSO);
+
+        auto viewMeshes = registry->view<const TransformComponent, SimpleMeshComponent>();
+        viewMeshes.each([&](const auto& entity, const TransformComponent& xform, SimpleMeshComponent& meshComponent)
         {
+            auto vertexBuffer = scene->GetVertexBuffer(meshComponent.rendererMeshID);
+            auto indexBuffer = scene->GetIndexBuffer(meshComponent.rendererMeshID);
+
+            // Validate buffers before use
+            if (!vertexBuffer || !indexBuffer)
+            {
+                LogRenderer3D.Error("Invalid buffers for mesh %s", meshComponent.rendererMeshID.ToString().c_str());
+                return;
+            }
+
+            // Validate buffer states
+            Dg::BufferDesc vbDesc = vertexBuffer->GetDesc();
+            if (!(vbDesc.BindFlags & Dg::BIND_VERTEX_BUFFER))
+            {
+                LogRenderer3D.Error("Invalid vertex buffer flags");
+                return;
+            }
+
+            // {
+            //     Dg::MapHelper<Vertex> vertices(contextImmediate, vertexBuffer, Dg::MAP_READ, Diligent::MAP_FLAG_NONE);
+            //     if (vertices)
+            //     {
+            //         LogRenderer3D.Info("Post-creation vertex[0]: Pos({},{},{})",
+            //             vertices[0].position.x,
+            //             vertices[0].position.y,
+            //             vertices[0].position.z);
+            //     }
+            // }
             
+            // Update constant buffer
+            {
+                Diligent::MapHelper<VSConstants> constants(contextImmediate, vsConstantsBuffer, Diligent::MAP_WRITE, Diligent::MAP_FLAG_DISCARD);
+                constants->world = xform.matrix;
+                constants->worldViewProj = xform.matrix * mainCameraViewMatrix * mainCameraProjectionMatrix;
+            }
+
+            // Bind vertex buffers
+            Diligent::IBuffer* pVBs[] = {vertexBuffer};
+            const Uint64 offset   = 0;
+            contextImmediate->SetVertexBuffers(0, 1, pVBs, &offset, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION, Diligent::SET_VERTEX_BUFFERS_FLAG_RESET);
+
+            // Bind index buffer
+            contextImmediate->SetIndexBuffer(indexBuffer, 0, Dg::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+
+            contextImmediate->CommitShaderResources(shaderBinding, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+            
+            uint32 indexCount = scene->GetIndexCount(meshComponent.rendererMeshID);
+
+            // Add debug markers if supported
+            contextImmediate->BeginDebugGroup("Mesh Draw");
+        
+            Dg::DrawIndexedAttribs DrawAttrs;
+            DrawAttrs.IndexType  = Diligent::VT_UINT32;
+            DrawAttrs.NumIndices = indexCount;
+            DrawAttrs.Flags      = Diligent::DRAW_FLAG_VERIFY_ALL; // Enable all validation
+            contextImmediate->DrawIndexed(DrawAttrs);
+
+            contextImmediate->EndDebugGroup();
         });
     }
-    
-    // // Set render targets before issuing any draw command.
-    // // Note that Present() unbinds the back buffer if it is set as render target.
-    // contextImmediate->SetRenderTargets(1, &viewport->GetRenderViewTarget(), viewport->GetViewDepthStencil(), Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-    //
-    // // Clear the back buffer
-    // const float ClearColor[] = {0.350f, 0.350f, 0.350f, 1.0f};
-    // // Let the engine perform required state transitions
-    // contextImmediate->ClearRenderTarget(viewport->GetRenderViewTarget(), ClearColor, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-    // contextImmediate->ClearDepthStencil(viewport->GetViewDepthStencil(), Diligent::CLEAR_DEPTH_FLAG, 1.f, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-    //
-    // // Set the pipeline state in the immediate context
-    // contextImmediate->SetPipelineState(pPSO);
-    //
-    // // Typically we should now call CommitShaderResources(), however shaders in this example don't
-    // // use any resources.
-    //
-    // Diligent::DrawAttribs drawAttrs;
-    // drawAttrs.NumVertices = 3; // Render 3 vertices
-    // contextImmediate->Draw(drawAttrs);
-    
-    
-    
-    // auto scDesc = pSwapChain->GetDesc();
-    // imguiRenderer->NewFrame(scDesc.Width, scDesc.Height, scDesc.PreTransform);
-    //
-    // auto* pRTV = pSwapChain->GetCurrentBackBufferRTV();
-    // auto* pDSV = pSwapChain->GetDepthBufferDSV();
-    // pImmediateContext->SetRenderTargets(1, &pRTV, pDSV, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-    // pImmediateContext->ClearRenderTarget(pRTV, ClearColor, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-    // pImmediateContext->ClearDepthStencil(pDSV, Diligent::CLEAR_DEPTH_FLAG, 1.f, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-    //
-    // static bool showDemoWindow = true;
-    // ImGui::ShowDemoWindow(&showDemoWindow);
-    // viewport->Draw();
-    //
-    // imguiRenderer->Render(pImmediateContext);
     
     viewport->Render(contextImmediate);
 }

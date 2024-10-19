@@ -11,18 +11,21 @@ RenderTarget::RenderTarget(Dg::RefCntAutoPtr<Dg::ISwapChain>& swapChain, Dg::Ref
     : swapChain(swapChain)
     , renderDevice(renderDevice)
 {
+    Resize(500, 500);
 }
 
 void RenderTarget::SetRenderTargetAndClear(Dg::IDeviceContext* deviceContext)
 {
+    Dg::RefCntAutoPtr<Dg::ITextureView> renderViewTarget = GetRenderViewTarget();
+        
     // Set render targets before issuing any draw command.
     // Note that Present() unbinds the back buffer if it is set as render target.
-    deviceContext->SetRenderTargets(1, &GetRenderViewTarget(), GetViewDepthStencil(), Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    deviceContext->SetRenderTargets(1, &renderViewTarget, GetViewDepthStencil(), Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
 
     // Clear the back buffer
     const float ClearColor[] = {0.350f, 0.350f, 0.350f, 1.0f};
     // Let the engine perform required state transitions
-    deviceContext->ClearRenderTarget(GetRenderViewTarget(), ClearColor, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+    deviceContext->ClearRenderTarget(renderViewTarget, ClearColor, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
     deviceContext->ClearDepthStencil(GetViewDepthStencil(), Diligent::CLEAR_DEPTH_FLAG, 1.f, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
 }
 
