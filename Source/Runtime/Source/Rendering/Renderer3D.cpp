@@ -74,18 +74,7 @@ layout(location = 0) out vec4 out_Color;
 
 void main()
 {
-    vec3 Normal = normalize(in_Normal);
-    
-    // Simple lighting calculation
-    vec3 LightDir = normalize(vec3(1.0, 1.0, -1.0));
-    float NdotL = max(dot(Normal, LightDir), 0.0);
-    
-    // Base color (you could add texture sampling here)
-    vec3 BaseColor = vec3(0.7, 0.7, 0.7);
-    
-    // Final color with simple diffuse lighting
-    vec3 FinalColor = BaseColor * (NdotL * 0.7 + 0.3); // 0.3 is ambient
-    out_Color = vec4(FinalColor, 1.0);
+    out_Color = in_Color;
 }
 )";
 

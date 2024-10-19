@@ -9,6 +9,13 @@ EditorWorldContext::EditorWorldContext()
     gameWorld = NewObject<GameWorld>();
 }
 
+void EditorWorldContext::Process()
+{
+    WorldContext::Process();
+
+    gameWorld->Process();
+}
+
 void EditorWorldContext::Initialize()
 {
     gameWorld->Initialize();

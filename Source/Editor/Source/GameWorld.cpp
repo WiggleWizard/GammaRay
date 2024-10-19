@@ -19,8 +19,17 @@ void GameWorld::Initialize()
     registry->emplace<CameraComponent>(cameraEntity);
 
     auto simpleMeshEntity = registry->create();
-    TransformComponent& xformComponent = registry->emplace<TransformComponent>(simpleMeshEntity);
-    xformComponent.matrix = xformComponent.matrix.Translation(0, 0, -5.f);
+    xformComponent = &registry->emplace<TransformComponent>(simpleMeshEntity);
     SimpleMeshComponent simpleMeshComponent = registry->emplace<SimpleMeshComponent>(simpleMeshEntity);
     simpleMeshComponent.GenerateMesh();
+}
+
+void GameWorld::Process()
+{
+    const Dg::float4x4 rotationMatrix = rotationMatrix.RotationArbitrary(Dg::float3{0.f, 1.f, 0.f}, rotation);
+    const Dg::float4x4 translationMatrix = translationMatrix.Translation(0.f, 0.f, 5.f);
+    
+    xformComponent->matrix = rotationMatrix * translationMatrix;
+
+    rotation += 0.01f;
 }

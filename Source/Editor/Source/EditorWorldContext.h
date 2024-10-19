@@ -10,6 +10,8 @@ class EditorWorldContext : public WorldContext
 public:
     EditorWorldContext();
 
+    void Process() override;
+
     void Initialize();
 
     virtual ObjectPtr<World> GetMainWorld() override;
