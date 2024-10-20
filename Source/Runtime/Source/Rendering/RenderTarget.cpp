@@ -3,6 +3,8 @@
 #include <RenderDevice.h>
 #include <Texture.h>
 
+DEFINE_LOGGER_STATIC(LogRenderTarget, LogVerbosity::Verbose)
+
 RenderTarget::RenderTarget()
 {
 }
@@ -11,13 +13,19 @@ RenderTarget::RenderTarget(Dg::RefCntAutoPtr<Dg::ISwapChain>& swapChain, Dg::Ref
     : swapChain(swapChain)
     , renderDevice(renderDevice)
 {
-    Resize(500, 500);
+    //Resize(500, 500);
 }
 
-void RenderTarget::SetRenderTargetAndClear(Dg::IDeviceContext* deviceContext)
+bool RenderTarget::SetRenderTargetAndClear(Dg::IDeviceContext* deviceContext)
 {
     Dg::RefCntAutoPtr<Dg::ITextureView> renderViewTarget = GetRenderViewTarget();
-        
+
+    // Don't try set render target and clear if the target does not exist
+    if (renderViewTarget == nullptr)
+    {
+        return false;
+    }
+    
     // Set render targets before issuing any draw command.
     // Note that Present() unbinds the back buffer if it is set as render target.
     deviceContext->SetRenderTargets(1, &renderViewTarget, GetViewDepthStencil(), Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
@@ -27,6 +35,8 @@ void RenderTarget::SetRenderTargetAndClear(Dg::IDeviceContext* deviceContext)
     // Let the engine perform required state transitions
     deviceContext->ClearRenderTarget(renderViewTarget, ClearColor, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
     deviceContext->ClearDepthStencil(GetViewDepthStencil(), Diligent::CLEAR_DEPTH_FLAG, 1.f, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+
+    return true;
 }
 
 void RenderTarget::Resize(uint32 width, uint32 height)
@@ -34,6 +44,11 @@ void RenderTarget::Resize(uint32 width, uint32 height)
     viewportSize.x = width;
     viewportSize.y = height;
     
+    if (width == 0 || height == 0)
+    {
+        return;
+    }
+        
     if (swapChain == nullptr)
     {
         return;
@@ -56,6 +71,8 @@ void RenderTarget::Resize(uint32 width, uint32 height)
     RTColorDesc.ClearValue.Color[3] = 1.f;
 
     renderDevice->CreateTexture(RTColorDesc, nullptr, &renderTargetTextureColor);
+
+    CHECK_RETURN_VOID(renderTargetTextureColor != nullptr, "Could not create a color texture for render target");
     
     // Store the render target view
     renderViewTarget = renderTargetTextureColor->GetDefaultView(Dg::TEXTURE_VIEW_RENDER_TARGET);
@@ -75,4 +92,24 @@ void RenderTarget::Resize(uint32 width, uint32 height)
     renderDevice->CreateTexture(RTDepthDesc, nullptr, &pRTDepth);
     // Store the depth-stencil view
     viewDepthStencil = pRTDepth->GetDefaultView(Dg::TEXTURE_VIEW_DEPTH_STENCIL);
+}
+
+float RenderTarget::GetHorizontalRatio()
+{
+    if (viewportSize.y == 0 || viewportSize.x == 0)
+        return 0.f;
+    return (float)viewportSize.x / (float)viewportSize.y;
+}
+
+float RenderTarget::GetVerticalRatio()
+{
+    if (viewportSize.y == 0 || viewportSize.x == 0)
+        return 0.f;
+    return (float)viewportSize.y / (float)viewportSize.x;
+}
+
+float RenderTarget::GetRatio()
+{
+    // TODO: 
+    return GetHorizontalRatio();
 }

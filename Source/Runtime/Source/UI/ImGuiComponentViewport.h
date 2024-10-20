@@ -25,6 +25,7 @@ public:
     void OnResized(uint32 width, uint32 height);
 
 private:
-    Dg::Vector2<uint32> prevWindowSize;
+    uint32 prevSizeX = 0;
+    uint32 prevSizeY = 0;
     ObjectPtr<RenderTarget> viewport = nullptr;
 };

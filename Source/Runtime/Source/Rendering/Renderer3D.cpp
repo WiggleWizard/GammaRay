@@ -253,25 +253,22 @@ void Renderer3D::RenderViewport(ObjectPtr<Viewport> viewport)
         Dg::float4x4 mainCameraViewMatrix;
         Dg::float4x4 mainCameraProjectionMatrix;
         
+        float viewportRatio = viewport->GetRatio();
+        
         auto registry = world->GetRegistry();
         auto viewCameras = registry->view<const TransformComponent, CameraComponent>();
-        viewCameras.each([&mainCameraProjectionMatrix, &mainCameraViewMatrix](const auto& entity, const TransformComponent& xform, CameraComponent& camera)
+        viewCameras.each([&viewportRatio, &mainCameraProjectionMatrix, &mainCameraViewMatrix](const auto& entity, const TransformComponent& xform, CameraComponent& camera)
         {
             mainCameraViewMatrix = xform.matrix;
             
-            camera.ComputeProjectionMatrix(1);
+            camera.ComputeProjectionMatrix(viewportRatio);
             mainCameraProjectionMatrix = camera.frustum;
         });
 
-        // Set render targets before issuing any draw command.
-        // Note that Present() unbinds the back buffer if it is set as render target.
-        contextImmediate->SetRenderTargets(1, &viewport->GetRenderViewTarget(), viewport->GetViewDepthStencil(), Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-
-        // Clear the back buffer
-        const float ClearColor[] = {0.350f, 0.350f, 0.350f, 1.0f};
-        // Let the engine perform required state transitions
-        contextImmediate->ClearRenderTarget(viewport->GetRenderViewTarget(), ClearColor, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-        contextImmediate->ClearDepthStencil(viewport->GetViewDepthStencil(), Diligent::CLEAR_DEPTH_FLAG, 1.f, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+        if (!viewport->SetRenderTargetAndClear(contextImmediate))
+        {
+            return;
+        }
 
         // Set the pipeline state in the immediate context
         contextImmediate->SetPipelineState(pPSO);
@@ -279,6 +276,9 @@ void Renderer3D::RenderViewport(ObjectPtr<Viewport> viewport)
         auto viewMeshes = registry->view<const TransformComponent, SimpleMeshComponent>();
         viewMeshes.each([&](const auto& entity, const TransformComponent& xform, SimpleMeshComponent& meshComponent)
         {
+            // Add debug markers if supported
+            contextImmediate->BeginDebugGroup("Mesh Draw");
+            
             auto vertexBuffer = scene->GetVertexBuffer(meshComponent.rendererMeshID);
             auto indexBuffer = scene->GetIndexBuffer(meshComponent.rendererMeshID);
 
@@ -296,17 +296,6 @@ void Renderer3D::RenderViewport(ObjectPtr<Viewport> viewport)
                 LogRenderer3D.Error("Invalid vertex buffer flags");
                 return;
             }
-
-            // {
-            //     Dg::MapHelper<Vertex> vertices(contextImmediate, vertexBuffer, Dg::MAP_READ, Diligent::MAP_FLAG_NONE);
-            //     if (vertices)
-            //     {
-            //         LogRenderer3D.Info("Post-creation vertex[0]: Pos({},{},{})",
-            //             vertices[0].position.x,
-            //             vertices[0].position.y,
-            //             vertices[0].position.z);
-            //     }
-            // }
             
             // Update constant buffer
             {
@@ -326,9 +315,6 @@ void Renderer3D::RenderViewport(ObjectPtr<Viewport> viewport)
             contextImmediate->CommitShaderResources(shaderBinding, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
             
             uint32 indexCount = scene->GetIndexCount(meshComponent.rendererMeshID);
-
-            // Add debug markers if supported
-            contextImmediate->BeginDebugGroup("Mesh Draw");
         
             Dg::DrawIndexedAttribs DrawAttrs;
             DrawAttrs.IndexType  = Diligent::VT_UINT32;

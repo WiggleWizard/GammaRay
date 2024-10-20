@@ -3,10 +3,6 @@
 #include "Rendering/RenderTarget.h"
 
 #include <imgui.h>
-#include <SwapChain.h>
-#include <RenderDevice.h>
-
-namespace Dg = Diligent;
 
 ImGuiComponentViewport::ImGuiComponentViewport(ObjectPtr<RenderTarget> viewport)
     : viewport(viewport)
@@ -20,9 +16,12 @@ void ImGuiComponentViewport::Draw()
     if (ImGui::Begin("Viewport"))
     {
         ImVec2 viewSize = ImGui::GetContentRegionAvail();
-        if (prevWindowSize.x != (uint32)viewSize.x || prevWindowSize.y != (uint32)viewSize.y)
+        if (prevSizeX != (uint32)viewSize.x || prevSizeY != (uint32)viewSize.y)
         {
-            //OnResized(viewSize.x, viewSize.y);
+            OnResized(viewSize.x, viewSize.y);
+            
+            prevSizeX = viewSize.x;
+            prevSizeY = viewSize.y;
         }
 
         if (IsValid(viewport))
@@ -37,4 +36,5 @@ void ImGuiComponentViewport::Draw()
 
 void ImGuiComponentViewport::OnResized(uint32 width, uint32 height)
 {
+    viewport->Resize(width, height);
 }

@@ -26,9 +26,13 @@ public:
     virtual Dg::RefCntAutoPtr<Dg::ITextureView> GetRenderResourceShader() { return renderResourceShader; }
     virtual Dg::RefCntAutoPtr<Dg::ITextureView> GetViewDepthStencil() { return viewDepthStencil; }
 
-    void SetRenderTargetAndClear(Dg::IDeviceContext* deviceContext);
+    // Sets the render target to this render target and return true if it was successful
+    bool SetRenderTargetAndClear(Dg::IDeviceContext* deviceContext);
     
     virtual void Resize(uint32 width, uint32 height);
+    float GetHorizontalRatio();
+    float GetVerticalRatio();
+    float GetRatio();
     
 protected:
     Dg::RefCntAutoPtr<Dg::ISwapChain> swapChain;
