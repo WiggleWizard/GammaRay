@@ -61,6 +61,8 @@ Dg::RefCntAutoPtr<Dg::ITextureView> WindowViewport::GetViewDepthStencil()
 void WindowViewport::SetImguiRenderer(ImGuiImplSDLDiligent* inImguiRenderer)
 {
     imguiRenderer.reset(inImguiRenderer);
+
+    ImGui::GetIO().ConfigWindowsMoveFromTitleBarOnly = true;
 }
 
 void WindowViewport::DrawImGui()

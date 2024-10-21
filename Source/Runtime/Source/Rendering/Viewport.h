@@ -10,13 +10,15 @@ union SDL_Event;
 
 class Viewport : public RenderTarget
 {
+    friend class ImGuiComponentViewport;
+    
 public:
     Viewport();
     Viewport(Dg::RefCntAutoPtr<Dg::ISwapChain>& swapChain, Dg::RefCntAutoPtr<Dg::IRenderDevice>& renderDevice);
 
     virtual bool PreProcessEvent(const SDL_Event* event) { return false; }
 
-    virtual void PreProcess() {}
+    virtual void PreProcess();
     virtual void Process() {}
     
     virtual void PreRender(Dg::RefCntAutoPtr<Dg::IDeviceContext> deviceContext) {}
@@ -24,7 +26,8 @@ public:
 
     virtual void PostPresent() {}
 
-    virtual bool ProcessInputEvent(const InputEvent* inputEvent);
+    // Don't override unless you know exactly what you're doing
+    virtual bool ProcessInputEvent(const ObjectPtr<InputEvent> inputEvent);
 
     void SetWorld(ObjectPtr<World> inWorld);
     virtual ObjectPtr<World> GetWorld() { return world; }
@@ -33,6 +36,9 @@ public:
     std::vector<ObjectPtr<Viewport>> GetChildViewports();
 
 protected:
+    virtual void OnInputEvent(const ObjectPtr<InputEvent> inputEvent);
+    
     ObjectPtr<World> world = nullptr;
     std::vector<ObjectPtr<Viewport>> children;
+    bool mouseFocused = false;
 };

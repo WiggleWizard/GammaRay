@@ -18,18 +18,25 @@ void GameWorld::Initialize()
     registry->emplace<TransformComponent>(cameraEntity);
     registry->emplace<CameraComponent>(cameraEntity);
 
-    auto simpleMeshEntity = registry->create();
-    xformComponent = &registry->emplace<TransformComponent>(simpleMeshEntity);
-    SimpleMeshComponent simpleMeshComponent = registry->emplace<SimpleMeshComponent>(simpleMeshEntity);
-    simpleMeshComponent.GenerateMesh();
+    auto simpleMeshEntity1 = registry->create();
+    auto xformComponent1 = &registry->emplace<TransformComponent>(simpleMeshEntity1);
+    xformComponent1->matrix = xformComponent1->matrix.Translation(0.f, 0.f, 5.f);
+    auto simpleMeshComponent1 = registry->emplace<SimpleMeshComponent>(simpleMeshEntity1);
+    simpleMeshComponent1.GenerateMesh();
+
+    auto simpleMeshEntity2 = registry->create();
+    auto xformComponent2 = &registry->emplace<TransformComponent>(simpleMeshEntity2);
+    xformComponent2->matrix = xformComponent2->matrix.Translation(5.f, 0.f, 0.f);
+    auto simpleMeshComponent2 = registry->emplace<SimpleMeshComponent>(simpleMeshEntity2);
+    simpleMeshComponent2.GenerateMesh();
 }
 
 void GameWorld::Process()
 {
-    const Dg::float4x4 rotationMatrix = rotationMatrix.RotationArbitrary(Dg::float3{0.f, 1.f, 0.f}, rotation);
-    const Dg::float4x4 translationMatrix = translationMatrix.Translation(0.f, 0.f, 5.f);
-    
-    xformComponent->matrix = rotationMatrix * translationMatrix;
-
-    rotation += 0.01f;
+    // const Dg::float4x4 rotationMatrix = rotationMatrix.RotationArbitrary(Dg::float3{0.f, 1.f, 0.f}, rotation);
+    // const Dg::float4x4 translationMatrix = translationMatrix.Translation(0.f, 0.f, 5.f);
+    //
+    // xformComponent->matrix = rotationMatrix * translationMatrix;
+    //
+    // rotation += 0.01f;
 }

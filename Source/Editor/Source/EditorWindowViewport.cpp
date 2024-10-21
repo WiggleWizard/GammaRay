@@ -1,6 +1,7 @@
 ﻿#include "EditorWindowViewport.h"
 
 #include "EditorWorldContext.h"
+#include "GameViewport.h"
 #include "GameWorld.h"
 #include "UI/ImGuiComponentViewport.h"
 
@@ -10,7 +11,7 @@
 EditorWindowViewport::EditorWindowViewport(Dg::RefCntAutoPtr<Dg::ISwapChain>& swapChain, Dg::RefCntAutoPtr<Dg::IRenderDevice>& renderDevice)
     : Super(swapChain, renderDevice)
 {
-    ObjectPtr<Viewport> gameViewport = NewObject<Viewport>(swapChain, renderDevice);
+    ObjectPtr<Viewport> gameViewport = NewObject<GameViewport>(swapChain, renderDevice);
     AttachChildViewport(gameViewport);
 
     auto editorWorldContext = Cast<EditorWorldContext>(GEngine->GetMainWorldContext());

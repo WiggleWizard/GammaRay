@@ -111,7 +111,7 @@ void WindowManager::OnWindowEvent(const SDL_WindowEvent* event)
     }
 }
 
-void WindowManager::PropagateInputEvent(const InputEvent* inputEvent)
+void WindowManager::PropagateInputEvent(const ObjectPtr<InputEvent> inputEvent)
 {
     for (const auto& window : windows)
     {

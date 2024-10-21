@@ -35,7 +35,7 @@ public:
     void PreProcess();
     void Render();
 
-    virtual bool ProcessInputEvent(const InputEvent* inputEvent);
+    virtual bool ProcessInputEvent(const ObjectPtr<InputEvent> inputEvent);
 
     void AttachViewport(ObjectPtr<WindowViewport> inViewport);
     

@@ -11,7 +11,7 @@ class CameraComponent : public Component
 public:
     Dg::float4x4 frustum;
     
-    float fov = 90.f;
+    float fov = 70.f;
     float zNear = 0.01f;
     float zFar = 100.f;
 

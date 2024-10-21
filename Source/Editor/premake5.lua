@@ -1,6 +1,6 @@
 
 local external_includes = {
-    "spdlog", "DiligentCoreCommon", "DiligentCoreGraphics", "entt"
+    "spdlog", "DiligentCoreCommon", "DiligentCoreGraphics", "entt", "SDL2"
 }
 local includes = {}
 

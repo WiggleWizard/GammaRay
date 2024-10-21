@@ -14,6 +14,6 @@ public:
     virtual ObjectPtr<World> GetMainWorld() { return nullptr; }
 
 private:
-    ObjectPtr<RenderTarget> viewport = nullptr;
+    ObjectPtr<RenderTarget> renderTarget = nullptr;
     ObjectPtr<World> currentWorld = nullptr;
 };

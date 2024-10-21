@@ -6,6 +6,10 @@
 class InputEvent : public Object
 {
 public:
+    bool HasBeenHandled() const { return handled; }
+    void Handled() { handled = true; }
+
+protected:
     bool handled = false;
 };
 

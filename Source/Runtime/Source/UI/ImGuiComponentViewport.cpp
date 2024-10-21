@@ -1,10 +1,10 @@
 ﻿#include "ImGuiComponentViewport.h"
 
-#include "Rendering/RenderTarget.h"
+#include "Rendering/Viewport.h"
 
 #include <imgui.h>
 
-ImGuiComponentViewport::ImGuiComponentViewport(ObjectPtr<RenderTarget> viewport)
+ImGuiComponentViewport::ImGuiComponentViewport(ObjectPtr<Viewport> viewport)
     : viewport(viewport)
 {
 }
@@ -26,6 +26,8 @@ void ImGuiComponentViewport::Draw()
 
         if (IsValid(viewport))
         {
+            viewport->mouseFocused = false;
+            
             ImGui::Image(viewport->GetRenderResourceShader(), ImGui::GetContentRegionAvail());
 
             // Force ImGui to not sink the inputs if we are hovering over the viewport display quad
@@ -34,6 +36,9 @@ void ImGuiComponentViewport::Draw()
             {
                 io.WantCaptureMouse = false;
                 io.WantCaptureKeyboard = false;
+
+                // Tell the viewport we focusing on it
+                viewport->mouseFocused = true;
             }
         }
     }

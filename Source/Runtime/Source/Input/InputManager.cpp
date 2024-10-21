@@ -81,18 +81,18 @@ void InputManager::HandleEvent(const SDL_Event* event)
         LogInputManager.Info("Could not process user generated SDL input {0} (0x{0:X})", event->type);
     }
 
-    // If imgui has eaten the input, then mark it as handled
     if (IsValid(inputEvent))
     {
+        // If imgui has eaten the input, then mark it as handled
         auto io = ImGui::GetIO();
         if (io.WantCaptureKeyboard || io.WantCaptureMouse)
         {
-            inputEvent->handled = true;
+            inputEvent->Handled();
         }
 
-        if (!inputEvent->handled)
+        if (!inputEvent->HasBeenHandled())
         {
-            
+            windowManager->PropagateInputEvent(inputEvent);
         }
     }
 }

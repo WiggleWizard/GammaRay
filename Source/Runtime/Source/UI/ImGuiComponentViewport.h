@@ -4,7 +4,7 @@
 
 #include <BasicMath.hpp>
 
-class RenderTarget;
+class Viewport;
 
 namespace Diligent
 {
@@ -18,7 +18,7 @@ namespace Dg = Diligent;
 class ImGuiComponentViewport : public ImGuiComponent
 {
 public:
-    ImGuiComponentViewport(ObjectPtr<RenderTarget> viewport);
+    ImGuiComponentViewport(ObjectPtr<Viewport> viewport);
     
     virtual void Draw() override;
     
@@ -29,5 +29,5 @@ public:
 private:
     uint32 prevSizeX = 0;
     uint32 prevSizeY = 0;
-    ObjectPtr<RenderTarget> viewport = nullptr;
+    ObjectPtr<Viewport> viewport = nullptr;
 };

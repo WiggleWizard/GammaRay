@@ -75,9 +75,10 @@ void Window::Render()
 {
 }
 
-bool Window::ProcessInputEvent(const InputEvent* inputEvent)
+bool Window::ProcessInputEvent(const ObjectPtr<InputEvent> inputEvent)
 {
-    viewport
+    // Tell the active viewport to process the input
+    viewport->ProcessInputEvent(inputEvent);
     
     return false;
 }

@@ -22,7 +22,7 @@ public:
     void PreProcess();
     
     void OnWindowEvent(const SDL_WindowEvent* event);
-    void PropagateInputEvent(const InputEvent* inputEvent);
+    void PropagateInputEvent(const ObjectPtr<InputEvent> inputEvent);
 
 private:
     void SendEventToFocusedWindow(const SDL_Event* event);
