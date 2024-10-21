@@ -22,7 +22,9 @@ public:
     
     virtual void Draw() override;
     
-    void OnResized(uint32 width, uint32 height);
+    void ImGuiWindowResized(uint32 width, uint32 height);
+
+    virtual void ProcessUI() {}
 
 private:
     uint32 prevSizeX = 0;

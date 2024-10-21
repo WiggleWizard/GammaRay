@@ -30,3 +30,10 @@ bool ImGuiImplSDLDiligent::ProcessEvent(const SDL_Event* event)
 {
     return ImGui_ImplSDL2_ProcessEvent(event);
 }
+
+void ImGuiImplSDLDiligent::Render(Dg::IDeviceContext* pCtx)
+{
+    pCtx->BeginDebugGroup("ImGui Render");
+    ImGuiImplDiligent::Render(pCtx);
+    pCtx->EndDebugGroup();
+}

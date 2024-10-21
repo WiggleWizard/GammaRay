@@ -4,6 +4,7 @@
 #include "ModuleManager.h"
 #include "World.h"
 #include "WorldContext.h"
+#include "Input/InputManager.h"
 #include "Rendering/Renderer3D.h"
 #include "Windowing/WindowManager.h"
 
@@ -21,6 +22,8 @@ Engine::~Engine()
 
 void Engine::Initialize()
 {
+    inputManager = NewObject<InputManager>();
+    
     windowManager = NewObject<WindowManager>();
     windowManager->Initialize();
 
@@ -73,9 +76,13 @@ ObjectPtr<Window> Engine::NewWindow(const String& windowTitle)
 
 void Engine::Process()
 {
+    if (IsValid(inputManager))
+    {
+        inputManager->PollEvents();
+    }
+    
     if (IsValid(windowManager))
     {
-        windowManager->PollEvents();
         windowManager->PreProcess();
     }
 
@@ -103,11 +110,6 @@ bool Engine::OpenWorld(String url)
 bool Engine::NewWorld()
 {
     return false;    
-}
-
-ObjectPtr<Renderer3D> Engine::GetRenderer3D()
-{
-    return renderer3D;
 }
 
 bool Engine::TryExit()

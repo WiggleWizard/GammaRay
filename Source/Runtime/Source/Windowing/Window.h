@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+class InputEvent;
 class ImGuiComponentViewport;
 class RenderTarget;
 class ImGuiImplSDLDiligent;
@@ -33,15 +34,8 @@ public:
     
     void PreProcess();
     void Render();
-    
-    void OnWindowEvent(const SDL_WindowEvent* event);
-    void OnMouseMove(const SDL_MouseMotionEvent* event);
-    void OnMouseButtonPressed(const SDL_MouseButtonEvent* event);
-    void OnMouseWheel(const SDL_MouseWheelEvent* event);
-    void OnKeyboardPressed(const SDL_KeyboardEvent* event);
-    void OnJoyAxisMotion(SDL_JoyAxisEvent* event);
-    void OnJoyButtonPressed(SDL_JoyButtonEvent* event);
-    void OnTextInput(const SDL_TextInputEvent* event);
+
+    virtual bool ProcessInputEvent(const InputEvent* inputEvent);
 
     void AttachViewport(ObjectPtr<WindowViewport> inViewport);
     

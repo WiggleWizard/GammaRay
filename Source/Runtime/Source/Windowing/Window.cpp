@@ -75,36 +75,11 @@ void Window::Render()
 {
 }
 
-void Window::OnWindowEvent(const SDL_WindowEvent* event)
+bool Window::ProcessInputEvent(const InputEvent* inputEvent)
 {
-}
-
-void Window::OnMouseMove(const SDL_MouseMotionEvent* event)
-{
-}
-
-void Window::OnMouseButtonPressed(const SDL_MouseButtonEvent* event)
-{
-}
-
-void Window::OnMouseWheel(const SDL_MouseWheelEvent* event)
-{
-}
-
-void Window::OnKeyboardPressed(const SDL_KeyboardEvent* event)
-{
-}
-
-void Window::OnJoyAxisMotion(SDL_JoyAxisEvent* event)
-{
-}
-
-void Window::OnJoyButtonPressed(SDL_JoyButtonEvent* event)
-{
-}
-
-void Window::OnTextInput(const SDL_TextInputEvent* event)
-{
+    viewport
+    
+    return false;
 }
 
 void Window::AttachViewport(ObjectPtr<WindowViewport> inViewport)

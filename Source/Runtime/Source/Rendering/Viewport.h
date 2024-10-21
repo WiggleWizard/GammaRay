@@ -2,6 +2,7 @@
 
 #include "RenderTarget.h"
 
+class InputEvent;
 class World;
 
 class ImGuiImplSDLDiligent;
@@ -22,6 +23,8 @@ public:
     virtual void Render(Dg::RefCntAutoPtr<Dg::IDeviceContext> deviceContext) {}
 
     virtual void PostPresent() {}
+
+    virtual bool ProcessInputEvent(const InputEvent* inputEvent);
 
     void SetWorld(ObjectPtr<World> inWorld);
     virtual ObjectPtr<World> GetWorld() { return world; }

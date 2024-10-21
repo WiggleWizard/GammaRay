@@ -4,6 +4,7 @@
 #include "Core/Object/ObjectMacros.h"
 #include "Core/Types/String.h"
 
+class InputManager;
 class Renderer3D;
 class WorldContext;
 class WindowManager;
@@ -35,7 +36,9 @@ public:
     bool OpenWorld(String url);
     bool NewWorld();
 
-    ObjectPtr<Renderer3D> GetRenderer3D();
+    ObjectPtr<WindowManager> GetWindowManager() { return windowManager; }
+    ObjectPtr<Renderer3D> GetRenderer3D() { return renderer3D; }
+    ObjectPtr<InputManager> GetInputManager() { return inputManager; }
 
 private:
     bool TryExit();
@@ -45,6 +48,7 @@ private:
     ObjectPtr<MainLoop> mainLoop = nullptr;
     ObjectPtr<WorldContext> worldContext = nullptr;
     ObjectPtr<Renderer3D> renderer3D = nullptr;
+    ObjectPtr<InputManager> inputManager = nullptr;
 
     bool wantsToQuit = false;
 };

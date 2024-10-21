@@ -9,6 +9,11 @@ Viewport::Viewport(Dg::RefCntAutoPtr<Dg::ISwapChain>& swapChain, Dg::RefCntAutoP
 {
 }
 
+bool Viewport::ProcessInputEvent(const InputEvent* inputEvent)
+{
+    return false;
+}
+
 void Viewport::SetWorld(ObjectPtr<World> inWorld)
 {
     world = inWorld;

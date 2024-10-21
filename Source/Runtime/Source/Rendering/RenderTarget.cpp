@@ -18,6 +18,8 @@ RenderTarget::RenderTarget(Dg::RefCntAutoPtr<Dg::ISwapChain>& swapChain, Dg::Ref
 
 bool RenderTarget::SetRenderTargetAndClear(Dg::IDeviceContext* deviceContext)
 {
+    deviceContext->BeginDebugGroup("Set Render Target");
+    
     Dg::RefCntAutoPtr<Dg::ITextureView> renderViewTarget = GetRenderViewTarget();
 
     // Don't try set render target and clear if the target does not exist
@@ -35,6 +37,8 @@ bool RenderTarget::SetRenderTargetAndClear(Dg::IDeviceContext* deviceContext)
     // Let the engine perform required state transitions
     deviceContext->ClearRenderTarget(renderViewTarget, ClearColor, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
     deviceContext->ClearDepthStencil(GetViewDepthStencil(), Diligent::CLEAR_DEPTH_FLAG, 1.f, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+
+    deviceContext->EndDebugGroup();
 
     return true;
 }
