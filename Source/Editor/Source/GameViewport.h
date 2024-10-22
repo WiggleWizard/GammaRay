@@ -20,5 +20,7 @@ protected:
 
     float camPitch = 0.0f;  // X rotation
     float camYaw = 0.0f;    // Y rotation
-    Dg::float2 wishDir = { 0.f, 0.f };
+    Dg::float2 inputDir = { 0.f, 0.f };
+
+    float cameraMoveSpeed = .1f;
 };

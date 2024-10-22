@@ -21,4 +21,20 @@ struct Vertex
     {}
 };
 
+template<class T>
+static Dg::Vector3<T> GetForwardVector(Dg::Matrix4x4<T> m)
+{
+    Dg::Vector3<T> result = { m._31, m._32, m._33 };
+    result = Dg::normalize(result);
+    return result;
+}
+
+template<class T>
+static Dg::Vector3<T> GetRightVector(Dg::Matrix4x4<T> m)
+{
+    Dg::Vector3<T> result = { m._11, m._12, m._13 };
+    result = Dg::normalize(result);
+    return result;
+}
+
 #pragma pack(pop)

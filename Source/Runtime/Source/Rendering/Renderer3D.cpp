@@ -301,7 +301,7 @@ void Renderer3D::RenderViewport(ObjectPtr<Viewport> viewport)
             {
                 Diligent::MapHelper<VSConstants> constants(contextImmediate, vsConstantsBuffer, Diligent::MAP_WRITE, Diligent::MAP_FLAG_DISCARD);
                 constants->world = xform.matrix;
-                constants->worldViewProj = xform.matrix * mainCameraViewMatrix * mainCameraProjectionMatrix;
+                constants->worldViewProj = xform.matrix * mainCameraViewMatrix.Inverse() * mainCameraProjectionMatrix;
             }
 
             // Bind vertex buffers
