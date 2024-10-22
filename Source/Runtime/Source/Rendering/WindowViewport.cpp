@@ -15,7 +15,7 @@ WindowViewport::WindowViewport(Dg::RefCntAutoPtr<Dg::ISwapChain>& swapChain, Dg:
     
 }
 
-bool WindowViewport::PreProcessEvent(const SDL_Event* event)
+bool WindowViewport::ProcessEventForImGui(const SDL_Event* event)
 {
     return imguiRenderer->ProcessEvent(event);
 }

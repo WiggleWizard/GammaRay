@@ -42,11 +42,11 @@ void* Window::GetWindowNativeID()
     return (void*)wmInfo.info.win.window;
 }
 
-bool Window::PreProcessEvent(const SDL_Event* event)
+bool Window::ProcessEventForImGui(const SDL_Event* event)
 {
     if (IsValid(viewport))
     {
-        return viewport->PreProcessEvent(event);
+        return viewport->ProcessEventForImGui(event);
     }
     
     return false;

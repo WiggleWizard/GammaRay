@@ -27,7 +27,7 @@ public:
     void* GetWindowNativeID();
 
     // Return true if the input has been sinked/used
-    bool PreProcessEvent(const SDL_Event* event);
+    bool ProcessEventForImGui(const SDL_Event* event);
     void OnCloseRequested();
 
     bool IsFocused() const;

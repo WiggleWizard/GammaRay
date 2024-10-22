@@ -16,7 +16,7 @@ public:
     Viewport();
     Viewport(Dg::RefCntAutoPtr<Dg::ISwapChain>& swapChain, Dg::RefCntAutoPtr<Dg::IRenderDevice>& renderDevice);
 
-    virtual bool PreProcessEvent(const SDL_Event* event) { return false; }
+    virtual bool ProcessEventForImGui(const SDL_Event* event) { return false; }
 
     virtual void PreProcess();
     virtual void Process() {}

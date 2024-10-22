@@ -21,6 +21,8 @@ public:
     
     void HandleEvent(const SDL_Event* event);
 
+    void SetMouseCaptured(bool captured);
+
 protected:
     ObjectPtr<InputEvent> ProcessMouseMove(const SDL_MouseMotionEvent* event);
     ObjectPtr<InputEvent> OnMouseButtonPressed(const SDL_MouseButtonEvent* event);

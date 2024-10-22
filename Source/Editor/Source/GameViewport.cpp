@@ -5,9 +5,8 @@
 #include "Scene/Components/TransformComponent.h"
 #include "Scene/Components/CameraComponent.h"
 
+#include <SDL_mouse.h>
 #include <entt/entity/registry.hpp>
-
-class CameraComponent;
 
 GameViewport::GameViewport(Dg::RefCntAutoPtr<Dg::ISwapChain>& swapChain, Dg::RefCntAutoPtr<Dg::IRenderDevice>& renderDevice)
     : Super(swapChain, renderDevice)
@@ -50,15 +49,21 @@ void GameViewport::OnInputEvent(const ObjectPtr<InputEvent> inputEvent)
     ObjectPtr<InputEventMouseButton> inputEventMouseButton = Cast<InputEventMouseButton>(inputEvent);
     if (IsValid(inputEventMouseButton))
     {
-        if (inputEventMouseButton->buttonIndex == 1)
+        if (inputEventMouseButton->buttonIndex == 3)
         {
             if (inputEventMouseButton->pressed && mouseFocused)
             {
-                holdingLeftMouse = true;
+                controllingCamera = true;
+                SDL_GetGlobalMouseState(&initialDown.x, &initialDown.y);
+                SDL_SetRelativeMouseMode(SDL_TRUE);
             }
-            else if (!inputEventMouseButton->pressed)
+            
+            // Mouse button was released if was controlling camera
+            if (controllingCamera && !inputEventMouseButton->pressed)
             {
-                holdingLeftMouse = false;
+                controllingCamera = false;
+                SDL_SetRelativeMouseMode(SDL_FALSE);
+                SDL_WarpMouseGlobal(initialDown.x, initialDown.y);
             }
             
             inputEvent->Handled();
@@ -66,12 +71,28 @@ void GameViewport::OnInputEvent(const ObjectPtr<InputEvent> inputEvent)
     }
 
     // While the user holds mouse 1, then update some internal trackers
-    if (holdingLeftMouse)
+    if (controllingCamera)
     {
         ObjectPtr<InputEventMouseMotion> inputEventMouseMotion = Cast<InputEventMouseMotion>(inputEvent);
         if (IsValid(inputEventMouseMotion))
         {
             mouseMotion += inputEventMouseMotion->velocity;
+        }
+
+        ObjectPtr<InputEventKey> inputEventKey = Cast<InputEventKey>(inputEvent);
+        if (IsValid(inputEventKey))
+        {
+            if (inputEventKey->pressed)
+            {
+                if (inputEventKey->scancode == SDL_SCANCODE_W)
+                    wishDir.y += 1.f;
+                else if (inputEventKey->scancode == SDL_SCANCODE_S)
+                    wishDir.y -= 1.f;
+                else if (inputEventKey->scancode == SDL_SCANCODE_A)
+                    wishDir.x -= 1.f;
+                else if (inputEventKey->scancode == SDL_SCANCODE_D)
+                    wishDir.x += 1.f;
+            }
         }
     }
 }

@@ -67,7 +67,7 @@ void WindowManager::PollEvents()
     for (const auto& window : windows)
     {
         // If any window has processed this event, then don't bubble it elsewhere
-        if (window->PreProcessEvent(&event))
+        if (window->ProcessEventForImGui(&event))
         {
             return;
         }

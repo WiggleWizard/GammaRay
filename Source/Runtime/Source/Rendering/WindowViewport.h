@@ -8,7 +8,7 @@ public:
     WindowViewport();
     WindowViewport(Dg::RefCntAutoPtr<Dg::ISwapChain>& swapChain, Dg::RefCntAutoPtr<Dg::IRenderDevice>& renderDevice);
 
-    virtual bool PreProcessEvent(const SDL_Event* event) override;
+    virtual bool ProcessEventForImGui(const SDL_Event* event) override;
     virtual void PreProcess() override;
     virtual void Render(Dg::RefCntAutoPtr<Dg::IDeviceContext> deviceContext) override;
 

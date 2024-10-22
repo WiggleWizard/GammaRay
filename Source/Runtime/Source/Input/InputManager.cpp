@@ -30,12 +30,19 @@ void InputManager::HandleEvent(const SDL_Event* event)
     auto focusedWindow = windowManager->GetFocusedWindow();
     if (IsValid(focusedWindow))
     {
-        focusedWindow->PreProcessEvent(event);
+        
+        // Don't process mouse specific events for ImGui if relative mouse is enabled
+        if (SDL_GetRelativeMouseMode() == SDL_FALSE)
+        {
+            focusedWindow->ProcessEventForImGui(event);
+        }
     }
 
     // Generate a native input event from SDL events
     ObjectPtr<InputEvent> inputEvent = nullptr;
     bool userGeneratedInput = false;
+
+    auto io = ImGui::GetIO();
     
     switch (event->type)
     {
@@ -63,6 +70,8 @@ void InputManager::HandleEvent(const SDL_Event* event)
     case SDL_KEYDOWN:
         inputEvent = OnKeyboardPressed(reinterpret_cast<const SDL_KeyboardEvent*>(event));
         userGeneratedInput = true;
+        if (io.WantCaptureKeyboard)
+            inputEvent->Handled();
         break;
     case SDL_JOYAXISMOTION:
         inputEvent = OnJoyAxisMotion(reinterpret_cast<const SDL_JoyAxisEvent*>(event));
@@ -75,21 +84,14 @@ void InputManager::HandleEvent(const SDL_Event* event)
         break;
     default: break;
     }
-
+    
     if (userGeneratedInput && !IsValid(inputEvent))
     {
-        LogInputManager.Info("Could not process user generated SDL input {0} (0x{0:X})", event->type);
+        LogInputManager.Info("Unknown user generated SDL input {0} (0x{0:X})", event->type);
     }
 
     if (IsValid(inputEvent))
     {
-        // If imgui has eaten the input, then mark it as handled
-        auto io = ImGui::GetIO();
-        if (io.WantCaptureKeyboard || io.WantCaptureMouse)
-        {
-            inputEvent->Handled();
-        }
-
         if (!inputEvent->HasBeenHandled())
         {
             windowManager->PropagateInputEvent(inputEvent);
