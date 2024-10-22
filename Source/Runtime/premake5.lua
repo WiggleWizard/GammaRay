@@ -16,7 +16,8 @@ group "Dependencies"
     
     build_data.project_configure["SDL2"]("ThirdParty/SDL2")
     build_data.project_configure["DiligentCore"]("ThirdParty/DiligentCore")
-    build_data.project_configure["ImGui"]("ThirdParty/DiligentTools/ThirdParty/imgui", table.unpack(build_data.project_public_includes["SDL2"]()))
+    build_data.project_configure["DiligentToolsImGui"]("ThirdParty/imgui")
+    build_data.project_configure["ImGui"]("ThirdParty/imgui", table.unpack(build_data.project_public_includes["SDL2"]()))
     
     build_data.project_declare["spdlog"]()
     build_data.project_declare["SDL2"]()

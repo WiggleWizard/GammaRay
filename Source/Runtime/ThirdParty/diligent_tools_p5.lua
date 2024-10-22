@@ -20,6 +20,7 @@ local config = {
 
 build_data.project_configure[project_names.imgui] = function(imgui_path)
     config.imgui_path = imgui_path
+    print(imgui_path)
 end
 
 
@@ -45,6 +46,8 @@ build_data.project_declare[project_names.imgui] = function(base_dir)
     if (imgui_path == nil) then
         imgui_path = path.join(dep_root_path, "ThirdParty/imgui")
     end
+
+print(imgui_path)
     
     project "DiligentToolsImGui"
         location(dep_root_path)
