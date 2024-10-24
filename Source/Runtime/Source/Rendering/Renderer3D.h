@@ -5,6 +5,8 @@
 #include <SwapChain.h>
 #include <DeviceContext.h>
 
+class PSOGrid;
+class PipelineShaderObject;
 class Scene3D;
 class Viewport;
 class Window;
@@ -61,6 +63,8 @@ private:
     Dg::RefCntAutoPtr<Dg::ISwapChain> renderSwapChain;
     Dg::RefCntAutoPtr<Dg::IDeviceContext> contextImmediate;
     Dg::IPipelineState* pPSO = nullptr;
+
+    ObjectPtr<PSOGrid> psoGrid = nullptr;
 
     Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> shaderBinding;
 

@@ -9,6 +9,7 @@
 #include "Scene/Components/TransformComponent.h"
 #include "Scene/Components/StaticMeshComponent.h"
 #include "Scene3D.h"
+#include "PSOs/PSOGrid.h"
 #include "Scene/Components/SimpleMeshComponent.h"
 
 #include <GraphicsTypes.h>
@@ -81,6 +82,7 @@ void main()
 Renderer3D::Renderer3D()
 {
     scene = NewObject<Scene3D>();
+    psoGrid = NewObject<PSOGrid>();
 }
 
 void Renderer3D::Render()
@@ -128,6 +130,8 @@ UUID Renderer3D::MeshCreateFromComponent(StaticMeshComponent* staticMeshComponen
 
 void Renderer3D::CreateResources()
 {
+    psoGrid->Initialize(renderDevice, renderSwapChain);
+    
     // Pipeline state object encompasses configuration of all GPU stages
 
     Dg::GraphicsPipelineStateCreateInfo PSOCreateInfo;
@@ -324,6 +328,13 @@ void Renderer3D::RenderViewport(ObjectPtr<Viewport> viewport)
 
             contextImmediate->EndDebugGroup();
         });
+
+        {
+            auto psoGridConstants = psoGrid->Write(contextImmediate);
+            psoGridConstants->worldViewProj = mainCameraViewMatrix.Inverse() * mainCameraProjectionMatrix;
+        }
+        psoGrid->Commit(contextImmediate);
+        
     }
     
     viewport->Render(contextImmediate);

@@ -33,7 +33,18 @@ bool PipelineShaderObject::Initialize(Dg::RefCntAutoPtr<Dg::IRenderDevice> rende
     psoCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthWriteEnable = true;
 
     String shaderSourceCodeVertex = GetShaderSourceVertex();
+    if (shaderSourceCodeVertex.empty())
+    {
+        LogPipelineShaderObject.Error("Vertex shader empty");
+        return false;
+    }
+    
     String shaderSourceCodePixel = GetShaderSourcePixel();
+    if (shaderSourceCodePixel.empty())
+    {
+        LogPipelineShaderObject.Error("Pixel shader empty");
+        return false;
+    }
 
     Dg::ShaderCreateInfo ShaderCI;
     // Tell the system that the shader source code is in HLSL.
@@ -47,14 +58,15 @@ bool PipelineShaderObject::Initialize(Dg::RefCntAutoPtr<Dg::IRenderDevice> rende
         Dg::RefCntAutoPtr<Dg::IDataBlob> shaderCompilerOutput;
         
         ShaderCI.Desc.ShaderType = Dg::SHADER_TYPE_VERTEX;
-        ShaderCI.EntryPoint      = "main_vs";
-        ShaderCI.Desc.Name       = "Triangle vertex shader";
+        ShaderCI.EntryPoint      = "main";
+        ShaderCI.Desc.Name       = "Vertex shader";
         ShaderCI.Source          = shaderSourceCodeVertex.c_str();
         renderDevice->CreateShader(ShaderCI, &shaderVertex, &shaderCompilerOutput);
 
         if (shaderCompilerOutput)
         {
             LogPipelineShaderObject.Error("An error occurred during vertex shader compilation: {}", (char*)shaderCompilerOutput->GetDataPtr());
+            return false;
         }
     }
 
@@ -64,34 +76,27 @@ bool PipelineShaderObject::Initialize(Dg::RefCntAutoPtr<Dg::IRenderDevice> rende
         Dg::RefCntAutoPtr<Dg::IDataBlob> shaderCompilerOutput;
         
         ShaderCI.Desc.ShaderType = Dg::SHADER_TYPE_PIXEL;
-        ShaderCI.EntryPoint      = "main_ps";
-        ShaderCI.Desc.Name       = "Triangle pixel shader";
+        ShaderCI.EntryPoint      = "main";
+        ShaderCI.Desc.Name       = "Pixel shader";
         ShaderCI.Source          = shaderSourceCodePixel.c_str();
         renderDevice->CreateShader(ShaderCI, &shaderPixel);
 
         if (shaderCompilerOutput)
         {
             LogPipelineShaderObject.Error("An error occurred during pixel shader compilation: {}", (char*)shaderCompilerOutput->GetDataPtr());
+            return false;
         }
     }
 
-    // Create constant buffer for the vertex shader
-    Dg::BufferDesc constantsBufferDesc;
-    constantsBufferDesc.Name = "VS constants buffer";
-    constantsBufferDesc.Size = sizeof(VSConstants);
-    constantsBufferDesc.Usage = Dg::USAGE_DYNAMIC;
-    constantsBufferDesc.BindFlags = Dg::BIND_UNIFORM_BUFFER;
-    constantsBufferDesc.CPUAccessFlags = Dg::CPU_ACCESS_WRITE;
+    SetupConstantsBuffer(renderDevice);
 
-    renderDevice->CreateBuffer(constantsBufferDesc, nullptr, &constantsBuffer);
-    
     // When creating the PSO, make sure to set up the resource layout
     Dg::PipelineResourceLayoutDesc resourceLayoutDesc;
-    Dg::ShaderResourceVariableDesc Variables[] = {
+    Dg::ShaderResourceVariableDesc variables[] = {
         {Dg::SHADER_TYPE_VERTEX, "VSConstants", Dg::SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE}
     };
-    resourceLayoutDesc.Variables = Variables;
-    resourceLayoutDesc.NumVariables = _countof(Variables);
+    resourceLayoutDesc.Variables = variables;
+    resourceLayoutDesc.NumVariables = _countof(variables);
 
     auto layoutElems = GetLayoutElements();
     psoCreateInfo.GraphicsPipeline.InputLayout.LayoutElements = layoutElems.data();
@@ -102,29 +107,30 @@ bool PipelineShaderObject::Initialize(Dg::RefCntAutoPtr<Dg::IRenderDevice> rende
     psoCreateInfo.pPS = shaderPixel;
     renderDevice->CreateGraphicsPipelineState(psoCreateInfo, &pso);
 
-    pso->CreateShaderResourceBinding(&shaderBinding, true);
-    auto shaderVarConstants = shaderBinding->GetVariableByName(Dg::SHADER_TYPE_VERTEX, "VSConstants");
-    if (shaderVarConstants)
-    {
-        shaderVarConstants->Set(constantsBuffer);
-    }
+    initialized = true;
 
     return true;
 }
 
 std::vector<Dg::LayoutElement> PipelineShaderObject::GetLayoutElements()
 {
-    return
-    {
-        // Attribute 0 - vertex position
-        Dg::LayoutElement{0, 0, 3, Dg::VT_FLOAT32, false},
-        // Attribute 1 - vertex normal
-        Dg::LayoutElement{1, 0, 3, Dg::VT_FLOAT32, false},
-        // Attribute 2 - texture coordinates
-        Dg::LayoutElement{2, 0, 2, Dg::VT_FLOAT32, false},
-        // Attribute 3 - vertex colors
-        Dg::LayoutElement{3, 0, 4, Dg::VT_FLOAT32, false}
-    };
+    return {};
+}
+
+void PipelineShaderObject::SetupCustomConstantsBuffer(Dg::RefCntAutoPtr<Dg::IRenderDevice> renderDevice, size_t bufferSize)
+{
+}
+
+void PipelineShaderObject::Commit(Dg::RefCntAutoPtr<Dg::IDeviceContext> ctx)
+{
+    ctx->CommitShaderResources(shaderBinding, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+}
+
+bool PipelineShaderObject::Validate()
+{
+    if (!initialized)
+        return false;
+    return true;
 }
 
 String PipelineShaderObject::GetShaderSourceVertex()
