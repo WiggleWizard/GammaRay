@@ -42,7 +42,7 @@ void InputManager::HandleEvent(const SDL_Event* event)
     ObjectPtr<InputEvent> inputEvent = nullptr;
     bool userGeneratedInput = false;
 
-    auto io = ImGui::GetIO();
+    auto& io = ImGui::GetIO();
     
     switch (event->type)
     {

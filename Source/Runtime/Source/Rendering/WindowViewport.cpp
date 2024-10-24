@@ -62,7 +62,8 @@ void WindowViewport::SetImguiRenderer(ImGuiImplSDLDiligent* inImguiRenderer)
 {
     imguiRenderer.reset(inImguiRenderer);
 
-    ImGui::GetIO().ConfigWindowsMoveFromTitleBarOnly = true;
+    auto& io = ImGui::GetIO();
+    io.ConfigWindowsMoveFromTitleBarOnly = true;
 }
 
 void WindowViewport::DrawImGui()

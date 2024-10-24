@@ -65,7 +65,7 @@ build_data.project_declare[project_name] = function()
         filter "system:windows"
             files {
                 path.join(lib_dir, "backends/imgui_impl_win32.cpp"),
-                path.join(lib_dir, "backends/imgui_impl_sdl.cpp")
+                path.join(lib_dir, "backends/imgui_impl_sdl2.cpp")
             }
             
         filter "configurations:Release"

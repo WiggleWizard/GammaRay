@@ -1,6 +1,6 @@
 #include "ImGuiImplSDLDiligent.h"
 
-#include <backends/imgui_impl_sdl.h>
+#include <backends/imgui_impl_sdl2.h>
 #include <SDL_events.h>
 
 std::unique_ptr<ImGuiImplSDLDiligent> ImGuiImplSDLDiligent::Create(const Diligent::ImGuiDiligentCreateInfo& CI, SDL_Window* sdlWindowPtr)
