@@ -5,6 +5,7 @@
 #include <SwapChain.h>
 #include <DeviceContext.h>
 
+class PSO3D;
 class PSOGrid;
 class PipelineShaderObject;
 class Scene3D;
@@ -65,6 +66,7 @@ private:
     Dg::IPipelineState* pPSO = nullptr;
 
     ObjectPtr<PSOGrid> psoGrid = nullptr;
+    ObjectPtr<PSO3D> pso3D = nullptr;
 
     Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> shaderBinding;
 

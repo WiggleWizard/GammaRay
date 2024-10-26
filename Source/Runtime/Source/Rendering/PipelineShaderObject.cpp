@@ -47,11 +47,10 @@ bool PipelineShaderObject::Initialize(Dg::RefCntAutoPtr<Dg::IRenderDevice> rende
     }
 
     Dg::ShaderCreateInfo ShaderCI;
-    // Tell the system that the shader source code is in HLSL.
-    // For OpenGL, the engine will convert this into GLSL under the hood
     ShaderCI.SourceLanguage = Dg::SHADER_SOURCE_LANGUAGE_GLSL;
     // OpenGL backend requires emulated combined HLSL texture samplers (g_Texture + g_Texture_sampler combination)
     ShaderCI.Desc.UseCombinedTextureSamplers = true;
+    
     // Create a vertex shader
     Dg::RefCntAutoPtr<Dg::IShader> shaderVertex;
     {
@@ -77,7 +76,7 @@ bool PipelineShaderObject::Initialize(Dg::RefCntAutoPtr<Dg::IRenderDevice> rende
         
         ShaderCI.Desc.ShaderType = Dg::SHADER_TYPE_PIXEL;
         ShaderCI.EntryPoint      = "main";
-        ShaderCI.Desc.Name       = "Pixel shader";
+        ShaderCI.Desc.Name       = "PP Pixel shader";
         ShaderCI.Source          = shaderSourceCodePixel.c_str();
         renderDevice->CreateShader(ShaderCI, &shaderPixel);
 
@@ -93,7 +92,8 @@ bool PipelineShaderObject::Initialize(Dg::RefCntAutoPtr<Dg::IRenderDevice> rende
     // When creating the PSO, make sure to set up the resource layout
     Dg::PipelineResourceLayoutDesc resourceLayoutDesc;
     Dg::ShaderResourceVariableDesc variables[] = {
-        {Dg::SHADER_TYPE_VERTEX, "VSConstants", Dg::SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE}
+        { Dg::SHADER_TYPE_VERTEX, "ConstantsVS", Dg::SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE },
+        //{ Dg::SHADER_TYPE_PIXEL, "ConstantsPS", Dg::SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE }
     };
     resourceLayoutDesc.Variables = variables;
     resourceLayoutDesc.NumVariables = _countof(variables);
@@ -107,6 +107,24 @@ bool PipelineShaderObject::Initialize(Dg::RefCntAutoPtr<Dg::IRenderDevice> rende
     psoCreateInfo.pPS = shaderPixel;
     renderDevice->CreateGraphicsPipelineState(psoCreateInfo, &pso);
 
+    if (!pso)
+    {
+        LogPipelineShaderObject.Error("Failed to make PSO");
+        return false;
+    }
+
+    pso->CreateShaderResourceBinding(&shaderBinding, true);
+    if (const auto shaderVarConstants = shaderBinding->GetVariableByName(Dg::SHADER_TYPE_VERTEX, "ConstantsVS"))
+    {
+        shaderVarConstants->Set(constantsBufferVS);
+    }
+
+    // pso->CreateShaderResourceBinding(&shaderBinding, true);
+    // if (const auto shaderVarConstants = shaderBinding->GetVariableByName(Dg::SHADER_TYPE_PIXEL, "ConstantsPS"))
+    // {
+    //     shaderVarConstants->Set(constantsBufferPS);
+    // }
+
     initialized = true;
 
     return true;
@@ -115,6 +133,11 @@ bool PipelineShaderObject::Initialize(Dg::RefCntAutoPtr<Dg::IRenderDevice> rende
 std::vector<Dg::LayoutElement> PipelineShaderObject::GetLayoutElements()
 {
     return {};
+}
+
+void PipelineShaderObject::Bind(Dg::RefCntAutoPtr<Dg::IDeviceContext> ctx)
+{
+    ctx->SetPipelineState(pso);
 }
 
 void PipelineShaderObject::SetupCustomConstantsBuffer(Dg::RefCntAutoPtr<Dg::IRenderDevice> renderDevice, size_t bufferSize)
@@ -131,6 +154,33 @@ bool PipelineShaderObject::Validate()
     if (!initialized)
         return false;
     return true;
+}
+
+void PipelineShaderObject::SetupConstantsBuffer(Dg::RefCntAutoPtr<Dg::IRenderDevice> renderDevice)
+{
+    {
+        size_t buffSize = GetConstantBufferSizeVS();
+        
+        Dg::BufferDesc constantsBufferDesc;
+        constantsBufferDesc.Name = "VS constants buffer";
+        constantsBufferDesc.Size = buffSize;
+        constantsBufferDesc.Usage = Dg::USAGE_DYNAMIC;
+        constantsBufferDesc.BindFlags = Dg::BIND_UNIFORM_BUFFER;
+        constantsBufferDesc.CPUAccessFlags = Dg::CPU_ACCESS_WRITE;
+        renderDevice->CreateBuffer(constantsBufferDesc, nullptr, &constantsBufferVS);
+    }
+
+    {
+        size_t buffSize = GetConstantBufferSizePS();
+        
+        Dg::BufferDesc constantsBufferDesc;
+        constantsBufferDesc.Name = "PS constants buffer";
+        constantsBufferDesc.Size = buffSize;
+        constantsBufferDesc.Usage = Dg::USAGE_DYNAMIC;
+        constantsBufferDesc.BindFlags = Dg::BIND_UNIFORM_BUFFER;
+        constantsBufferDesc.CPUAccessFlags = Dg::CPU_ACCESS_WRITE;
+        renderDevice->CreateBuffer(constantsBufferDesc, nullptr, &constantsBufferPS);
+    }
 }
 
 String PipelineShaderObject::GetShaderSourceVertex()

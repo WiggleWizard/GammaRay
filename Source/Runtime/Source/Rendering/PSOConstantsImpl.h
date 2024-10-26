@@ -2,15 +2,23 @@
 
 #include <Graphics/GraphicsTools/interface/MapHelper.hpp>
 
-template<class ConstantsType>
+struct PSOConstantsVSBase {};
+struct PSOConstantsPSBase {};
+
+template<class ConstantsTypeVS, class ConstantsTypePS = PSOConstantsPSBase>
 class PSOConstantsImpl
 {
 public:
-    Dg::MapHelper<ConstantsType> Write(Dg::RefCntAutoPtr<Dg::IDeviceContext> deviceContext)
+    Dg::MapHelper<ConstantsTypeVS> WriteVS(Dg::RefCntAutoPtr<Dg::IDeviceContext> deviceContext)
     {
-        return Dg::MapHelper<ConstantsType>(deviceContext, constants, Dg::MAP_WRITE, Dg::MAP_FLAG_DISCARD);
+        return Dg::MapHelper<ConstantsTypeVS>(deviceContext, GetConstantBufferVS(), Dg::MAP_WRITE, Dg::MAP_FLAG_DISCARD);
     }
     
-protected:
-    ConstantsType constants;
+    Dg::MapHelper<ConstantsTypePS> WritePS(Dg::RefCntAutoPtr<Dg::IDeviceContext> deviceContext)
+    {
+        return Dg::MapHelper<ConstantsTypePS>(deviceContext, GetConstantBufferPS(), Dg::MAP_WRITE, Dg::MAP_FLAG_DISCARD);
+    }
+    
+    virtual Dg::RefCntAutoPtr<Dg::IBuffer> GetConstantBufferVS() { return {}; }
+    virtual Dg::RefCntAutoPtr<Dg::IBuffer> GetConstantBufferPS() { return {}; }
 };

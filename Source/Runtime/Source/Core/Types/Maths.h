@@ -21,6 +21,8 @@ struct Vertex
     {}
 };
 
+#pragma pack(pop)
+
 template<class T>
 static Dg::Vector3<T> GetForwardVector(Dg::Matrix4x4<T> m)
 {
@@ -37,4 +39,8 @@ static Dg::Vector3<T> GetRightVector(Dg::Matrix4x4<T> m)
     return result;
 }
 
-#pragma pack(pop)
+template<class T>
+static Dg::Vector3<T> GetPositionFromMatrix(const Dg::Matrix4x4<T> mat)
+{
+    return Dg::Vector3<T>(mat._41, mat._42, mat._43);
+}
