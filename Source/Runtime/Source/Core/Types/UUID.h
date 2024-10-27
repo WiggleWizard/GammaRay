@@ -14,7 +14,6 @@ public:
     UUID()
     {
         Generate();
-        Invalidate();
     }
 
     // Constructor from string

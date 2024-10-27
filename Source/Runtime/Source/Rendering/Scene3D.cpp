@@ -15,6 +15,11 @@ UUID Scene3D::MeshCreateFromComponent(Dg::RefCntAutoPtr<Dg::IRenderDevice> devic
 {
     const UUID id;
 
+    if (!id.IsValid())
+    {
+        return id;
+    }
+
     if (device == nullptr)
     {
         LogScene3D.Error("Device nullptr");

@@ -296,62 +296,7 @@ void Renderer3D::RenderViewport(ObjectPtr<Viewport> viewport)
             return;
         }
 
-        // Set the pipeline state in the immediate context
-        // contextImmediate->SetPipelineState(pPSO);
-        //
-        // auto viewMeshes = registry->view<const TransformComponent, SimpleMeshComponent>();
-        // viewMeshes.each([&](const auto& entity, const TransformComponent& xform, SimpleMeshComponent& meshComponent)
-        // {
-        //     // Add debug markers if supported
-        //     contextImmediate->BeginDebugGroup("Mesh Draw");
-        //     
-        //     auto vertexBuffer = scene->GetVertexBuffer(meshComponent.rendererMeshID);
-        //     auto indexBuffer = scene->GetIndexBuffer(meshComponent.rendererMeshID);
-        //
-        //     // Validate buffers before use
-        //     if (!vertexBuffer || !indexBuffer)
-        //     {
-        //         LogRenderer3D.Error("Invalid buffers for mesh %s", meshComponent.rendererMeshID.ToString().c_str());
-        //         return;
-        //     }
-        //
-        //     // Validate buffer states
-        //     Dg::BufferDesc vbDesc = vertexBuffer->GetDesc();
-        //     if (!(vbDesc.BindFlags & Dg::BIND_VERTEX_BUFFER))
-        //     {
-        //         LogRenderer3D.Error("Invalid vertex buffer flags");
-        //         return;
-        //     }
-        //     
-        //     // Update constant buffer
-        //     {
-        //         Diligent::MapHelper<VSConstants> constants(contextImmediate, vsConstantsBuffer, Diligent::MAP_WRITE, Diligent::MAP_FLAG_DISCARD);
-        //         constants->world = xform.matrix;
-        //         constants->worldViewProj = xform.matrix * mainCameraViewMatrix.Inverse() * mainCameraProjectionMatrix;
-        //     }
-        //
-        //     // Bind vertex buffers
-        //     Diligent::IBuffer* pVBs[] = {vertexBuffer};
-        //     const Uint64 offset   = 0;
-        //     contextImmediate->SetVertexBuffers(0, 1, pVBs, &offset, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION, Diligent::SET_VERTEX_BUFFERS_FLAG_RESET);
-        //
-        //     // Bind index buffer
-        //     contextImmediate->SetIndexBuffer(indexBuffer, 0, Dg::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-        //
-        //     contextImmediate->CommitShaderResources(shaderBinding, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-        //     
-        //     uint32 indexCount = scene->GetIndexCount(meshComponent.rendererMeshID);
-        //
-        //     Dg::DrawIndexedAttribs DrawAttrs;
-        //     DrawAttrs.IndexType  = Diligent::VT_UINT32;
-        //     DrawAttrs.NumIndices = indexCount;
-        //     DrawAttrs.Flags      = Diligent::DRAW_FLAG_VERIFY_ALL; // Enable all validation
-        //     contextImmediate->DrawIndexed(DrawAttrs);
-        //
-        //     contextImmediate->EndDebugGroup();
-        // });
-
-        pso3D->Bind(contextImmediate);
+        psoGrid->Bind(contextImmediate);
         
         auto viewMeshes = registry->view<const TransformComponent, SimpleMeshComponent>();
         viewMeshes.each([&](const auto& entity, const TransformComponent& xform, SimpleMeshComponent& meshComponent)
@@ -379,16 +324,16 @@ void Renderer3D::RenderViewport(ObjectPtr<Viewport> viewport)
             
             // Update constant buffer
             {
-                Dg::MapHelper<PSOConstants3D> psoGridConstants(contextImmediate, pso3D->GetConstantBufferVS(), Dg::MAP_WRITE, Dg::MAP_FLAG_DISCARD);
+                auto psoGridConstants = psoGrid->WriteVS<PSOGrid::PSOConstants>(contextImmediate);
                 
                 psoGridConstants->world = xform.matrix;
                 psoGridConstants->worldViewProj = xform.matrix * mainCameraViewMatrix.Inverse() * mainCameraProjectionMatrix;
-                // psoGridConstants->cameraPosition = GetPositionFromMatrix(mainCameraViewMatrix);
-                // psoGridConstants->gridScale = 1.f;
-                // psoGridConstants->lineWidth = 1.f;
-                // psoGridConstants->lineColor = { 1.f, 1.f, 1.f };
-                // psoGridConstants->baseColor = { 1.f, 1.f, 1.f };
-                // psoGridConstants->uvMode = 0;
+                psoGridConstants->cameraPosition = GetPositionFromMatrix(mainCameraViewMatrix);
+                psoGridConstants->gridScale = 1.f;
+                psoGridConstants->lineWidth = 1.f;
+                psoGridConstants->lineColor = { 1.f, 1.f, 1.f };
+                psoGridConstants->baseColor = { 1.f, 1.f, 1.f };
+                psoGridConstants->uvMode = 1;
             }
         
             // Bind vertex buffers
@@ -400,7 +345,7 @@ void Renderer3D::RenderViewport(ObjectPtr<Viewport> viewport)
             contextImmediate->SetIndexBuffer(indexBuffer, 0, Dg::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
         
             //contextImmediate->CommitShaderResources(shaderBinding, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-            pso3D->Commit(contextImmediate);
+            psoGrid->Commit(contextImmediate);
             
             uint32 indexCount = scene->GetIndexCount(meshComponent.rendererMeshID);
         

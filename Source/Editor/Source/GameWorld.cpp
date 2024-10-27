@@ -21,14 +21,14 @@ void GameWorld::Initialize()
     auto simpleMeshEntity1 = registry->create();
     auto xformComponent1 = &registry->emplace<TransformComponent>(simpleMeshEntity1);
     xformComponent1->matrix = xformComponent1->matrix.Translation(0.f, 0.f, 5.f);
-    auto simpleMeshComponent1 = registry->emplace<SimpleMeshComponent>(simpleMeshEntity1);
-    simpleMeshComponent1.GenerateMesh();
+    auto simpleMeshComponent1 = &registry->emplace<SimpleMeshComponent>(simpleMeshEntity1);
+    simpleMeshComponent1->GenerateMesh(SimpleMeshComponent::Quad);
 
     auto simpleMeshEntity2 = registry->create();
     auto xformComponent2 = &registry->emplace<TransformComponent>(simpleMeshEntity2);
     xformComponent2->matrix = xformComponent2->matrix.Translation(5.f, 0.f, 0.f);
-    auto simpleMeshComponent2 = registry->emplace<SimpleMeshComponent>(simpleMeshEntity2);
-    simpleMeshComponent2.GenerateMesh();
+    auto simpleMeshComponent2 = &registry->emplace<SimpleMeshComponent>(simpleMeshEntity2);
+    simpleMeshComponent2->GenerateMesh(SimpleMeshComponent::Cube);
 }
 
 void GameWorld::Process()
