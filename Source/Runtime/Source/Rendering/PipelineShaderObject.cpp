@@ -28,9 +28,10 @@ bool PipelineShaderObject::Initialize(Dg::RefCntAutoPtr<Dg::IRenderDevice> rende
     psoCreateInfo.GraphicsPipeline.PrimitiveTopology            = Dg::PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
     psoCreateInfo.GraphicsPipeline.RasterizerDesc.CullMode      = Dg::CULL_MODE_NONE;
     
-    // Disable depth testing
     psoCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthEnable = true;
     psoCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthWriteEnable = true;
+
+    ModifyPSOCreationInfo(psoCreateInfo);
 
     String shaderSourceCodeVertex = GetShaderSourceVertex();
     if (shaderSourceCodeVertex.empty())

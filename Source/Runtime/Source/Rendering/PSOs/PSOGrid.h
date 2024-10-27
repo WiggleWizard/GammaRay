@@ -12,17 +12,14 @@ public:
     struct PSOConstants : PSO3D::PSOConstants
     {
         Dg::float3 cameraPosition;
-        float gridScale;
-        float lineWidth;
-        Dg::float4 lineColor;
-        Dg::float4 baseColor;
-        int uvMode; // 0: MeshUV, 1: WorldX, 2: WorldY, 3: WorldZ
     };
     
 public:
     std::vector<Dg::LayoutElement> GetLayoutElements() override;
 
 protected:
+    virtual void ModifyPSOCreationInfo(Dg::GraphicsPipelineStateCreateInfo& creationInfo) override;
+    
     size_t GetConstantBufferSizeVS() override { return sizeof (PSOConstants); }
     //size_t GetConstantBufferSizePS() override { return sizeof (PSOConstantsGrid); }
     

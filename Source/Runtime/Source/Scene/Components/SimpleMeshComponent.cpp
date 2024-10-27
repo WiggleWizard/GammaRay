@@ -23,19 +23,45 @@ void SimpleMeshComponent::SetupVertexBuffer(Dg::BufferDesc* descriptor, Dg::Buff
 
     if (shape == Cube)
     {
-        vertexCount = 8;
         vertices = new std::vector<Vertex>
         {
-            {Dg::float3(-1,-1,-1), Dg::float3(0,0,0), Dg::float2(0,0), Dg::float4(1,0,0,1)},
-            {Dg::float3(-1,+1,-1), Dg::float3(0,0,0), Dg::float2(0,0), Dg::float4(0,1,0,1)},
-            {Dg::float3(+1,+1,-1), Dg::float3(0,0,0), Dg::float2(0,0), Dg::float4(0,0,1,1)},
-            {Dg::float3(+1,-1,-1), Dg::float3(0,0,0), Dg::float2(0,0), Dg::float4(1,1,1,1)},
+            // Front face (Z negative)
+            {Dg::float3(-1,-1,-1), Dg::float3(0,0,-1), Dg::float2(0,1), Dg::float4(1,0,0,1)},
+            {Dg::float3(-1,+1,-1), Dg::float3(0,0,-1), Dg::float2(0,0), Dg::float4(1,0,0,1)},
+            {Dg::float3(+1,+1,-1), Dg::float3(0,0,-1), Dg::float2(1,0), Dg::float4(1,0,0,1)},
+            {Dg::float3(+1,-1,-1), Dg::float3(0,0,-1), Dg::float2(1,1), Dg::float4(1,0,0,1)},
 
-            {Dg::float3(-1,-1,+1), Dg::float3(0,0,0), Dg::float2(0,0), Dg::float4(1,1,0,1)},
-            {Dg::float3(-1,+1,+1), Dg::float3(0,0,0), Dg::float2(0,0), Dg::float4(0,1,1,1)},
-            {Dg::float3(+1,+1,+1), Dg::float3(0,0,0), Dg::float2(0,0), Dg::float4(1,0,1,1)},
-            {Dg::float3(+1,-1,+1), Dg::float3(0,0,0), Dg::float2(0,0), Dg::float4(0.2f,0.2f,0.2f,1)},
+            // Back face (Z positive)
+            {Dg::float3(-1,-1,+1), Dg::float3(0,0,1), Dg::float2(0,1), Dg::float4(0,1,0,1)},
+            {Dg::float3(-1,+1,+1), Dg::float3(0,0,1), Dg::float2(0,0), Dg::float4(0,1,0,1)},
+            {Dg::float3(+1,+1,+1), Dg::float3(0,0,1), Dg::float2(1,0), Dg::float4(0,1,0,1)},
+            {Dg::float3(+1,-1,+1), Dg::float3(0,0,1), Dg::float2(1,1), Dg::float4(0,1,0,1)},
+
+            // Left face (X negative)
+            {Dg::float3(-1,-1,-1), Dg::float3(-1,0,0), Dg::float2(0,1), Dg::float4(0,0,1,1)},
+            {Dg::float3(-1,+1,-1), Dg::float3(-1,0,0), Dg::float2(0,0), Dg::float4(0,0,1,1)},
+            {Dg::float3(-1,+1,+1), Dg::float3(-1,0,0), Dg::float2(1,0), Dg::float4(0,0,1,1)},
+            {Dg::float3(-1,-1,+1), Dg::float3(-1,0,0), Dg::float2(1,1), Dg::float4(0,0,1,1)},
+
+            // Right face (X positive)
+            {Dg::float3(+1,-1,-1), Dg::float3(1,0,0), Dg::float2(0,1), Dg::float4(1,1,0,1)},
+            {Dg::float3(+1,+1,-1), Dg::float3(1,0,0), Dg::float2(0,0), Dg::float4(1,1,0,1)},
+            {Dg::float3(+1,+1,+1), Dg::float3(1,0,0), Dg::float2(1,0), Dg::float4(1,1,0,1)},
+            {Dg::float3(+1,-1,+1), Dg::float3(1,0,0), Dg::float2(1,1), Dg::float4(1,1,0,1)},
+
+            // Top face (Y positive)
+            {Dg::float3(-1,+1,-1), Dg::float3(0,1,0), Dg::float2(0,1), Dg::float4(1,0,1,1)},
+            {Dg::float3(-1,+1,+1), Dg::float3(0,1,0), Dg::float2(0,0), Dg::float4(1,0,1,1)},
+            {Dg::float3(+1,+1,+1), Dg::float3(0,1,0), Dg::float2(1,0), Dg::float4(1,0,1,1)},
+            {Dg::float3(+1,+1,-1), Dg::float3(0,1,0), Dg::float2(1,1), Dg::float4(1,0,1,1)},
+
+            // Bottom face (Y negative)
+            {Dg::float3(-1,-1,-1), Dg::float3(0,-1,0), Dg::float2(0,1), Dg::float4(0,1,1,1)},
+            {Dg::float3(-1,-1,+1), Dg::float3(0,-1,0), Dg::float2(0,0), Dg::float4(0,1,1,1)},
+            {Dg::float3(+1,-1,+1), Dg::float3(0,-1,0), Dg::float2(1,0), Dg::float4(0,1,1,1)},
+            {Dg::float3(+1,-1,-1), Dg::float3(0,-1,0), Dg::float2(1,1), Dg::float4(0,1,1,1)},
         };
+        vertexCount = vertices->size();
     }
     else if (shape == Quad)
     {
@@ -52,7 +78,7 @@ void SimpleMeshComponent::SetupVertexBuffer(Dg::BufferDesc* descriptor, Dg::Buff
     }
 
     // Create a vertex buffer that stores cube vertices
-    descriptor->Name      = "Cube vertex buffer";
+    descriptor->Name      = "SimpleMesh";
     descriptor->Usage     = Dg::USAGE_IMMUTABLE;
     descriptor->BindFlags = Dg::BIND_VERTEX_BUFFER;
     descriptor->Size      = vertexCount * sizeof(Vertex);
@@ -68,16 +94,33 @@ uint32 SimpleMeshComponent::SetupIndexBuffer(Dg::BufferDesc* descriptor, Dg::Buf
 
     if (shape == Cube)
     {
-        indexCount = 36;
         indices = new std::vector<uint32>
         {
-            2,0,1, 2,3,0,
-            4,6,5, 4,7,6,
-            0,7,4, 0,3,7,
-            1,0,4, 1,4,5,
-            1,5,2, 5,6,2,
-            3,6,7, 3,2,6
+            // Front face
+            0,  1,  2,
+            0,  2,  3,
+
+            // Back face
+            4,  6,  5,
+            4,  7,  6,
+
+            // Left face
+            8,  9,  10,
+            8,  10, 11,
+
+            // Right face
+            12, 14, 13,
+            12, 15, 14,
+
+            // Top face
+            16, 17, 18,
+            16, 18, 19,
+
+            // Bottom face
+            20, 22, 21,
+            20, 23, 22
         };
+        indexCount = indices->size();
     }
     else if (shape == Quad)
     {
@@ -89,7 +132,7 @@ uint32 SimpleMeshComponent::SetupIndexBuffer(Dg::BufferDesc* descriptor, Dg::Buf
         };
     }
 
-    descriptor->Name      = "Cube index buffer";
+    descriptor->Name      = "SimpleMesh";
     descriptor->Usage     = Dg::USAGE_IMMUTABLE;
     descriptor->BindFlags = Dg::BIND_INDEX_BUFFER;
     descriptor->Size      = indexCount * sizeof(uint32);

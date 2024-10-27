@@ -31,6 +31,8 @@ public:
     }
 
 protected:
+    virtual void ModifyPSOCreationInfo(Dg::GraphicsPipelineStateCreateInfo& creationInfo) {}
+    
     virtual void SetupConstantsBuffer(Dg::RefCntAutoPtr<Dg::IRenderDevice> renderDevice);
     virtual size_t GetConstantBufferSizeVS() { return 0; }
     virtual size_t GetConstantBufferSizePS() { return 0; }

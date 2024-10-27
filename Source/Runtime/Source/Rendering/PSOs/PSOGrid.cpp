@@ -12,97 +12,113 @@ std::vector<Dg::LayoutElement> PSOGrid::GetLayoutElements()
     // };
 }
 
+void PSOGrid::ModifyPSOCreationInfo(Dg::GraphicsPipelineStateCreateInfo& creationInfo)
+{
+    PSO3D::ModifyPSOCreationInfo(creationInfo);
+
+    creationInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].BlendEnable = true;
+    creationInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].SrcBlend = Dg::BLEND_FACTOR_SRC_ALPHA;
+    creationInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].DestBlend = Dg::BLEND_FACTOR_INV_SRC_ALPHA;
+    creationInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].BlendOp = Dg::BLEND_OPERATION_ADD;
+    creationInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].SrcBlendAlpha = Dg::BLEND_FACTOR_ONE;
+    creationInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].DestBlendAlpha = Dg::BLEND_FACTOR_INV_SRC_ALPHA;
+    creationInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].BlendOpAlpha = Dg::BLEND_OPERATION_ADD;
+}
+
+// Vertex Shader
 String PSOGrid::GetShaderSourceVertex()
 {
     return R"(
-        layout(location = 0) in vec3 ATTRIB0_inPosition;
-        layout(location = 1) in vec3 ATTRIB1_Normal;
-        layout(location = 2) in vec2 ATTRIB2_inTexCoord;
-        layout(location = 3) in vec4 ATTRIB3_Color;
+        // Attributes
+        layout(location = 0) in vec3 ATTRIB0_Position;
 
-        layout(location = 0) out vec2 outUV;
-
-        layout(set = 0, binding = 0) uniform ConstantsVS {
+        // Constant buffer
+        layout(std140, binding = 0) uniform ConstantsVS
+        {
             mat4 g_WorldViewProj;
-            mat4 g_World; // Placeholding for padding
+            mat4 g_World;
             vec3 g_CameraPosition;
-            float g_GridScale;
-            float g_LineWidth;
-            vec4 g_LineColor;
-            vec4 g_BaseColor;
-            int g_UVMode; // 0: MeshUV, 1: WorldX, 2: WorldY, 3: WorldZ
         };
 
-        void main() {
-            gl_Position = g_WorldViewProj * vec4(ATTRIB0_inPosition, 1.0);
+        // Outputs to fragment shader
+        layout(location = 0) out vec3 out_CameraPos;
+        layout(location = 1) out vec2 out_Coords;
+
+        // Constants
+        const float GRID_SIZE = 100.0;
+
+        void main()
+        {
+            // Create grid quad centered at camera
+            vec4 worldPos = vec4(ATTRIB0_Position, 1.0);
+            worldPos.xyz *= GRID_SIZE;
+            worldPos.xz += g_CameraPosition.xz; // Make the quad follow the camera
             
-            if (g_UVMode == 0) { // MeshUV
-                outUV = ATTRIB2_inTexCoord * g_GridScale;
-            } else {
-                // World space UV calculation
-                vec3 worldPos = (g_WorldViewProj * vec4(ATTRIB0_inPosition, 1.0)).xyz;
-                vec3 cameraCenteringOffset = floor(g_CameraPosition * g_GridScale);
-                vec3 cameraSnappedWorldPos = worldPos * g_GridScale - cameraCenteringOffset;
-                
-                if (g_UVMode == 1) { // WorldX
-                    outUV = cameraSnappedWorldPos.xy;
-                } else if (g_UVMode == 2) { // WorldY
-                    outUV = cameraSnappedWorldPos.xz;
-                } else { // WorldZ
-                    outUV = cameraSnappedWorldPos.yz;
-                }
-            }
+            gl_Position = g_WorldViewProj * worldPos;
+            out_CameraPos = g_CameraPosition;
+            out_Coords = worldPos.xz;
         }
     )";
 }
 
+// Pixel Shader
 String PSOGrid::GetShaderSourcePixel()
 {
     return R"(
-        layout(location = 0) in vec2 inUV;
+        // Inputs from vertex shader
+        layout(location = 0) in vec3 in_CameraPos;
+        layout(location = 1) in vec2 in_Coords;
 
-        layout(location = 0) out vec4 outColor;
+        // Output
+        layout(location = 0) out vec4 out_Color;
 
-        layout(set = 0, binding = 0) uniform ConstantsVS {
-            mat4 g_WorldViewProj;
-            mat4 g_World; // Placeholding for padding
-            vec3 g_CameraPosition;
-            float g_GridScale;
-            float g_LineWidth;
-            vec4 g_LineColor;
-            vec4 g_BaseColor;
-            int g_UVMode;
-        };
+        // Grid constants
+        const float GRID_SIZE = 100.0;
+        const float CELL_SIZE = 1.0;
+        const float HALF_CELL_SIZE = CELL_SIZE * 0.5;
+        const float CELL_LINE_THICKNESS = 0.01;
+        const float SUBCELL_SIZE = 0.1;
+        const float HALF_SUBCELL_SIZE = SUBCELL_SIZE * 0.5;
+        const float SUBCELL_LINE_THICKNESS = 0.001;
+        const vec4 CELL_COLOR = vec4(0.75, 0.75, 0.75, 0.5);
+        const vec4 SUBCELL_COLOR = vec4(0.5, 0.5, 0.5, 0.5);
+        const float HEIGHT_TO_FADE_DISTANCE_RATIO = 25.0;
+        const float MIN_FADE_DISTANCE = GRID_SIZE * 0.05;
+        const float MAX_FADE_DISTANCE = GRID_SIZE * 0.5;
 
-        float PristineGrid(vec2 uv, float lineWidth) {  // Changed parameter type
-            lineWidth = clamp(lineWidth, 0.0, 1.0);
-            vec2 uvDdx = dFdx(uv);
-            vec2 uvDdy = dFdy(uv);
-            vec2 uvDeriv = vec2(length(vec2(uvDdx.x, uvDdy.x)), length(vec2(uvDdx.y, uvDdy.y)));
+        void main()
+        {
+            // Calculate cell coordinates
+            vec2 cellCoords = mod(in_Coords + HALF_CELL_SIZE, CELL_SIZE);
+            vec2 subcellCoords = mod(in_Coords + HALF_SUBCELL_SIZE, SUBCELL_SIZE);
             
-            bool invertLine = lineWidth > 0.5;  // Simplified to bool
+            // Calculate distances to cell edges
+            vec2 distanceToCell = abs(cellCoords - HALF_CELL_SIZE);
+            vec2 distanceToSubcell = abs(subcellCoords - HALF_SUBCELL_SIZE);
             
-            float targetWidth = invertLine ? 1.0 - lineWidth : lineWidth;
-            vec2 drawWidth = clamp(vec2(targetWidth), uvDeriv, vec2(0.5));
-            vec2 lineAA = max(uvDeriv, vec2(0.000001)) * 1.5;
+            // Calculate line thickness adjustment based on distance
+            vec2 derivatives = fwidth(in_Coords);
+            float adjustedCellLineThickness = 0.5 * (CELL_LINE_THICKNESS + length(derivatives));
+            float adjustedSubcellLineThickness = 0.5 * (SUBCELL_LINE_THICKNESS + length(derivatives));
             
-            vec2 gridUV = abs(fract(uv) * 2.0 - 1.0);
-            gridUV = invertLine ? gridUV : vec2(1.0) - gridUV;
+            // Determine grid color
+            vec4 color = vec4(0.0);
+            if (any(lessThan(distanceToSubcell, vec2(adjustedSubcellLineThickness))))
+            {
+                color = SUBCELL_COLOR;
+            }
+            if (any(lessThan(distanceToCell, vec2(adjustedCellLineThickness))))
+            {
+                color = CELL_COLOR;
+            }
             
-            vec2 grid2 = smoothstep(drawWidth + lineAA, drawWidth - lineAA, gridUV);
-            grid2 *= clamp(vec2(targetWidth) / drawWidth, vec2(0.0), vec2(1.0));
-            grid2 = mix(grid2, vec2(targetWidth), clamp(uvDeriv * 2.0 - 1.0, vec2(0.0), vec2(1.0)));
-            grid2 = invertLine ? vec2(1.0) - grid2 : grid2;
+            // Calculate opacity falloff
+            float distanceToCamera = length(in_Coords - in_CameraPos.xz);
+            float fadeDistance = abs(in_CameraPos.y) * HEIGHT_TO_FADE_DISTANCE_RATIO;
+            fadeDistance = clamp(fadeDistance, MIN_FADE_DISTANCE, MAX_FADE_DISTANCE);
+            float opacityFalloff = smoothstep(1.0, 0.0, distanceToCamera / fadeDistance);
             
-            return mix(grid2.x, 1.0, grid2.y);
-        }
-
-        void main() {
-            float grid = PristineGrid(inUV, g_LineWidth);
-            
-            // Linear color space mixing
-            vec4 finalColor = mix(g_BaseColor, g_LineColor, grid * g_LineColor.a);
-            outColor = finalColor;
+            out_Color = color * opacityFalloff;
         }
     )";
 }

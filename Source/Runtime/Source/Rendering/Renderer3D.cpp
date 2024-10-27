@@ -329,11 +329,6 @@ void Renderer3D::RenderViewport(ObjectPtr<Viewport> viewport)
                 psoGridConstants->world = xform.matrix;
                 psoGridConstants->worldViewProj = xform.matrix * mainCameraViewMatrix.Inverse() * mainCameraProjectionMatrix;
                 psoGridConstants->cameraPosition = GetPositionFromMatrix(mainCameraViewMatrix);
-                psoGridConstants->gridScale = 1.f;
-                psoGridConstants->lineWidth = 1.f;
-                psoGridConstants->lineColor = { 1.f, 1.f, 1.f };
-                psoGridConstants->baseColor = { 1.f, 1.f, 1.f };
-                psoGridConstants->uvMode = 1;
             }
         
             // Bind vertex buffers
