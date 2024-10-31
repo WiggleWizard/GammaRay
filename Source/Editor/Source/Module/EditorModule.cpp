@@ -3,6 +3,7 @@
 #include "../EditorWindowViewport.h"
 #include "../EditorWorldContext.h"
 #include "../GameWorld.h"
+#include "../Resources/ResourceMasterMaterialGrid.h"
 
 #include "Engine/Engine.h"
 #include "Rendering/Renderer3D.h"
@@ -12,9 +13,7 @@
 void EditorModule::OnEngineInitialized()
 {
     auto resourceManager = GEngine->GetResourceManager();
-    resourceManager->CreateVirtualDirectory("/Editor/Materials");
-    
-    //resourceManager->AddVirtualResource("/Editor/Materials/Grid", );
+    resourceManager->AddVirtualResource("/Editor/Materials/MM_Grid", new ResourceMasterMaterialGrid());
     
     auto editorWorld = NewObject<EditorWorldContext>();
     GEngine->RegisterMainWorldContext(editorWorld);

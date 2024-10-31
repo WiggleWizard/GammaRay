@@ -10,6 +10,7 @@
 #include "Scene/Components/StaticMeshComponent.h"
 #include "Scene3D.h"
 #include "PSOs/PSOGrid.h"
+#include "Scene/Components/MaterialComponent.h"
 #include "Scene/Components/SimpleMeshComponent.h"
 
 #include <GraphicsTypes.h>
@@ -87,8 +88,18 @@ Renderer3D::Renderer3D()
     pso3D = NewObject<PSO3D>();
 }
 
+void Renderer3D::Sort()
+{
+    for (auto viewport : viewports)
+    {
+        
+    }
+}
+
 void Renderer3D::Render()
 {
+    Sort();
+    
     for (auto viewport : viewports)
     {
         RenderViewport(viewport);
@@ -262,6 +273,29 @@ void Renderer3D::CreateResources()
     if (auto shaderVarConstants = shaderBinding->GetVariableByName(Diligent::SHADER_TYPE_VERTEX, "VSConstants"))
     {
         shaderVarConstants->Set(vsConstantsBuffer);
+    }
+}
+
+void Renderer3D::SortViewport(ObjectPtr<Viewport> viewport)
+{
+    SortViewportChildren(viewport);
+
+    auto world = viewport->GetWorld();
+    if (IsValid(world))
+    {
+        auto registry = world->GetRegistry();
+        registry->sort<MaterialComponent>([](const MaterialComponent& c1, const MaterialComponent& c2)
+        {
+            return c1.material == c2.material;
+        });
+    }
+}
+
+void Renderer3D::SortViewportChildren(ObjectPtr<Viewport> viewport)
+{
+    for (auto childViewport : viewport->GetChildViewports())
+    {
+        SortViewportChildren(childViewport);
     }
 }
 

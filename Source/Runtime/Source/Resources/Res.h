@@ -39,6 +39,17 @@ public:
         }
     }
 
+    // Implicit casting
+    template <typename U>
+    Res(const Res<U>& other)
+    {
+        resource.reset(static_cast<T*>(other.Get()));
+        if (resource)
+        {
+            resource->Retain();
+        }
+    }
+
     // Move constructor
     Res(Res&& other) noexcept : resource(std::move(other.resource))
     {
@@ -74,6 +85,24 @@ public:
             resource = std::move(other.resource);
         }
         return *this;
+    }
+
+    // Explicit casting
+    template <typename U>
+    Res<U> Cast() const
+    {
+        // Perform a dynamic_cast to validate the type conversion
+        U* castedPtr = dynamic_cast<U*>(resource.get());
+    
+        if (castedPtr)
+        {
+            // If cast is successful, create a new Res with the casted pointer
+            // This ensures proper reference counting
+            return Res<U>(castedPtr);
+        }
+    
+        // Return an invalid/null Res if the cast fails
+        return Res<U>();
     }
 
     // Release current resource
@@ -115,5 +144,5 @@ public:
     bool operator!=(std::nullptr_t) const { return IsValid(); }
 
 private:
-    std::shared_ptr<T> resource;
+    std::shared_ptr<T> resource = nullptr;
 };

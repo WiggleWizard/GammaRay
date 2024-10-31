@@ -1,6 +1,10 @@
 ﻿#include "GameWorld.h"
 
+#include "Engine/Engine.h"
+#include "Resources/ResourceManager.h"
+#include "Resources/ResourceMasterMaterialGrid.h"
 #include "Scene/Components/CameraComponent.h"
+#include "Scene/Components/MaterialComponent.h"
 #include "Scene/Components/SimpleMeshComponent.h"
 #include "Scene/Components/StaticMeshComponent.h"
 #include "Scene/Components/TransformComponent.h"
@@ -14,6 +18,8 @@ GameWorld::GameWorld()
 
 void GameWorld::Initialize()
 {
+    Res<ResourceMasterMaterialGrid> resMMGrid = GEngine->GetResourceManager()->GetResource("/Editor/Materials/MM_Grid");
+    
     auto cameraEntity = registry->create();
     registry->emplace<TransformComponent>(cameraEntity);
     registry->emplace<CameraComponent>(cameraEntity);
@@ -23,6 +29,9 @@ void GameWorld::Initialize()
     xformComponent1->matrix = xformComponent1->matrix.Translation(0.f, 0.f, 5.f);
     auto simpleMeshComponent1 = &registry->emplace<SimpleMeshComponent>(simpleMeshEntity1);
     simpleMeshComponent1->GenerateMesh(SimpleMeshComponent::Quad);
+
+    auto componentMaterial = registry->emplace<MaterialComponent>(simpleMeshEntity1);
+    componentMaterial.material = ResourceMaterialInstance::FromMasterMaterial(resMMGrid);
 
     // auto simpleMeshEntity2 = registry->create();
     // auto xformComponent2 = &registry->emplace<TransformComponent>(simpleMeshEntity2);

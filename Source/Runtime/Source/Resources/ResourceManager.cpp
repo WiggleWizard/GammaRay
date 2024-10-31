@@ -8,14 +8,6 @@ ResourceManager::ResourceManager()
     rootNode->isDirectory = true;
 }
 
-void ResourceManager::ImportSource(String path)
-{
-}
-
-void ResourceManager::ImportSourceFolder(String path, bool recursive)
-{
-}
-
 bool ResourceManager::CreateVirtualDirectory(const String& path)
 {
     if (!IsValidPath(path))
@@ -29,7 +21,12 @@ bool ResourceManager::CreateVirtualDirectory(const String& path)
     return true;
 }
 
-void ResourceManager::AddVirtualResource(String destPath, Res<Resource> res)
+void ResourceManager::AddVirtualResource(const String& virtualPath, Resource* res)
+{
+    AddVirtualResource(virtualPath, Res{ res });
+}
+
+void ResourceManager::AddVirtualResource(const String& destPath, Res<Resource> res)
 {
     VirtualNode* node = CreateNodePath(destPath);
     if (node)
@@ -55,9 +52,7 @@ Res<Resource> ResourceManager::GetResource(const String& virtualPath)
     // If no virtual resource but we have a physical path, load it
     if (!node->physicalPath.empty())
     {
-        // This would integrate with your existing ImportSource functionality
-        ImportSource(node->physicalPath);
-        // Assuming ImportSource populates node->resource
+        //ImportSource(node->physicalPath);
     }
 
     return node->resource;

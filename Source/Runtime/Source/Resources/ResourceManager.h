@@ -12,11 +12,6 @@ class ResourceManager : public Object
 public:
     ResourceManager();
     
-    // Imports a raw file into an engine specific file type
-    void ImportSource(String path);
-    // Same as above but for an entire folder
-    void ImportSourceFolder(String path, bool recursive);
-
     // VFS
     bool CreateVirtualDirectory(const String& path);
     bool DeleteVirtualDirectory(const String& path, bool recursive = false);
@@ -24,7 +19,9 @@ public:
     bool UnmountDirectory(const String& virtualPath);
 
     // Resource management
-    void AddVirtualResource(String virtualPath, Res<Resource> res);
+    // Takes ownership of the Resource pointer
+    void AddVirtualResource(const String& virtualPath, Resource* res);
+    void AddVirtualResource(const String& virtualPath, Res<Resource> res);
     bool DeleteResource(const String& virtualPath);
     Res<Resource> GetResource(const String& virtualPath);
     bool ResourceExists(const String& virtualPath) const;

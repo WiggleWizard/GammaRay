@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "Res.h"
 #include "Resource.h"
 
 class PipelineShaderObject;

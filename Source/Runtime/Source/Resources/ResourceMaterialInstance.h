@@ -7,6 +7,9 @@
 class ResourceMaterialInstance : public Resource
 {
 public:
+    static Res<ResourceMaterialInstance> FromMasterMaterial(Res<ResourceMasterMaterial> masterMaterial);
+    
+    void SetMasterMaterial(Res<ResourceMasterMaterial>& masterMaterial);
 
 protected:
     Res<ResourceMasterMaterial> masterMaterial;

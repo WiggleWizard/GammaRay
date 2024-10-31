@@ -33,7 +33,8 @@ class Renderer3D : public Object
     
 public:
     Renderer3D();
-    
+
+    void Sort();
     void Render();
     
     void RegisterWindow(ObjectPtr<Window> window);
@@ -55,6 +56,9 @@ public:
 private:
     void CreateResources();
 
+    void SortViewport(ObjectPtr<Viewport> viewport);
+    void SortViewportChildren(ObjectPtr<Viewport> viewport);
+    
     void RenderViewport(ObjectPtr<Viewport> viewport);
     void RenderViewportChildren(ObjectPtr<Viewport> viewport);
     
