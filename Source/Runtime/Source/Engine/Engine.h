@@ -4,6 +4,7 @@
 #include "Core/Object/ObjectMacros.h"
 #include "Core/Types/String.h"
 
+class ResourceManager;
 class InputManager;
 class Renderer3D;
 class WorldContext;
@@ -39,6 +40,7 @@ public:
     ObjectPtr<WindowManager> GetWindowManager() { return windowManager; }
     ObjectPtr<Renderer3D> GetRenderer3D() { return renderer3D; }
     ObjectPtr<InputManager> GetInputManager() { return inputManager; }
+    ObjectPtr<ResourceManager> GetResourceManager() { return resourceManager; }
 
 private:
     bool TryExit();
@@ -49,6 +51,7 @@ private:
     ObjectPtr<WorldContext> worldContext = nullptr;
     ObjectPtr<Renderer3D> renderer3D = nullptr;
     ObjectPtr<InputManager> inputManager = nullptr;
+    ObjectPtr<ResourceManager> resourceManager = nullptr;
 
     bool wantsToQuit = false;
 };

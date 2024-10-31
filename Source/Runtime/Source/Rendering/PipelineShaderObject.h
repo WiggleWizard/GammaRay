@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include <Graphics/GraphicsTools/interface/MapHelper.hpp>
+#include <MapHelper.hpp>
 
 struct PSOConstantsPSBase;
 
@@ -19,7 +19,7 @@ public:
     bool Validate();
 
     template<class ConstantsType>
-    Diligent::MapHelper<ConstantsType> WriteVS(Dg::RefCntAutoPtr<Dg::IDeviceContext> deviceContext)
+    Dg::MapHelper<ConstantsType> WriteVS(Dg::RefCntAutoPtr<Dg::IDeviceContext> deviceContext)
     {
         return Dg::MapHelper<ConstantsType>(deviceContext, GetConstantBufferVS(), Dg::MAP_WRITE, Dg::MAP_FLAG_DISCARD);
     }
@@ -46,7 +46,7 @@ protected:
     bool initialized = false;
 
     Dg::RefCntAutoPtr<Dg::IPipelineState> pso;
-    Dg::RefCntAutoPtr<Diligent::IShaderResourceBinding> shaderBinding;
+    Dg::RefCntAutoPtr<Dg::IShaderResourceBinding> shaderBinding;
 
     Dg::RefCntAutoPtr<Dg::IBuffer> constantsBufferVS;
     Dg::RefCntAutoPtr<Dg::IBuffer> constantsBufferPS;

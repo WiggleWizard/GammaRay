@@ -2,10 +2,7 @@
 
 DEFINE_LOGGER_STATIC(LogPipelineShaderObject, LogVerbosity::Verbose)
 
-PipelineShaderObject::PipelineShaderObject()
-{
-    
-}
+PipelineShaderObject::PipelineShaderObject() = default;
 
 bool PipelineShaderObject::Initialize(Dg::RefCntAutoPtr<Dg::IRenderDevice> renderDevice, Dg::RefCntAutoPtr<Dg::ISwapChain> swapChain)
 {

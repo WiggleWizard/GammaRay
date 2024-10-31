@@ -37,6 +37,7 @@ local project_names = {
     diligent = "DiligentCore",
     common = "DiligentCoreCommon",
     graphics = "DiligentCoreGraphics",
+    graphics_tools = "DiligentGraphicsTools",
 }
 
 local config = {
@@ -61,6 +62,13 @@ build_data.project_public_includes[project_names.graphics] = function()
     return {
         path.join(config.src_dir, "Graphics/GraphicsEngine/interface"),
         path.join(config.src_dir, "Graphics/GraphicsEngine/include"),
+    }
+end
+
+build_data.project_public_includes[project_names.graphics_tools] = function()
+    return {
+        path.join(config.src_dir, "Graphics/GraphicsTools/interface"),
+        path.join(config.src_dir, "Graphics/GraphicsTools/include"),
     }
 end
 

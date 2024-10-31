@@ -67,6 +67,7 @@ project "Runtime"
         table.unpack(build_data.project_public_includes["ImGui"]()),
         table.unpack(build_data.project_public_includes["DiligentCoreCommon"]()),
         table.unpack(build_data.project_public_includes["DiligentCoreGraphics"]()),
+        table.unpack(build_data.project_public_includes["DiligentGraphicsTools"]()),
         table.unpack(build_data.project_public_includes["DiligentToolsImGui"]("ThirdParty/DiligentTools")),
         
         --table.unpack(build_data.project_public_includes["entt"]()),

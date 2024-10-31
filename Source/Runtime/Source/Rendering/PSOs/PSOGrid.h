@@ -2,8 +2,6 @@
 
 #include "PSO3D.h"
 
-
-
 class PSOGrid : public PSO3D
 {
     DECLARE_CLASS(PSOGrid, PSO3D)

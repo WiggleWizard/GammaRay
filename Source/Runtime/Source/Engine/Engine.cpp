@@ -7,6 +7,7 @@
 #include "Input/InputManager.h"
 #include "Rendering/Renderer3D.h"
 #include "Windowing/WindowManager.h"
+#include "Resources/ResourceManager.h"
 
 DEFINE_LOGGER_STATIC(LogEngine, LogVerbosity::VeryVerbose)
 
@@ -37,6 +38,7 @@ void Engine::Initialize()
         return;
     
     renderer3D = NewObject<Renderer3D>();
+    resourceManager = NewObject<ResourceManager>();
 
     ModuleManager::Get().EngineInitialized();
     

@@ -16,13 +16,13 @@ void PSOGrid::ModifyPSOCreationInfo(Dg::GraphicsPipelineStateCreateInfo& creatio
 {
     PSO3D::ModifyPSOCreationInfo(creationInfo);
 
-    creationInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].BlendEnable = true;
-    creationInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].SrcBlend = Dg::BLEND_FACTOR_SRC_ALPHA;
-    creationInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].DestBlend = Dg::BLEND_FACTOR_INV_SRC_ALPHA;
-    creationInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].BlendOp = Dg::BLEND_OPERATION_ADD;
-    creationInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].SrcBlendAlpha = Dg::BLEND_FACTOR_ONE;
+    creationInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].BlendEnable    = true;
+    creationInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].SrcBlend       = Dg::BLEND_FACTOR_SRC_ALPHA;
+    creationInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].DestBlend      = Dg::BLEND_FACTOR_INV_SRC_ALPHA;
+    creationInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].BlendOp        = Dg::BLEND_OPERATION_ADD;
+    creationInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].SrcBlendAlpha  = Dg::BLEND_FACTOR_ONE;
     creationInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].DestBlendAlpha = Dg::BLEND_FACTOR_INV_SRC_ALPHA;
-    creationInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].BlendOpAlpha = Dg::BLEND_OPERATION_ADD;
+    creationInfo.GraphicsPipeline.BlendDesc.RenderTargets[0].BlendOpAlpha   = Dg::BLEND_OPERATION_ADD;
 }
 
 // Vertex Shader

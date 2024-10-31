@@ -17,7 +17,7 @@
 #include <entt/entt.hpp>
 #include <BasicMath.hpp>
 
-#include <Graphics/GraphicsEngine/interface/SwapChain.h>
+#include <SwapChain.h>
 #include <Graphics/GraphicsEngineOpenGL/interface/EngineFactoryOpenGL.h>
 #include <Graphics/GraphicsTools/interface/MapHelper.hpp>
 
