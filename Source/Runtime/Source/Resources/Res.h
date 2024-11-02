@@ -1,41 +1,62 @@
 ﻿#pragma once
 
 #include "Resource.h"
+#include <atomic>
 
 template <typename T>
 class Res
 {
     static_assert(std::is_base_of<Resource, T>::value, "T must inherit from Resource");
 
+private:
+    struct RefCounter
+    {
+        T* ptr;
+        std::atomic<size_t> count;
+
+        explicit RefCounter(T* p) : ptr(p), count(1)
+        {
+        }
+
+        ~RefCounter()
+        {
+            if (ptr)
+            {
+                delete ptr;
+            }
+        }
+    };
+
 public:
-    Res() : resource(nullptr)
+    Res() : counter(nullptr)
     {
     }
 
     // Constructor that takes raw pointer
-    explicit Res(T* ptr) : resource(ptr)
+    explicit Res(T* ptr) : counter(ptr ? new RefCounter(ptr) : nullptr)
     {
-        if (resource)
+        if (counter)
         {
-            resource->Retain();
+            counter->ptr->Retain();
         }
     }
 
-    // Constructor that takes shared_ptr
-    explicit Res(std::shared_ptr<T> ptr) : resource(ptr)
+    // Constructor that takes shared_ptr - converts to raw pointer management
+    explicit Res(std::shared_ptr<T> ptr) : counter(ptr ? new RefCounter(ptr.get()) : nullptr)
     {
-        if (resource)
+        if (counter)
         {
-            resource->Retain();
+            counter->ptr->Retain();
         }
     }
 
     // Copy constructor
-    Res(const Res& other) : resource(other.resource)
+    Res(const Res& other) : counter(other.counter)
     {
-        if (resource)
+        if (counter)
         {
-            resource->Retain();
+            counter->count++;
+            counter->ptr->Retain();
         }
     }
 
@@ -43,16 +64,32 @@ public:
     template <typename U>
     Res(const Res<U>& other)
     {
-        resource.reset(static_cast<T*>(other.Get()));
-        if (resource)
+        // Make the class a friend to access private members
+        if (other.counter)
         {
-            resource->Retain();
+            T* castedPtr = static_cast<T*>(other.counter->ptr);
+            if (castedPtr)
+            {
+                // Share the reference counter instead of creating a new one
+                counter = reinterpret_cast<RefCounter*>(other.counter);
+                counter->count++;
+                counter->ptr->Retain();
+            }
+            else
+            {
+                counter = nullptr;
+            }
+        }
+        else
+        {
+            counter = nullptr;
         }
     }
 
     // Move constructor
-    Res(Res&& other) noexcept : resource(std::move(other.resource))
+    Res(Res&& other) noexcept : counter(other.counter)
     {
+        other.counter = nullptr;
     }
 
     // Destructor
@@ -67,10 +104,11 @@ public:
         if (this != &other)
         {
             Release();
-            resource = other.resource;
-            if (resource)
+            counter = other.counter;
+            if (counter)
             {
-                resource->Retain();
+                counter->count++;
+                counter->ptr->Retain();
             }
         }
         return *this;
@@ -82,7 +120,8 @@ public:
         if (this != &other)
         {
             Release();
-            resource = std::move(other.resource);
+            counter = other.counter;
+            other.counter = nullptr;
         }
         return *this;
     }
@@ -91,27 +130,28 @@ public:
     template <typename U>
     Res<U> Cast() const
     {
-        // Perform a dynamic_cast to validate the type conversion
-        U* castedPtr = dynamic_cast<U*>(resource.get());
-    
+        if (!counter) return Res<U>();
+
+        U* castedPtr = dynamic_cast<U*>(counter->ptr);
         if (castedPtr)
         {
-            // If cast is successful, create a new Res with the casted pointer
-            // This ensures proper reference counting
             return Res<U>(castedPtr);
         }
-    
-        // Return an invalid/null Res if the cast fails
+
         return Res<U>();
     }
 
     // Release current resource
     void Release()
     {
-        if (resource)
+        if (counter)
         {
-            resource->Release();
-            resource.reset();
+            counter->ptr->Release();
+            if (--counter->count == 0)
+            {
+                delete counter;
+            }
+            counter = nullptr;
         }
     }
 
@@ -119,30 +159,35 @@ public:
     void Reset(T* ptr = nullptr)
     {
         Release();
-        resource = std::shared_ptr<T>(ptr);
-        if (resource)
+        if (ptr)
         {
-            resource->Retain();
+            counter = new RefCounter(ptr);
+            counter->ptr->Retain();
         }
     }
 
+    // Get current reference count (for debugging/testing)
+    size_t GetRefCount() const
+    {
+        return counter ? counter->count.load() : 0;
+    }
+
     // Accessor operators
-    T* operator->() const { return resource.get(); }
-    T& operator*() const { return *resource; }
+    T* operator->() const { return counter ? counter->ptr : nullptr; }
+    T& operator*() const { return *counter->ptr; }
 
     // Utility functions
-    bool IsValid() const { return resource != nullptr; }
-    T* Get() const { return resource.get(); }
+    bool IsValid() const { return counter != nullptr && counter->ptr != nullptr; }
+    T* Get() const { return counter ? counter->ptr : nullptr; }
 
     // Cast operator to check if resource exists
     explicit operator bool() const { return IsValid(); }
 
     // Comparison operators
-    bool operator==(const Res& other) const { return resource == other.resource; }
-    bool operator!=(const Res& other) const { return resource != other.resource; }
+    bool operator==(const Res& other) const { return counter == other.counter; }
+    bool operator!=(const Res& other) const { return counter != other.counter; }
     bool operator==(std::nullptr_t) const { return !IsValid(); }
     bool operator!=(std::nullptr_t) const { return IsValid(); }
 
-private:
-    std::shared_ptr<T> resource = nullptr;
+    RefCounter* counter;
 };

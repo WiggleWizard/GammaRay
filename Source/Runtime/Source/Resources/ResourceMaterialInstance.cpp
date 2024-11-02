@@ -4,12 +4,17 @@ Res<ResourceMaterialInstance> ResourceMaterialInstance::FromMasterMaterial(Res<R
 {
     Res resourceMaterialInstance(new ResourceMaterialInstance());
 
-    resourceMaterialInstance->masterMaterial = masterMaterial;
+    resourceMaterialInstance->SetMasterMaterial(masterMaterial);
 
     return resourceMaterialInstance;
 }
 
-void ResourceMaterialInstance::SetMasterMaterial(Res<ResourceMasterMaterial>& inMasterMaterial)
+void ResourceMaterialInstance::SetMasterMaterial(Res<ResourceMasterMaterial> inMasterMaterial)
 {
     masterMaterial = inMasterMaterial;
+}
+
+void ResourceMaterialInstance::Commit()
+{
+    masterMaterial->Commit();
 }

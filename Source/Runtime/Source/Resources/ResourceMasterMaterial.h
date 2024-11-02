@@ -12,4 +12,5 @@ class ResourceMasterMaterial : public Resource
 {
 public:
     virtual ObjectPtr<PipelineShaderObject> GetPSO() { return nullptr; }
+    virtual void Commit() {}
 };

@@ -30,8 +30,8 @@ void GameWorld::Initialize()
     auto simpleMeshComponent1 = &registry->emplace<SimpleMeshComponent>(simpleMeshEntity1);
     simpleMeshComponent1->GenerateMesh(SimpleMeshComponent::Quad);
 
-    auto componentMaterial = registry->emplace<MaterialComponent>(simpleMeshEntity1);
-    componentMaterial.material = ResourceMaterialInstance::FromMasterMaterial(resMMGrid);
+    auto componentMaterial = &registry->emplace<MaterialComponent>(simpleMeshEntity1);
+    componentMaterial->SetMaterial(ResourceMaterialInstance::FromMasterMaterial(resMMGrid));
 
     // auto simpleMeshEntity2 = registry->create();
     // auto xformComponent2 = &registry->emplace<TransformComponent>(simpleMeshEntity2);

@@ -92,7 +92,7 @@ void Renderer3D::Sort()
 {
     for (auto viewport : viewports)
     {
-        
+        SortViewport(viewport);
     }
 }
 
@@ -286,7 +286,7 @@ void Renderer3D::SortViewport(ObjectPtr<Viewport> viewport)
         auto registry = world->GetRegistry();
         registry->sort<MaterialComponent>([](const MaterialComponent& c1, const MaterialComponent& c2)
         {
-            return c1.material == c2.material;
+            return c1.GetMaterial() == c2.GetMaterial();
         });
     }
 }
@@ -331,6 +331,55 @@ void Renderer3D::RenderViewport(ObjectPtr<Viewport> viewport)
         }
 
         psoGrid->Bind(contextImmediate);
+
+        auto viewMeshMaterials = registry->view<const TransformComponent, SimpleMeshComponent, MaterialComponent>();
+        viewMeshMaterials.each([&](const auto& entity, const TransformComponent& xform, SimpleMeshComponent& meshComponent, MaterialComponent& materialComponent)
+        {
+            auto material = materialComponent.GetMaterial();
+            auto pso = material->GetPSO();
+            
+            contextImmediate->BeginDebugGroup("Ordered Mesh Draw");
+
+            auto vertexBuffer = scene->GetVertexBuffer(meshComponent.rendererMeshID);
+            auto indexBuffer = scene->GetIndexBuffer(meshComponent.rendererMeshID);
+
+            // Validate buffers before use
+            if (!vertexBuffer || !indexBuffer)
+            {
+                LogRenderer3D.Error("Invalid buffers for mesh %s", meshComponent.rendererMeshID.ToString().c_str());
+                return;
+            }
+        
+            // Validate buffer states
+            Dg::BufferDesc vbDesc = vertexBuffer->GetDesc();
+            if (!(vbDesc.BindFlags & Dg::BIND_VERTEX_BUFFER))
+            {
+                LogRenderer3D.Error("Invalid vertex buffer flags");
+                return;
+            }
+
+            // TODO: Update constants/shader variables
+
+            // Bind vertex buffers
+            Diligent::IBuffer* pVBs[] = {vertexBuffer};
+            const Uint64 offset   = 0;
+            contextImmediate->SetVertexBuffers(0, 1, pVBs, &offset, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION, Diligent::SET_VERTEX_BUFFERS_FLAG_RESET);
+        
+            // Bind index buffer
+            contextImmediate->SetIndexBuffer(indexBuffer, 0, Dg::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+
+            pso->Commit(contextImmediate);
+            
+            uint32 indexCount = scene->GetIndexCount(meshComponent.rendererMeshID);
+        
+            Dg::DrawIndexedAttribs DrawAttrs;
+            DrawAttrs.IndexType  = Diligent::VT_UINT32;
+            DrawAttrs.NumIndices = indexCount;
+            DrawAttrs.Flags      = Diligent::DRAW_FLAG_VERIFY_ALL; // Enable all validation
+            contextImmediate->DrawIndexed(DrawAttrs);
+
+            contextImmediate->EndDebugGroup();
+        });
         
         auto viewMeshes = registry->view<const TransformComponent, SimpleMeshComponent>();
         viewMeshes.each([&](const auto& entity, const TransformComponent& xform, SimpleMeshComponent& meshComponent)

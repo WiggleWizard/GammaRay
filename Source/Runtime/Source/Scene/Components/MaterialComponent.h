@@ -8,7 +8,8 @@ class PipelineShaderObject;
 
 class MaterialComponent : public Component
 {
-    Res<ResourceMaterialInstance> GetMaterial()
+public:
+    Res<ResourceMaterialInstance> GetMaterial() const
     {
         return material;
     }
@@ -18,6 +19,6 @@ class MaterialComponent : public Component
         material = inMaterial;
     }
     
-public:
+protected:
     Res<ResourceMaterialInstance> material;
 };
