@@ -10,15 +10,20 @@ public:
     static Res<ResourceMaterialInstance> FromMasterMaterial(Res<ResourceMasterMaterial> masterMaterial);
     
     void SetMasterMaterial(Res<ResourceMasterMaterial> masterMaterial);
+    Res<ResourceMasterMaterial> GetMasterMaterial() { return masterMaterial; }
 
     ObjectPtr<PipelineShaderObject> GetPSO()
     {
         return masterMaterial->GetPSO();
     }
 
+    bool IsFromMasterMaterial(const Res<ResourceMasterMaterial>& other) const;
+
     virtual bool IsPSOInitialized();
 
     virtual void InitializePSO(Dg::RefCntAutoPtr<Dg::IRenderDevice> renderDevice, Dg::RefCntAutoPtr<Dg::ISwapChain> swapChain);
+
+    virtual void Bind(Dg::RefCntAutoPtr<Dg::IDeviceContext> renderDevice);
 
     virtual void WriteGeneralVS(Dg::RefCntAutoPtr<Dg::IDeviceContext> deviceContext, const Dg::float4x4& cameraViewMatrix,
         const Dg::float4x4& cameraProjectionMatrix, const Dg::float4x4& matrix);

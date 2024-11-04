@@ -9,7 +9,6 @@
 #include "Scene/Components/TransformComponent.h"
 #include "Scene/Components/StaticMeshComponent.h"
 #include "Scene3D.h"
-#include "PSOs/PSOGrid.h"
 #include "Scene/Components/MaterialComponent.h"
 #include "Scene/Components/SimpleMeshComponent.h"
 
@@ -84,8 +83,6 @@ void main()
 Renderer3D::Renderer3D()
 {
     scene = NewObject<Scene3D>();
-    psoGrid = NewObject<PSOGrid>();
-    pso3D = NewObject<PSO3D>();
 }
 
 void Renderer3D::Sort()
@@ -163,9 +160,6 @@ UUID Renderer3D::MeshCreateFromComponent(StaticMeshComponent* staticMeshComponen
 
 void Renderer3D::CreateResources()
 {
-    psoGrid->Initialize(renderDevice, renderSwapChain);
-    pso3D->Initialize(renderDevice, renderSwapChain);
-    
     // Pipeline state object encompasses configuration of all GPU stages
 
     Dg::GraphicsPipelineStateCreateInfo PSOCreateInfo;
@@ -318,7 +312,9 @@ void Renderer3D::RenderViewport(ObjectPtr<Viewport> viewport)
             auto material = materialComponent.GetMaterial();
             if (!material->IsPSOInitialized())
             {
+                contextImmediate->BeginDebugGroup("Initialize PSO");
                 material->InitializePSO(renderDevice, renderSwapChain);
+                contextImmediate->EndDebugGroup();
             }
         });
         
@@ -330,10 +326,9 @@ void Renderer3D::RenderViewport(ObjectPtr<Viewport> viewport)
         auto viewCameras = registry->view<const TransformComponent, CameraComponent>();
         viewCameras.each([&viewportRatio, &mainCameraProjectionMatrix, &mainCameraViewMatrix](const auto& entity, const TransformComponent& xform, CameraComponent& camera)
         {
-            mainCameraViewMatrix = xform.matrix;
-            
             camera.ComputeProjectionMatrix(viewportRatio);
             mainCameraProjectionMatrix = camera.frustum;
+            mainCameraViewMatrix = xform.matrix;
         });
 
         if (!viewport->SetRenderTargetAndClear(contextImmediate))
@@ -341,11 +336,18 @@ void Renderer3D::RenderViewport(ObjectPtr<Viewport> viewport)
             return;
         }
 
-        psoGrid->Bind(contextImmediate);
-
+        Res<ResourceMasterMaterial> currentlySelectedMasterMaterial;
         viewMeshMaterials.each([&](const auto& entity, const TransformComponent& xform, SimpleMeshComponent& meshComponent, MaterialComponent& materialComponent)
         {
             auto material = materialComponent.GetMaterial();
+
+            // If our master material has changed, then we need to rebind. This allows us to batch rendering without having to rebind a
+            // different program.
+            if (!material->IsFromMasterMaterial(currentlySelectedMasterMaterial))
+            {
+                material->Bind(contextImmediate);
+                currentlySelectedMasterMaterial = material->GetMasterMaterial();
+            }
             
             contextImmediate->BeginDebugGroup("Ordered Mesh Draw");
 
@@ -390,61 +392,6 @@ void Renderer3D::RenderViewport(ObjectPtr<Viewport> viewport)
 
             contextImmediate->EndDebugGroup();
         });
-        
-        // auto viewMeshes = registry->view<const TransformComponent, SimpleMeshComponent>();
-        // viewMeshes.each([&](const auto& entity, const TransformComponent& xform, SimpleMeshComponent& meshComponent)
-        // {
-        //     // Add debug markers if supported
-        //     contextImmediate->BeginDebugGroup("Mesh Draw");
-        //     
-        //     auto vertexBuffer = scene->GetVertexBuffer(meshComponent.rendererMeshID);
-        //     auto indexBuffer = scene->GetIndexBuffer(meshComponent.rendererMeshID);
-        //
-        //     // Validate buffers before use
-        //     if (!vertexBuffer || !indexBuffer)
-        //     {
-        //         LogRenderer3D.Error("Invalid buffers for mesh %s", meshComponent.rendererMeshID.ToString().c_str());
-        //         return;
-        //     }
-        //
-        //     // Validate buffer states
-        //     Dg::BufferDesc vbDesc = vertexBuffer->GetDesc();
-        //     if (!(vbDesc.BindFlags & Dg::BIND_VERTEX_BUFFER))
-        //     {
-        //         LogRenderer3D.Error("Invalid vertex buffer flags");
-        //         return;
-        //     }
-        //     
-        //     // Update constant buffer
-        //     {
-        //         auto psoGridConstants = psoGrid->WriteVS<PSOGrid::PSOConstants>(contextImmediate);
-        //         
-        //         psoGridConstants->world = xform.matrix;
-        //         psoGridConstants->worldViewProj = xform.matrix * mainCameraViewMatrix.Inverse() * mainCameraProjectionMatrix;
-        //         psoGridConstants->cameraPosition = GetPositionFromMatrix(mainCameraViewMatrix);
-        //     }
-        //
-        //     // Bind vertex buffers
-        //     Diligent::IBuffer* pVBs[] = {vertexBuffer};
-        //     const Uint64 offset   = 0;
-        //     contextImmediate->SetVertexBuffers(0, 1, pVBs, &offset, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION, Diligent::SET_VERTEX_BUFFERS_FLAG_RESET);
-        //
-        //     // Bind index buffer
-        //     contextImmediate->SetIndexBuffer(indexBuffer, 0, Dg::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-        //
-        //     //contextImmediate->CommitShaderResources(shaderBinding, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-        //     psoGrid->Commit(contextImmediate);
-        //     
-        //     uint32 indexCount = scene->GetIndexCount(meshComponent.rendererMeshID);
-        //
-        //     Dg::DrawIndexedAttribs DrawAttrs;
-        //     DrawAttrs.IndexType  = Diligent::VT_UINT32;
-        //     DrawAttrs.NumIndices = indexCount;
-        //     DrawAttrs.Flags      = Diligent::DRAW_FLAG_VERIFY_ALL; // Enable all validation
-        //     contextImmediate->DrawIndexed(DrawAttrs);
-        //
-        //     contextImmediate->EndDebugGroup();
-        // });
     }
     
     viewport->Render(contextImmediate);

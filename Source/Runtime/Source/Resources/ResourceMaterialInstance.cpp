@@ -16,6 +16,11 @@ void ResourceMaterialInstance::SetMasterMaterial(Res<ResourceMasterMaterial> inM
     masterMaterial = inMasterMaterial;
 }
 
+bool ResourceMaterialInstance::IsFromMasterMaterial(const Res<ResourceMasterMaterial>& other) const
+{
+    return masterMaterial == other;
+}
+
 bool ResourceMaterialInstance::IsPSOInitialized()
 {
     if (masterMaterial)
@@ -30,6 +35,14 @@ void ResourceMaterialInstance::InitializePSO(Dg::RefCntAutoPtr<Dg::IRenderDevice
     if (masterMaterial)
     {
         masterMaterial->InitializePSO(renderDevice, swapChain);
+    }
+}
+
+void ResourceMaterialInstance::Bind(Dg::RefCntAutoPtr<Dg::IDeviceContext> renderDevice)
+{
+    if (masterMaterial)
+    {
+        masterMaterial->Bind(renderDevice);
     }
 }
 

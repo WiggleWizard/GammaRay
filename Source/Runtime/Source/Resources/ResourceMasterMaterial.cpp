@@ -18,3 +18,11 @@ void ResourceMasterMaterial::InitializePSO(Dg::RefCntAutoPtr<Dg::IRenderDevice> 
         pso->Initialize(renderDevice, swapChain);
     }
 }
+
+void ResourceMasterMaterial::Bind(Dg::RefCntAutoPtr<Dg::IDeviceContext> renderDevice)
+{
+    if (IsValid(pso))
+    {
+        pso->Bind(renderDevice);
+    }
+}
