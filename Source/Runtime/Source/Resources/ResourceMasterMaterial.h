@@ -11,6 +11,17 @@ class PipelineShaderObject;
 class ResourceMasterMaterial : public Resource
 {
 public:
-    virtual ObjectPtr<PipelineShaderObject> GetPSO() { return nullptr; }
-    virtual void Commit() {}
+    virtual ObjectPtr<PipelineShaderObject> GetPSO() { return pso; }
+
+    virtual bool IsPSOInitialized();
+
+    virtual void InitializePSO(Dg::RefCntAutoPtr<Dg::IRenderDevice> renderDevice, Dg::RefCntAutoPtr<Dg::ISwapChain> swapChain);
+    
+    virtual void WriteGeneralVS(Dg::RefCntAutoPtr<Dg::IDeviceContext> deviceContext, const Dg::float4x4& cameraViewMatrix,
+        const Dg::float4x4& cameraProjectionMatrix, const Dg::float4x4& matrix) {}
+    
+    virtual void Commit(Dg::RefCntAutoPtr<Dg::IDeviceContext> deviceContext) {}
+
+protected:
+    ObjectPtr<PipelineShaderObject> pso = nullptr;
 };

@@ -56,7 +56,7 @@ void GameViewport::OnInputEvent(const ObjectPtr<InputEvent> inputEvent)
     ObjectPtr<InputEventMouseButton> inputEventMouseButton = Cast<InputEventMouseButton>(inputEvent);
     if (IsValid(inputEventMouseButton))
     {
-        if (inputEventMouseButton->buttonIndex == 3)
+        if (inputEventMouseButton->buttonIndex == 1)
         {
             if (inputEventMouseButton->pressed && mouseFocused)
             {

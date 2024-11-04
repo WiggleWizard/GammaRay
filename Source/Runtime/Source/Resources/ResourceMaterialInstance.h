@@ -16,10 +16,14 @@ public:
         return masterMaterial->GetPSO();
     }
 
-    void WriteGeneralVS(Dg::RefCntAutoPtr<Dg::IDeviceContext> deviceContext, const Dg::float4x4& cameraViewMatrix,
+    virtual bool IsPSOInitialized();
+
+    virtual void InitializePSO(Dg::RefCntAutoPtr<Dg::IRenderDevice> renderDevice, Dg::RefCntAutoPtr<Dg::ISwapChain> swapChain);
+
+    virtual void WriteGeneralVS(Dg::RefCntAutoPtr<Dg::IDeviceContext> deviceContext, const Dg::float4x4& cameraViewMatrix,
         const Dg::float4x4& cameraProjectionMatrix, const Dg::float4x4& matrix);
 
-    void Commit();
+    virtual void Commit(Dg::RefCntAutoPtr<Dg::IDeviceContext> deviceContext);
 
 protected:
     Res<ResourceMasterMaterial> masterMaterial;

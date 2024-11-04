@@ -1,14 +1,9 @@
 ﻿#pragma once
 
-#include "Resources/ResourceMasterMaterial.h"
+#include "Resources/ResourceMasterMaterial3D.h"
 
-class ResourceMasterMaterialGrid : public ResourceMasterMaterial
+class ResourceMasterMaterialGrid : public ResourceMasterMaterial3D
 {
 public:
     ResourceMasterMaterialGrid();
-
-    virtual ObjectPtr<PipelineShaderObject> GetPSO() override { return psoGrid; }
-
-protected:
-    ObjectPtr<PipelineShaderObject> psoGrid = nullptr;
 };

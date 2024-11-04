@@ -4,5 +4,5 @@
 
 ResourceMasterMaterialGrid::ResourceMasterMaterialGrid()
 {
-    psoGrid = NewObject<PSOGrid>();
+    pso = NewObject<PSOGrid>();
 }

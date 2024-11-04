@@ -1,5 +1,7 @@
 ﻿#include "ResourceMaterialInstance.h"
 
+#include "Rendering/PipelineShaderObject.h"
+
 Res<ResourceMaterialInstance> ResourceMaterialInstance::FromMasterMaterial(Res<ResourceMasterMaterial> masterMaterial)
 {
     Res resourceMaterialInstance(new ResourceMaterialInstance());
@@ -14,14 +16,36 @@ void ResourceMaterialInstance::SetMasterMaterial(Res<ResourceMasterMaterial> inM
     masterMaterial = inMasterMaterial;
 }
 
-void ResourceMaterialInstance::WriteGeneralVS(Dg::RefCntAutoPtr<Dg::IDeviceContext> deviceContext,
-    const Dg::float4x4& cameraViewMatrix, const Dg::float4x4& cameraProjectionMatrix, const Dg::float4x4& matrix)
+bool ResourceMaterialInstance::IsPSOInitialized()
 {
-    auto worldViewProj = matrix * cameraViewMatrix * cameraProjectionMatrix;
-    
+    if (masterMaterial)
+    {
+        return masterMaterial->IsPSOInitialized();
+    }
+    return false;
 }
 
-void ResourceMaterialInstance::Commit()
+void ResourceMaterialInstance::InitializePSO(Dg::RefCntAutoPtr<Dg::IRenderDevice> renderDevice, Dg::RefCntAutoPtr<Dg::ISwapChain> swapChain)
 {
-    masterMaterial->Commit();
+    if (masterMaterial)
+    {
+        masterMaterial->InitializePSO(renderDevice, swapChain);
+    }
+}
+
+void ResourceMaterialInstance::WriteGeneralVS(Dg::RefCntAutoPtr<Dg::IDeviceContext> deviceContext,
+                                              const Dg::float4x4& cameraViewMatrix, const Dg::float4x4& cameraProjectionMatrix, const Dg::float4x4& matrix)
+{
+    if (masterMaterial)
+    {
+        masterMaterial->WriteGeneralVS(deviceContext, cameraViewMatrix, cameraProjectionMatrix, matrix);
+    }
+}
+
+void ResourceMaterialInstance::Commit(Dg::RefCntAutoPtr<Dg::IDeviceContext> deviceContext)
+{
+    if (masterMaterial)
+    {
+        masterMaterial->Commit(deviceContext);
+    }
 }
