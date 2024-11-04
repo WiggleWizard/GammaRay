@@ -14,6 +14,13 @@ void ResourceMaterialInstance::SetMasterMaterial(Res<ResourceMasterMaterial> inM
     masterMaterial = inMasterMaterial;
 }
 
+void ResourceMaterialInstance::WriteGeneralVS(Dg::RefCntAutoPtr<Dg::IDeviceContext> deviceContext,
+    const Dg::float4x4& cameraViewMatrix, const Dg::float4x4& cameraProjectionMatrix, const Dg::float4x4& matrix)
+{
+    auto worldViewProj = matrix * cameraViewMatrix * cameraProjectionMatrix;
+    
+}
+
 void ResourceMaterialInstance::Commit()
 {
     masterMaterial->Commit();

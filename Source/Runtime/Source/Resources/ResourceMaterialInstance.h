@@ -16,6 +16,9 @@ public:
         return masterMaterial->GetPSO();
     }
 
+    void WriteGeneralVS(Dg::RefCntAutoPtr<Dg::IDeviceContext> deviceContext, const Dg::float4x4& cameraViewMatrix,
+        const Dg::float4x4& cameraProjectionMatrix, const Dg::float4x4& matrix);
+
     void Commit();
 
 protected:
