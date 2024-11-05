@@ -2,6 +2,7 @@
 
 #include "Rendering/WindowViewport.h"
 
+class ImGuiComponentFileBrowser;
 class ImGuiComponentViewport;
 
 class EditorWindowViewport : public WindowViewport
@@ -16,4 +17,5 @@ protected:
 
     bool imguiDemoWindowOpen = true;
     ObjectPtr<ImGuiComponentViewport> imGuiComponentViewport = nullptr;
+    ObjectPtr<ImGuiComponentFileBrowser> imGuiComponentFileBrowser = nullptr;
 };

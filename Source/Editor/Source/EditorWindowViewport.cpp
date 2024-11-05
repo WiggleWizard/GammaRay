@@ -7,6 +7,7 @@
 
 #include "../../Runtime/ThirdParty/DiligentTools/ThirdParty/imgui/imgui.h"
 #include "Engine/Engine.h"
+#include "UI/ImGuiComponentFileBrowser.h"
 
 EditorWindowViewport::EditorWindowViewport(Dg::RefCntAutoPtr<Dg::ISwapChain>& swapChain, Dg::RefCntAutoPtr<Dg::IRenderDevice>& renderDevice)
     : Super(swapChain, renderDevice)
@@ -21,6 +22,7 @@ EditorWindowViewport::EditorWindowViewport(Dg::RefCntAutoPtr<Dg::ISwapChain>& sw
     }
 
     imGuiComponentViewport = NewObject<ImGuiComponentViewport>(gameViewport);
+    imGuiComponentFileBrowser = NewObject<ImGuiComponentFileBrowser>();
 }
 
 void EditorWindowViewport::DrawImGui()
@@ -28,4 +30,5 @@ void EditorWindowViewport::DrawImGui()
     ImGui::ShowDemoWindow(&imguiDemoWindowOpen);
 
     imGuiComponentViewport->Draw();
+    imGuiComponentFileBrowser->Draw();
 }
