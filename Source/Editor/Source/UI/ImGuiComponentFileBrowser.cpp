@@ -22,16 +22,16 @@ void ImGuiComponentFileBrowser::Draw()
         // Left pane - Directory tree
         if (ImGui::Button("Parent Directory"))
         {
-            if (currentDir.has_parent_path())
+            if (currentDir.HasParentPath())
             {
-                currentDir = currentDir.parent_path();
+                currentDir.Back();
             }
         }
         
-        auto dirs = resourceManager->ListDirectories(currentDir.string());
-        for (auto entry : dirs)
+        auto dirs = resourceManager->ListDirectories(currentDir.ToString());
+        for (const auto entry : dirs)
         {
-            std::string dirName = currentDir.filename().string();
+            std::string dirName = entry.name;
             if (ImGui::Selectable(dirName.c_str(), false, ImGuiSelectableFlags_AllowDoubleClick))
             {
                 if (ImGui::IsMouseDoubleClicked(0))
@@ -44,11 +44,11 @@ void ImGuiComponentFileBrowser::Draw()
         ImGui::NextColumn();
 
         // Right pane - File listing
-        ImGui::Text("Current Path: %s", currentDir.string().c_str());
+        ImGui::Text("Current Path: %s", currentDir.ToString().c_str());
         ImGui::Separator();
 
         // Show files
-        auto files = resourceManager->ListFiles(currentDir.string());
+        auto files = resourceManager->ListFiles(currentDir.ToString());
         for (const auto& entry : files)
         {
             if (ImGui::Selectable(entry.name.c_str()))

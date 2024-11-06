@@ -8,7 +8,7 @@ ResourceManager::ResourceManager()
     rootNode->isDirectory = true;
 }
 
-bool ResourceManager::CreateVirtualDirectory(const String& path)
+bool ResourceManager::CreateVirtualDirectory(const ResPath& path)
 {
     if (!IsValidPath(path))
         return false;
@@ -21,12 +21,12 @@ bool ResourceManager::CreateVirtualDirectory(const String& path)
     return true;
 }
 
-void ResourceManager::AddVirtualResource(const String& virtualPath, Resource* res)
+void ResourceManager::AddVirtualResource(const ResPath& virtualPath, Resource* res)
 {
     AddVirtualResource(virtualPath, Res{res});
 }
 
-void ResourceManager::AddVirtualResource(const String& destPath, Res<Resource> res)
+void ResourceManager::AddVirtualResource(const ResPath& destPath, Res<Resource> res)
 {
     VirtualNode* node = CreateNodePath(destPath);
     if (node)
@@ -36,7 +36,7 @@ void ResourceManager::AddVirtualResource(const String& destPath, Res<Resource> r
     }
 }
 
-Res<Resource> ResourceManager::GetResource(const String& virtualPath)
+Res<Resource> ResourceManager::GetResource(const ResPath& virtualPath)
 {
     VirtualNode* node = FindNode(virtualPath);
     if (!node || node->isDirectory)
@@ -58,7 +58,7 @@ Res<Resource> ResourceManager::GetResource(const String& virtualPath)
     return node->resource;
 }
 
-std::vector<DirectoryInfo> ResourceManager::ListDirectories(const String& path, const ListOptions& options) const
+std::vector<DirectoryInfo> ResourceManager::ListDirectories(const ResPath& path, const ListOptions& options) const
 {
     DirectoryContents contents;
     const VirtualNode* node = FindNode(path);
@@ -69,7 +69,7 @@ std::vector<DirectoryInfo> ResourceManager::ListDirectories(const String& path, 
     return contents.directories;
 }
 
-std::vector<FileInfo> ResourceManager::ListFiles(const String& path, const ListOptions& options) const
+std::vector<FileInfo> ResourceManager::ListFiles(const ResPath& path, const ListOptions& options) const
 {
     DirectoryContents contents;
     VirtualNode* node = FindNode(path);
@@ -80,7 +80,7 @@ std::vector<FileInfo> ResourceManager::ListFiles(const String& path, const ListO
     return contents.files;
 }
 
-ResourceManager::DirectoryContents ResourceManager::ListContents(const String& path, const ListOptions& options) const
+ResourceManager::DirectoryContents ResourceManager::ListContents(const ResPath& path, const ListOptions& options) const
 {
     DirectoryContents contents;
     VirtualNode* node = FindNode(path);
@@ -91,24 +91,23 @@ ResourceManager::DirectoryContents ResourceManager::ListContents(const String& p
     return contents;
 }
 
-ResourceManager::VirtualNode* ResourceManager::FindNode(const String& path) const
+ResourceManager::VirtualNode* ResourceManager::FindNode(const ResPath& path) const
 {
-    if (path.empty() || path == "/")
+    if (path.IsEmpty())
     {
         return rootNode.get();
     }
 
     VirtualNode* current = rootNode.get();
 
-    const std::filesystem::path fsPath(path);
-    for (const auto& component : fsPath)
+    for (const auto& component : path)
     {
         if (component.empty() || component == "." || component == "/")
         {
             continue;
         }
 
-        auto it = current->children.find(component.string());
+        auto it = current->children.find(component);
         if (it == current->children.end())
         {
             return nullptr;
@@ -135,37 +134,28 @@ std::vector<String> ResourceManager::SplitPath(const String& path) const
     return components;
 }
 
-bool ResourceManager::IsValidPath(const String& path) const
+bool ResourceManager::IsValidPath(const ResPath& path) const
 {
-    if (path.empty())
+    if (path.IsEmpty())
     {
         return false;
     }
 
-    try
-    {
-        const std::filesystem::path fsPath(path);
-        return !fsPath.empty();
-    }
-    catch (...)
-    {
-        return false;
-    }
+    return true;
 }
 
-ResourceManager::VirtualNode* ResourceManager::CreateNodePath(const String& path)
+ResourceManager::VirtualNode* ResourceManager::CreateNodePath(const ResPath& path)
 {
-    const std::filesystem::path fsPath(path);
     VirtualNode* current = rootNode.get();
 
-    for (const auto& component : fsPath)
+    for (const auto& component : path)
     {
         if (component.empty() || component == "." || component == "/")
         {
             continue;
         }
 
-        auto& child = current->children[component.string()];
+        auto& child = current->children[component];
         if (!child)
         {
             child = std::make_unique<VirtualNode>();
@@ -196,10 +186,10 @@ bool ResourceManager::MatchesPattern(const String& filename, const String& patte
     return filename == pattern;
 }
 
-FileInfo ResourceManager::GetFileInfo(const String& virtualPath, const VirtualNode* node) const
+FileInfo ResourceManager::GetFileInfo(const ResPath& virtualPath, const VirtualNode* node) const
 {
     FileInfo info;
-    info.name = std::filesystem::path(virtualPath).filename().string();
+    info.name = virtualPath.Filename().ToString();
     info.virtualPath = virtualPath;
     info.physicalPath = node->physicalPath;
     info.isVirtual = node->physicalPath.empty();
@@ -224,14 +214,14 @@ FileInfo ResourceManager::GetFileInfo(const String& virtualPath, const VirtualNo
     return info;
 }
 
-DirectoryInfo ResourceManager::GetDirectoryInfo(const String& virtualPath, const VirtualNode* node) const
+DirectoryInfo ResourceManager::GetDirectoryInfo(const ResPath& virtualPath, const VirtualNode* node) const
 {
     DirectoryInfo info;
-    info.name = std::filesystem::path(virtualPath).filename().string();
-    info.virtualPath = virtualPath;
+    info.name         = virtualPath.Filename().ToString();
+    info.virtualPath  = virtualPath;
     info.physicalPath = node->physicalPath;
-    info.isVirtual = node->physicalPath.empty();
-    info.numChildren = node->children.size();
+    info.isVirtual    = node->physicalPath.empty();
+    info.numChildren  = node->children.size();
 
     // If it's a physical directory, add physical children count
     if (!info.isVirtual)
@@ -254,7 +244,7 @@ DirectoryInfo ResourceManager::GetDirectoryInfo(const String& virtualPath, const
     return info;
 }
 
-void ResourceManager::ListContentsRecursive(const String& currentPath, const VirtualNode* node, DirectoryContents& contents, const ListOptions& options, size_t currentDepth) const
+void ResourceManager::ListContentsRecursive(const ResPath& currentPath, const VirtualNode* node, DirectoryContents& contents, const ListOptions& options, size_t currentDepth) const
 {
     if (!node || currentDepth > options.maxDepth)
         return;
@@ -267,7 +257,7 @@ void ResourceManager::ListContentsRecursive(const String& currentPath, const Vir
             continue;
         }
 
-        String childPath = (std::filesystem::path(currentPath) / childName).string();
+        ResPath childPath = currentPath / childName;
 
         if (childNode->isDirectory)
         {
@@ -304,7 +294,7 @@ void ResourceManager::ListContentsRecursive(const String& currentPath, const Vir
                     continue;
                 }
 
-                String virtualChildPath = currentPath + "/" + entryName;
+                ResPath virtualChildPath = currentPath / entryName;
 
                 if (entry.is_directory())
                 {
@@ -349,8 +339,8 @@ void ResourceManager::ListContentsRecursive(const String& currentPath, const Vir
     }
 }
 
-String ResourceManager::GetExtension(const String& path) const
+String ResourceManager::GetExtension(const ResPath& path) const
 {
-    String ext = std::filesystem::path(path).extension().string();
+    String ext = path.Ext();
     return ext.empty() ? ext : ext.substr(1); // Remove the dot from extension
 }

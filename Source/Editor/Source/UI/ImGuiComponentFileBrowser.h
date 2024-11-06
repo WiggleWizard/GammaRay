@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "Resources/ResPath.h"
 #include "UI/ImGuiComponent.h"
 
 #include <filesystem>
@@ -10,5 +11,5 @@ public:
     void Draw() override;
 
 protected:
-    std::filesystem::path currentDir = "/Editor/Materials";
+    ResPath currentDir = "/Editor/Materials";
 };

@@ -2,6 +2,7 @@
 
 #include "Res.h"
 #include "Resource.h"
+#include "ResPath.h"
 
 class Importer;
 class FileIO;
@@ -10,7 +11,7 @@ class Resource;
 struct FileInfo
 {
     String name;
-    String virtualPath;
+    ResPath virtualPath;
     String physicalPath;
     size_t size = 0;
     time_t lastModified = 0;
@@ -23,7 +24,7 @@ struct FileInfo
 struct DirectoryInfo
 {
     String name;
-    String virtualPath;
+    ResPath virtualPath;
     String physicalPath;
     bool isVirtual = true;
     size_t numChildren = 0; // Number of immediate children
@@ -44,23 +45,23 @@ public:
     ResourceManager();
 
     // VFS
-    bool CreateVirtualDirectory(const String& path);
-    bool DeleteVirtualDirectory(const String& path, bool recursive = false);
-    bool MountPhysicalDirectory(const String& virtualPath, const String& physicalPath);
-    bool UnmountDirectory(const String& virtualPath);
+    bool CreateVirtualDirectory(const ResPath& path);
+    bool DeleteVirtualDirectory(const ResPath& path, bool recursive = false);
+    bool MountPhysicalDirectory(const ResPath& virtualPath, const String& physicalPath);
+    bool UnmountDirectory(const ResPath& virtualPath);
 
     // Resource management
     // Takes ownership of the Resource pointer
-    void AddVirtualResource(const String& virtualPath, Resource* res);
-    void AddVirtualResource(const String& virtualPath, Res<Resource> res);
-    bool DeleteResource(const String& virtualPath);
-    Res<Resource> GetResource(const String& virtualPath);
-    bool ResourceExists(const String& virtualPath) const;
-    bool IsDirectory(const String& virtualPath) const;
+    void AddVirtualResource(const ResPath& virtualPath, Resource* res);
+    void AddVirtualResource(const ResPath& virtualPath, Res<Resource> res);
+    bool DeleteResource(const ResPath& virtualPath);
+    Res<Resource> GetResource(const ResPath& virtualPath);
+    bool ResourceExists(const ResPath& virtualPath) const;
+    bool IsDirectory(const ResPath& virtualPath) const;
 
     // Directory listing methods
-    std::vector<DirectoryInfo> ListDirectories(const String& path, const ListOptions& options = {}) const;
-    std::vector<FileInfo> ListFiles(const String& path, const ListOptions& options = {}) const;
+    std::vector<DirectoryInfo> ListDirectories(const ResPath& path, const ListOptions& options = {}) const;
+    std::vector<FileInfo> ListFiles(const ResPath& path, const ListOptions& options = {}) const;
     
     // Combined listing method
     struct DirectoryContents {
@@ -68,7 +69,7 @@ public:
         std::vector<FileInfo> files;
         size_t totalSize = 0;
     };
-    DirectoryContents ListContents(const String& path, const ListOptions& options = {}) const;
+    DirectoryContents ListContents(const ResPath& path, const ListOptions& options = {}) const;
 
     // Path operations
     String ResolvePath(const String& virtualPath) const; // Converts virtual path to physical if applicable
@@ -91,17 +92,17 @@ protected:
     std::unique_ptr<VirtualNode> rootNode;
 
     // Helper functions
-    VirtualNode* FindNode(const String& path) const;
+    VirtualNode* FindNode(const ResPath& path) const;
     std::vector<String> SplitPath(const String& path) const;
-    bool IsValidPath(const String& path) const;
-    VirtualNode* CreateNodePath(const String& path);
+    bool IsValidPath(const ResPath& path) const;
+    VirtualNode* CreateNodePath(const ResPath& path);
     bool DeleteNodeRecursive(VirtualNode* node);
 
     bool MatchesPattern(const String& filename, const String& pattern) const;
-    FileInfo GetFileInfo(const String& virtualPath, const VirtualNode* node) const;
-    DirectoryInfo GetDirectoryInfo(const String& virtualPath, const VirtualNode* node) const;
-    void ListContentsRecursive(const String& currentPath, const VirtualNode* node, DirectoryContents& contents, const ListOptions& options, size_t currentDepth) const;
-    String GetExtension(const String& path) const;
+    FileInfo GetFileInfo(const ResPath& virtualPath, const VirtualNode* node) const;
+    DirectoryInfo GetDirectoryInfo(const ResPath& virtualPath, const VirtualNode* node) const;
+    void ListContentsRecursive(const ResPath& currentPath, const VirtualNode* node, DirectoryContents& contents, const ListOptions& options, size_t currentDepth) const;
+    String GetExtension(const ResPath& path) const;
 
     // Mount point tracking
     struct MountPoint
