@@ -1,11 +1,40 @@
 ﻿#include "ResourceManager.h"
 
+#include "FileIO/FileIO.h"
+#include "Importers/Importer3DObject.h"
+
 #include <filesystem>
+
+DEFINE_LOGGER_STATIC(LogResourceManager, LogVerbosity::Verbose);
 
 ResourceManager::ResourceManager()
     : rootNode(std::make_unique<VirtualNode>())
 {
     rootNode->isDirectory = true;
+
+    registeredImports = {
+        { ".obj", NewObject<Importer3DObject>() }
+    };
+}
+
+void ResourceManager::ImportSource(const std::filesystem::path& sourcePath, const ResPath& destPath)
+{
+    // Figure out how we want to import it based on the source's extension
+    auto ext = sourcePath.extension().string();
+
+    if (!registeredImports.contains(ext))
+    {
+        LogResourceManager.Warn("Importer for file with extension {}", ext);
+        return;
+    }
+
+    auto importer = registeredImports[ext];
+
+    ObjectPtr<FileIO> fileIO = importer->CreateFileIO(false);
+
+    importer->Import(sourcePath, fileIO);
+
+    fileIO->Finalize();
 }
 
 bool ResourceManager::CreateVirtualDirectory(const ResPath& path)

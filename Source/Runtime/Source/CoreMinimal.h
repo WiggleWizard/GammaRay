@@ -7,7 +7,9 @@
 #include "Core/Types/UUID.h"
 
 #include "Core/Eventing/DelegateMulticast.h"
+
 #include "Core/Memory/SharedPtr.h"
+#include "Core/Memory/Archive.h"
 
 #include "Core/Object/ObjectMacros.h"
 #include "Core/Object/Object.h"

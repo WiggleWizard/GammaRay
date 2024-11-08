@@ -27,6 +27,13 @@ void ImGuiComponentFileBrowser::Draw()
                 currentDir.Back();
             }
         }
+
+        ImGui::SameLine();
+        
+        if (ImGui::Button("Import..."))
+        {
+            resourceManager->ImportSource("D:/Projects/CPP/GammaRay/Source/teapot.obj", "/Content/Objects/teapot");
+        }
         
         auto dirs = resourceManager->ListDirectories(currentDir.ToString());
         for (const auto entry : dirs)

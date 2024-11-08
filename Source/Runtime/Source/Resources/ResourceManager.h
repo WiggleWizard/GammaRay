@@ -44,6 +44,8 @@ class ResourceManager : public Object
 public:
     ResourceManager();
 
+    void ImportSource(const std::filesystem::path& sourcePath, const ResPath& destPath);
+
     // VFS
     bool CreateVirtualDirectory(const ResPath& path);
     bool DeleteVirtualDirectory(const ResPath& path, bool recursive = false);
@@ -74,11 +76,6 @@ public:
     // Path operations
     String ResolvePath(const String& virtualPath) const; // Converts virtual path to physical if applicable
     String NormalizePath(const String& path) const; // Normalizes path separators and removes redundant elements
-
-protected:
-    // List of importers available for file extensions
-    std::unordered_map<String, ObjectPtr<Importer>> registeredImports;
-    std::unordered_map<String, ObjectPtr<FileIO>> registeredFileIO;
 
 protected:
     struct VirtualNode
@@ -112,4 +109,9 @@ protected:
     };
 
     std::vector<MountPoint> mountPoints;
+
+protected:
+    // List of importers available for file extensions
+    std::unordered_map<String, ObjectPtr<Importer>> registeredImports;
+    std::unordered_map<String, ObjectPtr<FileIO>> registeredFileIO;
 };

@@ -9,6 +9,7 @@ group "Dependencies"
     include(thirdpartydir .. "/diligent_tools_p5.lua")
     include(thirdpartydir .. "/imgui_p5.lua")
     include(thirdpartydir .. "/entt_p5.lua")
+    include(path.join(thirdpartydir, "assimp_p5.lua"))
     
     build_data.project_configure["spdlog"]("ThirdParty/spdlog")
     
@@ -25,8 +26,7 @@ group "Dependencies"
     build_data.project_declare["DiligentToolsImGui"]("ThirdParty")
     
     dep_configure_and_decl("entt", { "ThirdParty/entt" })
-    
-    include(path.join(thirdpartydir, "entt_p5.lua"))
+    dep_configure_and_decl("assimp", { "ThirdParty/assimp" })
 group ""
 
 group "Projects"
@@ -72,7 +72,8 @@ project "Runtime"
         
         --table.unpack(build_data.project_public_includes["entt"]()),
         
-        dep_inject_public_includes("entt")
+        dep_inject_public_includes("entt"),
+        dep_inject_public_includes("assimp")
     }
     runtimeincludedirs["spdlog"] = thirdpartydir .. "/%{includedirectory.spdlog}"
     
@@ -91,7 +92,8 @@ project "Runtime"
         "spdlog",
         "glew",
         "DiligentToolsImGui",
-        "ImGui"
+        "ImGui",
+        "assimp"
     }
     
     defines
