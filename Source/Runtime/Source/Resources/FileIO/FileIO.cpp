@@ -6,9 +6,9 @@ void FileMetadataHeader::Serialize(Archive& archive)
     archive << sourcePath;
 }
 
-FileIO::FileIO(const String& inFilePath, bool isLoadingFromDisk)
-    : archive(isLoadingFromDisk)
-    , filePath(inFilePath)
+FileIO::FileIO(const ResPath& inResPath, bool loadFromDisk)
+    : archive(loadFromDisk)
+    , resPath(inResPath)
 {
 }
 
@@ -17,9 +17,9 @@ void FileIO::SetSavingToDisk(bool isLoadingFromDisk)
     archive = Archive(isLoadingFromDisk);
 }
 
-void FileIO::WriteMetadata(const FileMetadataHeader& metadata)
+void FileIO::WriteMetadata(FileMetadataHeader& metadata)
 {
-    
+    archive << metadata;
 }
 
 void FileIO::Finalize()

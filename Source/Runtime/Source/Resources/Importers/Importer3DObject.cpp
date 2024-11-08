@@ -18,10 +18,15 @@ void Importer3DObject::Import(const std::filesystem::path& source, ObjectPtr<Fil
     );
 
     auto fileIO3DObject = Cast<FileIO3DObject>(fileIO);
+    if (!IsValid(fileIO3DObject))
+    {
+        throw std::runtime_error("Invalid FileIO object");
+    }
+    
     fileIO3DObject->Write(scene);
 }
 
-ObjectPtr<FileIO> Importer3DObject::CreateFileIO(const String& filePath, bool isLoadingFromDisk)
+ObjectPtr<FileIO> Importer3DObject::CreateFileIO(const ResPath& resPath)
 {
-    return NewObject<FileIO3DObject>(filePath, isLoadingFromDisk);
+    return NewObject<FileIO3DObject>(resPath, false);
 }

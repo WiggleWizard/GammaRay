@@ -13,7 +13,7 @@ ResourceManager::ResourceManager()
     rootNode->isDirectory = true;
 
     registeredImports = {
-        { ".obj", NewObject<Importer3DObject>() }
+        { "obj", NewObject<Importer3DObject>() }
     };
 }
 
@@ -21,6 +21,7 @@ void ResourceManager::ImportSource(const std::filesystem::path& sourcePath, cons
 {
     // Figure out how we want to import it based on the source's extension
     auto ext = sourcePath.extension().string();
+    std::erase(ext, '.');
 
     if (!registeredImports.contains(ext))
     {
@@ -30,7 +31,9 @@ void ResourceManager::ImportSource(const std::filesystem::path& sourcePath, cons
 
     auto importer = registeredImports[ext];
 
-    ObjectPtr<FileIO> fileIO = importer->CreateFileIO(false);
+    ObjectPtr<FileIO> fileIO = importer->CreateFileIO(destPath);
+    FileMetadataHeader header = { ext, sourcePath.string() };
+    fileIO->WriteMetadata(header);
 
     importer->Import(sourcePath, fileIO);
 

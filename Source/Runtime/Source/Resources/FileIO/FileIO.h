@@ -1,8 +1,10 @@
 ﻿#pragma once
 
+#include "Resources/ResPath.h"
+
 struct FileMetadataHeader
 {
-    uint32 fileType;
+    String fileType;
     String sourcePath;
 
     void Serialize(Archive& archive);
@@ -11,14 +13,14 @@ struct FileMetadataHeader
 class FileIO : public Object
 {
 public:
-    FileIO(const String& inFilePath, bool isLoadingFromDisk);
+    FileIO(const ResPath& inResPath, bool loadFromDisk);
     
     void SetSavingToDisk(bool isLoadingFromDisk);
     
-    virtual void WriteMetadata(const FileMetadataHeader& metadata);
+    virtual void WriteMetadata(FileMetadataHeader& metadata);
     virtual void Finalize();
 
 protected:
     Archive archive;
-    String filePath;
+    ResPath resPath;
 };

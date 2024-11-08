@@ -35,6 +35,19 @@ public:
         return *this;
     }
 
+    // TODO: Revisit, this code isn't right
+    template <typename T>
+    void SerializeVector(std::vector<T>& vec)
+    {
+        int32_t sz = static_cast<int32_t>(vec.size());
+        *this << sz;
+        for (uint32 i = 0; i < sz; ++i)
+        {
+            T& value = vec[i];
+            *this << value;
+        }
+    }
+
     Archive& operator<<(int32_t& value)
     {
         SerializeInternal(value);
@@ -123,13 +136,13 @@ private:
         position += sizeof(T);
     }
 
-    template <typename T, std::enable_if_t<!std::is_arithmetic_v<T> && !std::is_same_v<T, std::string>, int> = 0>
+    template <typename T, std::enable_if_t<!std::is_arithmetic_v<T> && !std::is_same_v<T, std::string>, int>  = 0>
     void SerializeCustomType(T& value)
     {
         value.Serialize(*this);
     }
 
-    template <typename T, std::enable_if_t<std::is_arithmetic_v<T> || std::is_same_v<T, std::string>, int> = 0>
+    template <typename T, std::enable_if_t<std::is_arithmetic_v<T> || std::is_same_v<T, std::string>, int>  = 0>
     void SerializeCustomType(T& value)
     {
         *this << value;

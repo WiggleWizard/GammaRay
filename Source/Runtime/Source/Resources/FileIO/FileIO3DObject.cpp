@@ -1,19 +1,35 @@
 ﻿#include "FileIO3DObject.h"
 
 #include "Core/Memory/Archive.h"
+#include "Core/Types/ConversionAIDG.h"
 
 #include <assimp/scene.h>
 
-FileIO3DObject::FileIO3DObject(const String& inFilePath, bool isLoadingFromDisk) : FileIO(inFilePath, isLoadingFromDisk)
+void SerializeMesh(aiMesh* mesh, Archive& ar)
+{
+    for (uint32 i = 0; i < mesh->mNumVertices; i++)
+    {
+        Vertex v;
+        
+        v.position = ConversionAIDG(mesh->mVertices[i]);
+        v.normal = ConversionAIDG(mesh->mNormals[i]);
+
+        if (mesh->mTextureCoords[0] != nullptr)
+            v.uv = ConversionAIDG(mesh->mTextureCoords[0][i]);
+
+        if (mesh->mColors[0] != nullptr)
+            v.color = ConversionAIDG(mesh->mColors[0][i]);
+        
+        ar << v;
+    }
+}
+
+FileIO3DObject::FileIO3DObject(const ResPath& inResPath, bool isLoadingFromDisk) : FileIO(inResPath, isLoadingFromDisk)
 {
 }
 
 void FileIO3DObject::Write(const aiScene* scene)
 {
-    Archive a;
-    int b = 3;
-    a << b;
-
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {
         //throw std::runtime_error("Assimp error: " + std::string(importer.GetErrorString()));
@@ -25,5 +41,6 @@ void FileIO3DObject::Write(const aiScene* scene)
         throw std::runtime_error("No meshes found in file");
     }
 
-    const aiMesh* mesh = scene->mMeshes[0];
+    aiMesh* mesh = scene->mMeshes[0];
+    SerializeMesh(mesh, archive);
 }

@@ -7,7 +7,7 @@ struct aiScene;
 class FileIO3DObject : public FileIO
 {
 public:
-    FileIO3DObject(const String& inFilePath, bool isLoadingFromDisk);
+    FileIO3DObject(const ResPath& inResPath, bool isLoadingFromDisk);
     
     void Write(const aiScene* scene);
 };

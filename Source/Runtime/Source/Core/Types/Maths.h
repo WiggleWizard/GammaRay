@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core/Memory/Archive.h"
+
 #include <BasicMath.hpp>
 
 #pragma pack(push,1)
@@ -19,6 +21,25 @@ struct Vertex
         , uv(texcoord)
         , color(col)
     {}
+
+    void Serialize(Archive& ar)
+    {
+        ar << position.x;
+        ar << position.y;
+        ar << position.z;
+
+        ar << normal.x;
+        ar << normal.y;
+        ar << normal.z;
+
+        ar << uv.u;
+        ar << uv.v;
+
+        ar << color.r;
+        ar << color.g;
+        ar << color.b;
+        ar << color.a;
+    }
 };
 
 #pragma pack(pop)
